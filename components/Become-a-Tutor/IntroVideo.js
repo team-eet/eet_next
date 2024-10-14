@@ -100,11 +100,11 @@ const IntroVideo = () => {
             if(res.data.length !== 0){
                 setVideo(res.data[0]['sIntroVideoPath'])
                 setvideoUrl(res.data[0]['sIntroVideoUrl'])
-                if(res.data[0].bIsReview !== 0) {
-                    router.push('/become-a-tutor/Review')
-                } else {
-
-                }
+                // if(res.data[0].bIsReview !== 0) {
+                //     router.push('/become-a-tutor/Review')
+                // } else {
+                //
+                // }
             }
 
         })

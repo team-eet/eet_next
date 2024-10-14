@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 
 import "venobox/dist/venobox.min.css";
 import Viedo from "./Course-Sections/Viedo";
@@ -25,11 +25,17 @@ import {API_URL, API_KEY} from "../../constants/constant";
 const CourseDetailsTwo = ({ checkMatchCourses }) => {
   console.log(checkMatchCourses)
   const REACT_APP = API_URL
-
+  const contentRef = useRef(null);
   const [getModule, setModule] = useState([])
   const [getDefaultModule, setDefaultModule] = useState([])
   const [getSectionItems, setSectionItems] = useState([])
   const [getTitle, setTitle] = useState('')
+
+  const scrollToContent = () => {
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   const getCourseModule = () => {
     const url = window.location.href
     const parts = url.split("/");
@@ -42,7 +48,7 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
     })
         .then(res => {
           if (res.data) {
-            // console.log(res.data)
+            console.log('res.data', res.data)
             setModule(res.data)
             setTitle(res.data[0]['sModuleTitle'])
             setDefaultModule(res.data)
@@ -73,20 +79,22 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
   const getMID = (mid, title) => {
     // console.log(mid)
     setTitle(title)
-
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
     // window.addEventListener("scroll", handleScroll);
     const url = window.location.href
     const parts = url.split("/");
     const courseId = parts[parts.length - 1];
     // console.log(EncryptData(courseId), courseId)
-    // console.log(EncryptData(mid), mid)
+    console.log(EncryptData(mid), mid)
     Axios.get(`${API_URL}/api/section/GetCourseSummaryAll/${courseId}/${EncryptData(mid)}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
     })
         .then(res => {
-          // console.log('section items 2', res.data)
+          console.log('section items 2', res.data)
           if (res.data.length !== 0) {
             setSectionItems(res.data)
           } else {
@@ -142,7 +150,7 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
         {getModule.map((data, index) => (
             <SwiperSlide className="swiper-wrapper" key={index}>
               <div className="swiper-slide">
-                <div className="single-slide" onClick={() => getMID(data.nMId, data.sModuleTitle)}>
+                <div className="single-slide" style= {{ cursor : 'pointer' }} onClick={() => getMID(data.nMId, data.sModuleTitle)}>
                   <div className="rbt-card event-grid-card variation-01 rbt-hover">
                     <div className="rbt-card-img">
                       {/*<Link href={`/event-details/${data.id}`}>*/}
@@ -168,6 +176,8 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
                       <div className="read-more-btn">
                         <div
                             className="rbt-btn btn-border hover-icon-reverse btn-sm radius-round"
+                            onClick={scrollToContent}
+                            style={{ cursor: 'pointer' }}
                             // href={`/event-details/${data.id}`}
                         >
                         <span className="icon-reverse-wrapper">
@@ -221,7 +231,7 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
     
       <div className="col-lg-8">
     
-        <div className="m-3 mb-0 mt-5" id={'Title'}>
+        <div className="m-3 mb-0 mt-5" id={'Title'} ref={contentRef}>
           <h4 className={'m-0'}>
             {getTitle ? getTitle : getDefaultModule['sModuleTitle']}
     
@@ -231,32 +241,31 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
           <div className="rbt-inner-onepage-navigation sticky-top mt--30">
             <CourseMenu/>
           </div>
-    
-    
-          <div id={"overview"}>
-            {checkMatchCourses &&
-            checkMatchCourses.sFullDesc ?
-                <Overview checkMatchCourses={checkMatchCourses.sFullDesc}/> : ''
-            }
-          </div>
-    
-    
+
+
           <div
               className="course-content rbt-shadow-box coursecontent-wrapper mt--30"
               id="coursecontent"
           >
             {/*{checkMatchCourses &&*/}
             {/*  checkMatchCourses.courseContent.map((data, index) => (*/}
-            <Content checkMatchCourses={getSectionItems}/>
+            <Content checkMatchCourses={getSectionItems}  />
             {/*  ))}*/}
           </div>
 
-    
+
+          <div id={"overview"}>
+            {checkMatchCourses &&
+            checkMatchCourses.sFullDesc ?
+                <Overview checkMatchCourses={checkMatchCourses.sFullDesc}/> : ''
+            }
+          </div>
+
           <div
               className="rbt-course-feature-box rbt-shadow-box details-wrapper mt--30"
               id="details"
           >
-    
+
             <div className="row g-5">
               {checkMatchCourses.sPrerequisite &&
                   <Requirements
@@ -270,14 +279,14 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
               id="intructor"
           >
             {checkMatchCourses &&
-    
+
                 <Instructor checkMatchCourses={checkMatchCourses}/>
             }
           </div>
           <div className="rbt-review-wrapper rbt-shadow-box review-wrapper mt--30" id="review">
             <Review/>
           </div>
-    
+
           {/*{checkMatchCourses &&*/}
           {/*  checkMatchCourses.featuredReview.map((data, index) => (*/}
           {/*    <Featured {...data} key={index} coursesFeatured={data} />*/}

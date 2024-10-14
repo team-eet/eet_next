@@ -8,7 +8,7 @@ const CourseMenu = () => {
     { id: "overview", label: "Overview" },
     { id: "coursecontent", label: "Course Content" },
     { id: "details", label: "Details" },
-    { id: "intructor", label: "Intructor" },
+    { id: "tutor", label: "Tutor" },
     { id: "review", label: "Review" },
   ];
 
@@ -17,7 +17,7 @@ const CourseMenu = () => {
       "overview",
       "coursecontent",
       "details",
-      "intructor",
+      "tutor",
       "review",
     ];
 

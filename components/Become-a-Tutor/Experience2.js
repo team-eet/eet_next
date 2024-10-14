@@ -443,11 +443,11 @@ const Experience = () => {
                 .then(res => {
                     if(res.data.length !== 0){
                         settutorDetails(res.data)
-                        if(res.data[0].bIsReview !== 0) {
-                            router.push('/become-a-tutor/Review')
-                        } else {
-
-                        }
+                        // if(res.data[0].bIsReview !== 0) {
+                        //     router.push('/become-a-tutor/Review')
+                        // } else {
+                        //
+                        // }
                     }
                     console.log('GetTutorDetails' ,res.data)
 

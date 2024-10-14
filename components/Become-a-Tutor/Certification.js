@@ -276,6 +276,8 @@ const Certification = () => {
   const [verifySts, setverifySts] = useState()
   const [nocertificate, setnocertificate] = useState(false)
 
+  const [tutcerticnt, settutcerticnt] = useState('')
+
   useEffect(() => {
     let array2 = [2, 2, 1, 3, 2, 2, 3, 2, 2, 2, 3, 2];
 
@@ -360,6 +362,9 @@ const Certification = () => {
     })
         .then(res => {
           console.log('GetTutorCertiData', res.data)
+          if(res.data.length !== 0) {
+            settutcerticnt(res.data[0].certification_data)
+          }
 
           if(verifySts === 2 ) {
             setnocertificate(true)
@@ -376,7 +381,7 @@ const Certification = () => {
             const certivalue = res.data.map((item, index) => {
               return item.sCertification_comment
             })
-            console.log(certivalue)
+            // console.log(certivalue)
             if(certivalue[0] === 'No Certification') {
               sethideFields(false)
             }
@@ -401,11 +406,11 @@ const Certification = () => {
           .then(res => {
             if(res.data.length !== 0) {
               settutorDetails(res.data)
-              if(res.data[0].bIsReview !== 0) {
-                router.push('/become-a-tutor/Review')
-              } else {
-
-              }
+              // if(res.data[0].bIsReview !== 0) {
+              //   router.push('/become-a-tutor/Review')
+              // } else {
+              //
+              // }
             }
             console.log('GetTutorDetails' ,res.data)
 
@@ -429,12 +434,12 @@ const Certification = () => {
                 enableReinitialize={true}
                 onSubmit={async (values, {resetForm}) => {
                   // console.log([values])
-                  // console.log([values])s
+                  // console.log([values])
                   if(verifySts === 2) {
                     router.push('/become-a-tutor/teaching-experience')
                   } else {
                     if (tutorcnt !== 0) {
-                      if (hideFields === false) {
+                        if (hideFields === false) {
                         //no education
                         setisLoading(true)
                         const noEducation = {
@@ -460,151 +465,115 @@ const Certification = () => {
                                 ErrorDefaultAlert(JSON.stringify(err.response))
                               }
                             })
-                      } else {
-                        // alert('yes education')
-
-                        const updateValues = [{
-                          nRegId : regId,
-                          updateId: updateArray,
-                          deleteId: deletedArray,
-                          sCertification : CertificationList[0]
-                        }]
-                        setisLoading(true)
-                        // console.log(updateValues)
-                        await Axios.put(`${API_URL}/api/TutorCertification/UpdateTutorCertification  `, updateValues, {
-                          headers: {
-                            ApiKey: `${API_KEY}`
-                          }
-                        }).then(res => {
-                          console.log(res.data)
-                          const retData = JSON.parse(res.data)
-                          // localStorage.removeItem('verify_uname')
-                          // console.log(retData)
-                          resetForm({})
-                          if(retData.success === '1') {
-
-                            Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-                              headers: {
-                                ApiKey: `${API_KEY}`
-                              }
-                            })
-                                .then(res => {
-                                  // console.log(res.data)
-                                  if(res.data.length !== 0) {
-                                    const array2 = res.data.map((item) => {
-                                      return item.verify_list
-                                    })
-                                    // console.log(array2)
-                                    let array = array2[0].split(',').map(Number);
-                                    console.log('---------------', array);
-                                    let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification',
-                                      'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
-
-                                    let url = array1
-                                    let verify_string = array;
-                                    if(verify_string.length !== 0){
-                                      // Check the 0th position in array2 and get the corresponding string from array1
-                                      let positionToCheck = verify_string[0];
-                                      let conditionString = url[positionToCheck + 1];
-                                      console.log(conditionString)
-
-
-                                      // Check the position of the first 3 numbers in array2
-                                      let positionOfThree = verify_string.findIndex(num => num === 3);
-                                      // const array = [2, 5, 9];
-
-                                      // console.log(array);
-                                      //
-                                      // const index = verify_string.indexOf(positionOfThree);
-                                      // if (index > -1) { // only splice array when item is found
-                                      //   verify_string.splice(index, 1); // 2nd parameter means remove one item only
-                                      // }
-                                      //   console.log(a)
-                                      // console.log(positionOfThree)
-                                      // Get the string at that position from array1
-                                      let stringForUrl = url[positionOfThree];
-                                      let result = array1.indexOf(stringForUrl)
-
-
-                                      console.log('stringForUrl', stringForUrl, result)
-                                      router.push(`/become-a-tutor/teaching-experience`)
-                                    } else {
-                                      router.push('/become-a-tutor/teaching-experience')
-                                    }
-
-                                  }
-                                })
-                                .catch(err => {
-                                  { ErrorDefaultAlert(err) }
-                                })
-
-                          }
-                        })
-                            .catch(err => {
-                              // console.log(err)
-                              {
-                                ErrorDefaultAlert(JSON.stringify(err.response))
-                              }
-                            })
                       }
-                    } else {
-                      if (hideFields === false) {
-                        //no education
-                        const noCertification = {
-                          nRegId : regId,
-                          sIsCertification : "true"
+                        else {
+                        // alert('yes education')
+                        if (tutcerticnt === "0") {
+
+                          setisLoading(true)
+                          // alert('yes education')
+                          await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorCertificate  `, [values], {
+                            headers: {
+                              ApiKey: `${API_KEY}`
+                            }
+                          }).then(res => {
+                            // console.log(res.data)
+                            const retData = JSON.parse(res.data)
+                            // localStorage.removeItem('verify_uname')
+                            // console.log(retData)
+                            resetForm({})
+                            if (retData.success === '1') {
+                              router.push('/become-a-tutor/teaching-experience')
+                            }
+                          })
+                              .catch(err => {
+                                // console.log(err)
+                                {
+                                  ErrorDefaultAlert(JSON.stringify(err.response))
+                                }
+                              })
                         }
-                        setisLoading(true)
-                        // console.log(noEducation)
-                        await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorBasicCertificate`, noCertification, {
-                          headers: {
-                            ApiKey: `${API_KEY}`
-                            // 'Content-Type' : 'application/json'
-                          }
-                        }).then(res => {
-                          console.log(res.data)
-                          const retData = JSON.parse(res.data)
-                          // localStorage.removeItem('verify_uname')
-                          // console.log(retData)
-                          resetForm({})
-                          if(retData.success === '1') {
-                            router.push('/become-a-tutor/teaching-experience')
-                          }
-                        })
-                            .catch(err => {
-                              {
-                                ErrorDefaultAlert(JSON.stringify(err.response))
-                              }
-                            })
-                      } else {
-                        setisLoading(true)
-                        // alert('yes education')
-                        await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorCertificate  `, [values], {
-                          headers: {
-                            ApiKey: `${API_KEY}`
-                          }
-                        }).then(res => {
-                          // console.log(res.data)
-                          const retData = JSON.parse(res.data)
-                          // localStorage.removeItem('verify_uname')
-                          // console.log(retData)
-                          resetForm({})
-                          if(retData.success === '1') {
-                            router.push('/become-a-tutor/teaching-experience')
-                          }
-                        })
-                            .catch(err => {
-                              // console.log(err)
-                              {
-                                ErrorDefaultAlert(JSON.stringify(err.response))
-                              }
-                            })
-                      }
+                          else {
+                          const updateValues = [{
+                            nRegId : regId,
+                            updateId: updateArray,
+                            deleteId: deletedArray,
+                            sCertification : CertificationList[0]
+                          }]
+                          setisLoading(true)
+                          // console.log(updateValues)
+                          await Axios.put(`${API_URL}/api/TutorCertification/UpdateTutorCertification  `, updateValues, {
+                            headers: {
+                              ApiKey: `${API_KEY}`
+                            }
+                          }).then(res => {
+                            console.log(res.data)
+                            const retData = JSON.parse(res.data)
+                            // localStorage.removeItem('verify_uname')
+                            // console.log(retData)
+                            resetForm({})
+                            if(retData.success === '1') {
+
+                              Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                headers: {
+                                  ApiKey: `${API_KEY}`
+                                }
+                              })
+                                  .then(res => {
+                                    // console.log(res.data)
+                                    if(res.data.length !== 0) {
+                                      const array2 = res.data.map((item) => {
+                                        return item.verify_list
+                                      })
+                                      // console.log(array2)
+                                      let array = array2[0].split(',').map(Number);
+                                      console.log('---------------', array);
+                                      let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification',
+                                        'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
+
+                                      let url = array1
+                                      let verify_string = array;
+                                      if(verify_string.length !== 0){
+                                        // Check the 0th position in array2 and get the corresponding string from array1
+                                        let positionToCheck = verify_string[0];
+                                        let conditionString = url[positionToCheck + 1];
+                                        console.log(conditionString)
+
+
+                                        // Check the position of the first 3 numbers in array2
+                                        let positionOfThree = verify_string.findIndex(num => num === 3);
+
+                                        let stringForUrl = url[positionOfThree];
+                                        let result = array1.indexOf(stringForUrl)
+
+
+                                        console.log('stringForUrl', stringForUrl, result)
+                                        router.push(`/become-a-tutor/teaching-experience`)
+                                      } else {
+                                        router.push('/become-a-tutor/teaching-experience')
+                                      }
+
+                                    }
+                                  })
+                                  .catch(err => {
+                                    { ErrorDefaultAlert(err) }
+                                  })
+
+                            }
+                          })
+                              .catch(err => {
+                                // console.log(err)
+                                {
+                                  ErrorDefaultAlert(JSON.stringify(err.response))
+                                }
+                              })
+                        }
+                        }
+                    }
+                    else {
+                      alert('No tutor added')
                     }
                   }
-
-
-
                 }}
             >
               {({errors, touched}) => {

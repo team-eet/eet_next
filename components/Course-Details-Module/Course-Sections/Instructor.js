@@ -4,7 +4,7 @@ import React from "react";
 import img from "@/public/images/testimonial/client-01.png";
 
 const Instructor = ({ checkMatchCourses }) => {
-    console.log(checkMatchCourses)
+    console.log('checkMatchCourses', checkMatchCourses)
   return (
       <>
           <div className="about-author border-0 pb--0 pt--0">

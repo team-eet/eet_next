@@ -171,11 +171,11 @@ const Availability = () => {
         })
             .then(res => {
                 if(res.data.length !== 0) {
-                    if(res.data[0].bIsReview !== 0) {
-                        router.push('/become-a-tutor/Review')
-                    } else {
-
-                    }
+                    // if(res.data[0].bIsReview !== 0) {
+                    //     router.push('/become-a-tutor/Review')
+                    // } else {
+                    //
+                    // }
                 }
                 console.log(res.data)
             })

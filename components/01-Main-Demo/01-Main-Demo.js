@@ -570,7 +570,7 @@ const MainDemo = () => {
                                   </div>
                                   <div className="rbt-bookmark-btn">
                                     <Link className="rbt-round-btn" title="Bookmark" href="#">
-                                      <i className="feather-bookmark"></i>
+                                      <i className="feather-heart"></i>
                                     </Link>
                                   </div>
                                 </div>

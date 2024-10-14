@@ -172,11 +172,11 @@ const Cover = () => {
                     setSImagePathRight(res.data[0]['sCoverPhotoRightPath'])
                     setSImagePathLeft(res.data[0]['sCoverPhotoLeftPath'])
                     setSImagePathCenter(res.data[0]['sCoverPhotoCenterPath'])
-                    if(res.data[0].bIsReview !== 0) {
-                        router.push('/become-a-tutor/Review')
-                    } else {
-
-                    }
+                    // if(res.data[0].bIsReview !== 0) {
+                    //     router.push('/become-a-tutor/Review')
+                    // } else {
+                    //
+                    // }
                 }
 
                 // setTutorDetail(res.data[0])

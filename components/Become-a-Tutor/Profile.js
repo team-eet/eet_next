@@ -105,11 +105,11 @@ const Profile = () => {
                 // console.log(res.data)
                 if (res.data.length !== 0) {
                     setSImagePath(res.data[0]['sProfilePhotoPath'])
-                    if(res.data[0].bIsReview !== 0) {
-                        router.push('/become-a-tutor/Review')
-                    } else {
-
-                    }
+                    // if(res.data[0].bIsReview !== 0) {
+                    //     router.push('/become-a-tutor/Review')
+                    // } else {
+                    //
+                    // }
                 }
 
                 // setTutorDetail(res.data[0])

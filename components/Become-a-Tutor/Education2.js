@@ -323,6 +323,7 @@ const Education = () => {
                 { ErrorDefaultAlert(err) }
             })
     }
+    const [tuteducnt, settuteducnt] = useState('')
 
     useEffect(() => {
         bindCountry()
@@ -409,7 +410,10 @@ const Education = () => {
                 }
             })
                 .then(res => {
-                    console.log(res.data)
+                    console.log('res.data', res.data)
+                    if(res.data.length !== 0){
+                        settuteducnt(res.data[0].education_data)
+                    }
                     if (verifyeduSts === 2) {
                         setnoeducation(true)
                         sethideFields(false)
@@ -453,11 +457,11 @@ const Education = () => {
                     console.log('GetTutorDetails' ,res.data)
                     if(res.data.length !== 0) {
                         settutorDetails(res.data)
-                        if(res.data[0].bIsReview !== 0) {
-                            router.push('/become-a-tutor/Review')
-                        } else {
-
-                        }
+                        // if(res.data[0].bIsReview !== 0) {
+                        //     router.push('/become-a-tutor/Review')
+                        // } else {
+                        //
+                        // }
                     }
 
                 })
@@ -488,7 +492,6 @@ const Education = () => {
                                 router.push('/become-a-tutor/certification')
                             } else {
                                 if (tutorcnt !== 0) {
-
                                     if (hideFields === false) {
                                         //no education
                                         const noEducation = {
@@ -515,150 +518,110 @@ const Education = () => {
                                                     ErrorDefaultAlert(JSON.stringify(err.response))
                                                 }
                                             })
-                                    } else {
-                                        // alert('yes education')
-
-                                        const updateValues = [{
-                                            nRegId : regId,
-                                            updateId: updateArray,
-                                            deleteId: deletedArray,
-                                            sEducation : EducationList[0]
-                                        }]
-                                        console.log('updateValues', updateValues)
-                                        setisLoading(true)
-                                        await Axios.put(`${API_URL}/api/TutorEducation/UpdateTutorEducation  `, updateValues, {
-                                            headers: {
-                                                ApiKey: `${API_KEY}`
-                                            }
-                                        }).then(res => {
-                                            console.log(res.data)
-                                            const retData = JSON.parse(res.data)
-                                            // localStorage.removeItem('verify_uname')
-                                            // console.log(retData)
-                                            resetForm({})
-                                            if(retData.success === '1') {
-
-                                                Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-                                                    headers: {
-                                                        ApiKey: `${API_KEY}`
+                                    }
+                                    else {
+                                        if(tuteducnt === "0") {
+                                            setisLoading(true)
+                                            await Axios.post(`${API_URL}/api/TutorEducation/InsertTutorEducation`, [values], {
+                                                headers: {
+                                                    ApiKey: `${API_KEY}`
+                                                }
+                                            }).then(res => {
+                                                // console.log(res.data)
+                                                const retData = JSON.parse(res.data)
+                                                // localStorage.removeItem('verify_uname')
+                                                // console.log(retData)
+                                                resetForm({})
+                                                if(retData.success === '1') {
+                                                    router.push('/become-a-tutor/certification')
+                                                }
+                                            })
+                                                .catch(err => {
+                                                    // console.log(err)
+                                                    {
+                                                        ErrorDefaultAlert(JSON.stringify(err.response))
                                                     }
                                                 })
-                                                    .then(res => {
-                                                        // console.log(res.data)
-                                                        if(res.data.length !== 0) {
-                                                            const array2 = res.data.map((item) => {
-                                                                return item.verify_list
+                                        }
+                                        else {
+                                                    // alert('yes education')
+                                                    const updateValues = [{
+                                                        nRegId : regId,
+                                                        updateId: updateArray,
+                                                        deleteId: deletedArray,
+                                                        sEducation : EducationList[0]
+                                                    }]
+                                                    console.log('updateValues', updateValues)
+                                                    setisLoading(true)
+                                                    await Axios.put(`${API_URL}/api/TutorEducation/UpdateTutorEducation  `, updateValues, {
+                                                        headers: {
+                                                            ApiKey: `${API_KEY}`
+                                                        }
+                                                    }).then(res => {
+                                                        console.log(res.data)
+                                                        const retData = JSON.parse(res.data)
+
+                                                        resetForm({})
+                                                        if(retData.success === '1') {
+
+                                                            Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                                headers: {
+                                                                    ApiKey: `${API_KEY}`
+                                                                }
                                                             })
-                                                            // console.log(array2)
-                                                            let array = array2[0].split(',').map(Number);
-                                                            console.log('---------------', array);
-                                                            let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification',
-                                                                'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
+                                                                .then(res => {
+                                                                    // console.log(res.data)
+                                                                    if(res.data.length !== 0) {
+                                                                        const array2 = res.data.map((item) => {
+                                                                            return item.verify_list
+                                                                        })
+                                                                        // console.log(array2)
+                                                                        let array = array2[0].split(',').map(Number);
+                                                                        console.log('---------------', array);
+                                                                        let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification',
+                                                                            'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
 
-                                                            let url = array1
-                                                            let verify_string = array;
-                                                            if(verify_string.length !== 0){
-                                                                // Check the 0th position in array2 and get the corresponding string from array1
-                                                                let positionToCheck = verify_string[0];
-                                                                let conditionString = url[positionToCheck + 1];
-                                                                console.log(conditionString)
+                                                                        let url = array1
+                                                                        let verify_string = array;
+                                                                        if(verify_string.length !== 0){
+                                                                            // Check the 0th position in array2 and get the corresponding string from array1
+                                                                            let positionToCheck = verify_string[0];
+                                                                            let conditionString = url[positionToCheck + 1];
+                                                                            console.log(conditionString)
 
-
-                                                                // Check the position of the first 3 numbers in array2
-                                                                let positionOfThree = verify_string.findIndex(num => num === 3);
-                                                                // const array = [2, 5, 9];
-
-                                                                // console.log(array);
-                                                                //
-                                                                // const index = verify_string.indexOf(positionOfThree);
-                                                                // if (index > -1) { // only splice array when item is found
-                                                                //   verify_string.splice(index, 1); // 2nd parameter means remove one item only
-                                                                // }
-                                                                //   console.log(a)
-                                                                // console.log(positionOfThree)
-                                                                // Get the string at that position from array1
-                                                                let stringForUrl = url[positionOfThree];
-                                                                let result = array1.indexOf(stringForUrl)
+                                                                            let positionOfThree = verify_string.findIndex(num => num === 3);
+                                                                            let stringForUrl = url[positionOfThree];
+                                                                            let result = array1.indexOf(stringForUrl)
 
 
-                                                                console.log('stringForUrl', stringForUrl, result)
-                                                                router.push(`/become-a-tutor/certification`)
-                                                            } else {
-                                                                router.push('/become-a-tutor/certification')
-                                                            }
+                                                                            console.log('stringForUrl', stringForUrl, result)
+                                                                            router.push(`/become-a-tutor/certification`)
+                                                                        } else {
+                                                                            router.push('/become-a-tutor/certification')
+                                                                        }
+
+                                                                    }
+                                                                })
+                                                                .catch(err => {
+                                                                    { ErrorDefaultAlert(err) }
+                                                                })
 
                                                         }
                                                     })
-                                                    .catch(err => {
-                                                        { ErrorDefaultAlert(err) }
-                                                    })
+                                                        .catch(err => {
+                                                            // console.log(err)
+                                                            {
+                                                                ErrorDefaultAlert(JSON.stringify(err.response))
+                                                            }
+                                                        })
 
                                             }
-                                        })
-                                            .catch(err => {
-                                                // console.log(err)
-                                                {
-                                                    ErrorDefaultAlert(JSON.stringify(err.response))
-                                                }
-                                            })
-                                    }
-                                } else {
-                                    if (hideFields === false) {
-                                        //no education
-                                        const noEducation = {
-                                            nRegId : regId,
-                                            sIsEducation : "true"
-                                        }
-                                        // console.log(noEducation)
-                                        setisLoading(true)
-                                        await Axios.post(`${API_URL}/api/TutorEducation/InsertTutorBasicEducation`, noEducation, {
-                                            headers: {
-                                                ApiKey: `${API_KEY}`
-                                                // 'Content-Type' : 'application/json'
-                                            }
-                                        }).then(res => {
-                                            console.log(res.data)
-                                            const retData = JSON.parse(res.data)
-                                            // localStorage.removeItem('verify_uname')
-                                            // console.log(retData)
-                                            resetForm({})
-                                            if(retData.success === '1') {
-                                                router.push('/become-a-tutor/certification')
-                                            }
-                                        })
-                                            .catch(err => {
-                                                {
-                                                    ErrorDefaultAlert(JSON.stringify(err.response))
-                                                }
-                                            })
-                                    } else {
-                                        // alert('yes education')
-                                        setisLoading(true)
-                                        await Axios.post(`${API_URL}/api/TutorEducation/InsertTutorEducation  `, [values], {
-                                            headers: {
-                                                ApiKey: `${API_KEY}`
-                                            }
-                                        }).then(res => {
-                                            // console.log(res.data)
-                                            const retData = JSON.parse(res.data)
-                                            // localStorage.removeItem('verify_uname')
-                                            // console.log(retData)
-                                            resetForm({})
-                                            if(retData.success === '1') {
-                                                router.push('/become-a-tutor/certification')
-                                            }
-                                        })
-                                            .catch(err => {
-                                                // console.log(err)
-                                                {
-                                                    ErrorDefaultAlert(JSON.stringify(err.response))
-                                                }
-                                            })
                                     }
                                 }
+                                else {
+                                    alert('Tutor not found')
+                                }
                             }
-
-
 
                         }}
                     >

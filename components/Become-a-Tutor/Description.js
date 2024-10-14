@@ -86,11 +86,11 @@ const Description = () => {
         .then(res => {
           if(res.data.length !== 0) {
             setText(res.data[0]['sDesc'])
-            if(res.data[0].bIsReview !== 0) {
-              router.push('/become-a-tutor/Review')
-            } else {
-
-            }
+            // if(res.data[0].bIsReview !== 0) {
+            //   router.push('/become-a-tutor/Review')
+            // } else {
+            //
+            // }
           }
           console.log(res.data)
 

@@ -153,7 +153,7 @@ const Basics = () => {
                 }
             })
                 .then(res => {
-                    // console.log(res.data)
+                    console.log(res.data)
                     if (res.data.length !== 0) {
                         setState(res.data)
                     }
@@ -352,11 +352,11 @@ const Basics = () => {
                   console.log(res.data)
 
                   if(res.data.length !== 0) {
-                      if(res.data[0].bIsReview !== 0) {
-                           router.push('/become-a-tutor/Review')
-                      } else {
-
-                      }
+                      // if(res.data[0].bIsReview !== 0) {
+                      //      router.push('/become-a-tutor/Review')
+                      // } else {
+                      //
+                      // }
                   }
 
               })
