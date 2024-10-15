@@ -45,8 +45,6 @@ const Experience = () => {
     const [fields, showFields] = useState(false)
     const [isLoading, setisLoading] = useState(false)
 
-
-
     const handleChange = (e, index) => {
         console.log(e.target.value)
         setIsFresher(e.target.checked)
@@ -58,7 +56,6 @@ const Experience = () => {
     }
 
     // const [file, setFile] = useState();
-
 
     const ExperienceList = []
     const [expFields, setExpFields] = useState([
@@ -136,7 +133,6 @@ const Experience = () => {
         setExpFields(updatedFields);
     };
 
-
     const handleChangeCountry = (e, index) => {
         const { value } = e.target;
         if(expFields.length >= 1){
@@ -148,7 +144,6 @@ const Experience = () => {
             updatedFields.nCountryId = parseInt(value);
             setExpFields(updatedFields);
         }
-
     };
 
     const handleChangeOrganization = (e, index) => {
@@ -274,7 +269,6 @@ const Experience = () => {
         setExpFields(updatedFields);
     };
 
-
     const handleAddExperience = () => {
         const newId = expFields.length + 1;
         const newExperience = {
@@ -363,6 +357,7 @@ const Experience = () => {
     const [verifySts, setverifySts] = useState()
     const [nocertificate, setnocertificate] = useState(false)
 
+    const [tutexpcnt, settutexpcnt] = useState('')
 
     useEffect(() => {
         if(localStorage.getItem('userData')) {
@@ -408,6 +403,7 @@ const Experience = () => {
                 .then(res => {
                     console.log(res.data)
                     if(res.data.length !== 0){
+                        settutexpcnt(res.data[0].experience_data)
                         if(res.data[0]['sTeachExper_comment'] === 'Fresher'){
                             showFields(false)
                             setIsFresher(res.data[0]['sTeachExper_comment'])
@@ -462,7 +458,6 @@ const Experience = () => {
         <>
             <div className="rbt-dashboard-content bg-color-white rbt-shadow-box">
                 <div className="content">
-
                     <Formik
                         // validationSchema={UserValidationSchema}
                         initialValues={{
@@ -475,7 +470,6 @@ const Experience = () => {
                             if(verifySts === 2) {
                                 router.push('/become-a-tutor/description')
                             } else {
-
                                 if(tutorcnt !== 0) {
                                     if (fields === false) {
                                         // alert('hello')
@@ -506,32 +500,14 @@ const Experience = () => {
                                                     ErrorDefaultAlert(JSON.stringify(err.response))
                                                 }
                                             })
-                                    } else {
-                                        // alert('yes education')
-                                        const updateValues = [{
-                                            nRegId : regId,
-                                            updateId: updateArray,
-                                            deleteId: deletedArray,
-                                            sExperience : ExperienceList[0]
-                                        }]
-                                        console.log(updateValues)
-                                        // console.log(hideFields)
-                                        setisLoading(true)
-                                       // first time
-                                        // status == 0 call InsertTutorBasicTeachExp
-
-
-                                        if(Isfresher === 'Fresher') {
-                                            const noExperience = {
-                                                nRegId : regId,
-                                                sIsExperience : "fresher"
-                                            }
+                                    }
+                                    else {
+                                        if(tutexpcnt === "0") {
+                                            // alert('yes education')
                                             setisLoading(true)
-                                            // console.log(noExperience)
-                                            await Axios.post(`${API_URL}/api/TutorTeachExperience/InsertTutorBasicTeachExp`, noExperience, {
+                                            await Axios.post(`${API_URL}/api/TutorTeachExperience/InsertTutorTeachExp`, [values], {
                                                 headers: {
                                                     ApiKey: `${API_KEY}`
-                                                    // 'Content-Type' : 'application/json'
                                                 }
                                             }).then(res => {
                                                 console.log(res.data)
@@ -549,121 +525,117 @@ const Experience = () => {
                                                     }
                                                 })
                                         } else {
-                                            await Axios.put(`${API_URL}/api/TutorTeachExperience/UpdateTutorTeachExper`, updateValues, {
-                                                headers: {
-                                                    ApiKey: `${API_KEY}`
+                                            // alert('yes education')
+                                            const updateValues = [{
+                                                nRegId : regId,
+                                                updateId: updateArray,
+                                                deleteId: deletedArray,
+                                                sExperience : ExperienceList[0]
+                                            }]
+                                            console.log(updateValues)
+                                            // console.log(hideFields)
+                                            setisLoading(true)
+                                            // first time
+                                            // status == 0 call InsertTutorBasicTeachExp
+
+
+                                            if(Isfresher === 'Fresher') {
+                                                const noExperience = {
+                                                    nRegId : regId,
+                                                    sIsExperience : "fresher"
                                                 }
-                                            }).then(res => {
-                                                console.log(res.data)
-                                                const retData = JSON.parse(res.data)
-                                                // localStorage.removeItem('verify_uname')
-                                                // console.log(retData)
-                                                resetForm({})
-
-                                                if(retData.success === '1') {
-                                                    Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-                                                        headers: {
-                                                            ApiKey: `${API_KEY}`
-                                                        }
-                                                    })
-                                                        .then(res => {
-                                                            // console.log(res.data)
-                                                            if(res.data.length !== 0) {
-                                                                const array2 = res.data.map((item) => {
-                                                                    return item.verify_list
-                                                                })
-                                                                // console.log(array2)
-                                                                let array = array2[0].split(',').map(Number);
-                                                                // console.log('---------------', array);
-                                                                let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification', 'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
-
-                                                                let url = array1
-                                                                let verify_string = array;
-                                                                if(verify_string.length !== 0){
-                                                                    // Check the 0th position in array2 and get the corresponding string from array1
-                                                                    let positionToCheck = verify_string[0];
-                                                                    // let conditionString = url[positionToCheck - 1];
-
-                                                                    // Check the position of the first 3 numbers in array2
-                                                                    let positionOfThree = verify_string.findIndex(num => num === 3);
-
-                                                                    // Get the string at that position from array1
-                                                                    let stringForUrl = url[positionOfThree];
-
-                                                                    console.log('stringForUrl', stringForUrl)
-                                                                    router.push(`/become-a-tutor/description`)
-                                                                } else {
-                                                                    router.push('/become-a-tutor/description')
-                                                                }
-                                                            }
-                                                        })
-                                                        .catch(err => {
-                                                            { ErrorDefaultAlert(err) }
-                                                        })
-
-                                                }
-                                            })
-                                                .catch(err => {
-                                                    {
-                                                        ErrorDefaultAlert(JSON.stringify(err.response))
+                                                setisLoading(true)
+                                                // console.log(noExperience)
+                                                await Axios.post(`${API_URL}/api/TutorTeachExperience/InsertTutorBasicTeachExp`, noExperience, {
+                                                    headers: {
+                                                        ApiKey: `${API_KEY}`
+                                                        // 'Content-Type' : 'application/json'
+                                                    }
+                                                }).then(res => {
+                                                    console.log(res.data)
+                                                    const retData = JSON.parse(res.data)
+                                                    // localStorage.removeItem('verify_uname')
+                                                    // console.log(retData)
+                                                    resetForm({})
+                                                    if(retData.success === '1') {
+                                                        router.push('/become-a-tutor/description')
                                                     }
                                                 })
+                                                    .catch(err => {
+                                                        {
+                                                            ErrorDefaultAlert(JSON.stringify(err.response))
+                                                        }
+                                                    })
+                                            }
+                                            else {
+                                                await Axios.put(`${API_URL}/api/TutorTeachExperience/UpdateTutorTeachExper`, updateValues, {
+                                                    headers: {
+                                                        ApiKey: `${API_KEY}`
+                                                    }
+                                                }).then(res => {
+                                                    console.log(res.data)
+                                                    const retData = JSON.parse(res.data)
+                                                    // localStorage.removeItem('verify_uname')
+                                                    // console.log(retData)
+                                                    resetForm({})
+
+                                                    if(retData.success === '1') {
+                                                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                            headers: {
+                                                                ApiKey: `${API_KEY}`
+                                                            }
+                                                        })
+                                                            .then(res => {
+                                                                // console.log(res.data)
+                                                                if(res.data.length !== 0) {
+                                                                    const array2 = res.data.map((item) => {
+                                                                        return item.verify_list
+                                                                    })
+                                                                    // console.log(array2)
+                                                                    let array = array2[0].split(',').map(Number);
+                                                                    // console.log('---------------', array);
+                                                                    let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification', 'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
+
+                                                                    let url = array1
+                                                                    let verify_string = array;
+                                                                    if(verify_string.length !== 0){
+                                                                        // Check the 0th position in array2 and get the corresponding string from array1
+                                                                        let positionToCheck = verify_string[0];
+                                                                        // let conditionString = url[positionToCheck - 1];
+
+                                                                        // Check the position of the first 3 numbers in array2
+                                                                        let positionOfThree = verify_string.findIndex(num => num === 3);
+
+                                                                        // Get the string at that position from array1
+                                                                        let stringForUrl = url[positionOfThree];
+
+                                                                        console.log('stringForUrl', stringForUrl)
+                                                                        router.push(`/become-a-tutor/description`)
+                                                                    } else {
+                                                                        router.push('/become-a-tutor/description')
+                                                                    }
+                                                                }
+                                                            })
+                                                            .catch(err => {
+                                                                { ErrorDefaultAlert(err) }
+                                                            })
+
+                                                    }
+                                                })
+                                                    .catch(err => {
+                                                        {
+                                                            ErrorDefaultAlert(JSON.stringify(err.response))
+                                                        }
+                                                    })
+                                            }
+
                                         }
+                                    }
 
                                     }
-                                } else {
-                                    // console.log(hideFields)
-                                    if (fields === true) {
-                                        //no education
-                                        const noExperience = {
-                                            nRegId : regId,
-                                            sIsExperience : "fresher"
-                                        }
-                                        setisLoading(true)
-                                        // console.log(noExperience)
-                                        await Axios.post(`${API_URL}/api/TutorTeachExperience/InsertTutorBasicTeachExp`, noExperience, {
-                                            headers: {
-                                                ApiKey: `${API_KEY}`
-                                                // 'Content-Type' : 'application/json'
-                                            }
-                                        }).then(res => {
-                                            console.log(res.data)
-                                            const retData = JSON.parse(res.data)
-                                            // localStorage.removeItem('verify_uname')
-                                            // console.log(retData)
-                                            resetForm({})
-                                            if(retData.success === '1') {
-                                                router.push('/become-a-tutor/description')
-                                            }
-                                        })
-                                            .catch(err => {
-                                                {
-                                                    ErrorDefaultAlert(JSON.stringify(err.response))
-                                                }
-                                            })
-                                    } else {
-                                        // alert('yes education')
-                                        setisLoading(true)
-                                        await Axios.post(`${API_URL}/api/TutorTeachExperience/InsertTutorTeachExp`, [values], {
-                                            headers: {
-                                                ApiKey: `${API_KEY}`
-                                            }
-                                        }).then(res => {
-                                            console.log(res.data)
-                                            const retData = JSON.parse(res.data)
-                                            // localStorage.removeItem('verify_uname')
-                                            // console.log(retData)
-                                            resetForm({})
-                                            if(retData.success === '1') {
-                                                router.push('/become-a-tutor/description')
-                                            }
-                                        })
-                                            .catch(err => {
-                                                {
-                                                    ErrorDefaultAlert(JSON.stringify(err.response))
-                                                }
-                                            })
-                                    }
+
+                                else {
+                                    alert('No Tutor added')
                                 }
                             }
 
@@ -1181,12 +1153,10 @@ const Experience = () => {
                             )
                         }}
 
-
                     </Formik>
 
                 </div>
             </div>
-
         </>
     );
 };
