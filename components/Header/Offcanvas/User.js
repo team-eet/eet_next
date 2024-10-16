@@ -10,6 +10,7 @@ const User = ({fname, lname, profile}) => {
   // console.log(UserData)
   const router = useRouter()
   const [userRole, setuserRole] = useState('')
+  const [uuid, setuuid] = useState('')
 const handleLogout = () =>{
   localStorage.removeItem('userData')
   localStorage.removeItem('userUpdateData')
@@ -21,6 +22,7 @@ const handleLogout = () =>{
     if (localStorage.getItem('userData')){
       const data = JSON.parse(localStorage.getItem('userData'))
       setuserRole(data)
+      setuuid(JSON.parse(localStorage.getItem('userData')).uuid)
     }
   }, []);
   return (
@@ -57,7 +59,9 @@ const handleLogout = () =>{
                   View Profile
                 </Link>
               </div>
+
             </div>
+            {uuid !== "" ? <small>UUID : {uuid}</small> : ''}
             {/*<ul className="user-list-wrapper">*/}
             {/*  {person.userList.map((list, innerIndex) => (*/}
             {/*    <li key={innerIndex}>*/}

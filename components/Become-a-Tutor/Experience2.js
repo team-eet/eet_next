@@ -47,10 +47,12 @@ const Experience = () => {
 
     const handleChange = (e, index) => {
         console.log(e.target.value)
-        setIsFresher(e.target.checked)
+        // setIsFresher(e.target.checked)
         if(e.target.value === 'Experience') {
+            setIsFresher('Experience')
             showFields(true)
         } else {
+            setIsFresher('Fresher')
             showFields(false)
         }
     }
@@ -60,7 +62,8 @@ const Experience = () => {
     const ExperienceList = []
     const [expFields, setExpFields] = useState([
         {
-            sIs_fresher:Isfresher,
+            // sIs_fresher:Isfresher,
+            sIs_fresher:'',
             nTotal_exper:'',
             nTotal_online_exper:'',
             nCountryId:101,
@@ -151,13 +154,14 @@ const Experience = () => {
         if(expFields.length >= 1){
             const updatedFields = [...expFields];
             updatedFields[index].sOrganization = value;
+            updatedFields[index].sIs_fresher = Isfresher;
             setExpFields(updatedFields);
         } else {
             const updatedFields = expFields;
             updatedFields.sOrganization = value;
+            updatedFields[index].sIs_fresher = Isfresher;
             setExpFields(updatedFields);
         }
-
     };
     const handleChangePosition = (e, index) => {
         const { value } = e.target;

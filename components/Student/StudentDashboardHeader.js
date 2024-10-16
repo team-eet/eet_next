@@ -11,6 +11,7 @@ const StudentDashboardHeader = () => {
   const [fName, setFname] = useState('')
   const [lName, setLname] = useState('')
   const [crscnt, setcrscnt] = useState('')
+  const [uuid, setuuid] = useState('')
 
   const getPurchasedCourse = () => {
     if (localStorage.getItem('userData')) {
@@ -41,6 +42,7 @@ const StudentDashboardHeader = () => {
         setprofilePhoto(JSON.parse(localStorage.getItem('userData')).profile)
         setFname(JSON.parse(localStorage.getItem('userData')).fname)
         setLname(JSON.parse(localStorage.getItem('userData')).lname)
+        setuuid(JSON.parse(localStorage.getItem('userData')).uuid)
     }
     getPurchasedCourse()
   }, [])
@@ -77,8 +79,13 @@ const StudentDashboardHeader = () => {
                   <i className="feather-award"></i>4 Certificate
                 </li>
               </ul>
+              {uuid !== "" ? <small className={'rbt-meta-white text-white'} style={{ fontSize: '14px' }}><i className="feather-user me-1"></i>Unique User Id (uuid)
+                : {uuid}</small> : <></>}
+
             </div>
+
           </div>
+
           <div className="rbt-tutor-information-right">
             <div className="tutor-btn">
               <Link className="rbt-btn btn-md hover-icon-reverse" href="/student/student-settings">

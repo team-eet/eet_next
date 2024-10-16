@@ -12,21 +12,20 @@ const Instructor = ({ checkMatchCourses }) => {
                   <h4 className="rbt-title-style-3 text-start">Tutor</h4>
               </div>
               {/*{checkMatchCourses.body.map((teacher, innerIndex) => (*/}
-              <div className="media align-items-center">
-                  <div className="thumbnail">
-                      {/*<Link href={`/profile/${teacher.id}`}>*/}
+              <div className="row align-items-center">
+                  <div className="col-lg-4 thumbnail">
                       <Link href={``}>
-                          {/*<img src={checkMatchCourses.tutor_image} width={250} height={250}></img>*/}
+                          {/*<img src={checkMatchCourses.sProfilePhotoPath} width={250} height={250}></img>*/}
                           <Image
-                              className={'position-relative'}
-                              src={img}
-                              width={250}
-                              height={250}
-                              alt="Author Images"
+                            className={'position-relative'}
+                            src={checkMatchCourses.sProfilePhotoPath}
+                            width={250}
+                           height={250}
+                            alt="Author Images"
                           />
                       </Link>
                   </div>
-                  <div className="media-body">
+                  <div className="col-lg-8 media-body">
                       <div className="author-info">
                           <h5 className="title text-start">
                               <Link
@@ -37,7 +36,7 @@ const Instructor = ({ checkMatchCourses }) => {
                                   {checkMatchCourses.sFName} {checkMatchCourses.sLName}
                               </Link>
                           </h5>
-                          <span className="b3 subtitle text-start">Math Teacher</span>
+                          <span className="b3 subtitle text-start">{checkMatchCourses.sDegree} ({checkMatchCourses.sSpecialization})</span>
                           <ul className="rbt-meta mb--20 mt--10">
                               <li>
                                   <i className="fa fa-star color-warning"></i>
@@ -52,14 +51,13 @@ const Instructor = ({ checkMatchCourses }) => {
                               </li>
                               <li>
                                   <Link href="#">
-                                      <i className="feather-video"></i>5 Courses
+                                      <i className="feather-video"></i>{checkMatchCourses.total_courses} Courses
                                   </Link>
                               </li>
                           </ul>
                       </div>
                       <div className="content">
-                          <p className="description text-start">Fred Guer is a brilliant educator, whose life was spent
-                              for computer science and love of nature.</p>
+                          <p className="description text-start">{checkMatchCourses.sDesc.substring(0,150)}....</p>
 
                           {/*<ul className="social-icon social-default icon-naked justify-content-start">*/}
                           {/*  {teacher.social.map((social, index) => (*/}

@@ -16,6 +16,7 @@ const Profile = () => {
 
 
   const [userdata, setuserdata] = useState('')
+  const [uuid, setuuid] = useState('')
   useEffect(() => {
     if(localStorage.getItem('userData')){
       const udata = JSON.parse(localStorage.getItem('userData'))
@@ -33,6 +34,8 @@ const Profile = () => {
           .catch(err => {
             { ErrorDefaultAlert(err) }
           })
+
+      setuuid(JSON.parse(localStorage.getItem('userData')).uuid)
     }
   }, []);
 
@@ -43,7 +46,18 @@ const Profile = () => {
           <div className="section-title">
             <h4 className="rbt-title-style-3">My Profile</h4>
           </div>
-          <div className="rbt-profile-row row row--15">
+          {uuid !== "" ? <div className="rbt-profile-row row row--15">
+            <div className="col-lg-4 col-md-4">
+              <div className="rbt-profile-content b2">Unique User Id (uuid)</div>
+            </div>
+            <div className="col-lg-8 col-md-8">
+              <div className="rbt-profile-content b2">
+                {uuid}
+              </div>
+            </div>
+          </div> : <></>}
+
+          <div className="rbt-profile-row row row--15 mt--15">
             <div className="col-lg-4 col-md-4">
               <div className="rbt-profile-content b2">Registration Date</div>
             </div>

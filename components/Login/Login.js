@@ -120,7 +120,7 @@ const Login = () => {
                 enableReinitialize={true}
                 onSubmit={(input, { resetForm }) => {
                   setIsLoading(true)
-                  // console.log(input.username)
+                  // console.log(input)
                   const mob = /^(\+\d{1,4})?[1-9]\d{9}$/
                   // const mob = /^[1-9]{1}[0-9]{9}$/
                   const emailpattern = /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
@@ -149,7 +149,7 @@ const Login = () => {
                     if (res.data) {
                       const retData = DecryptData(res.data)
                       const srt = DecryptData(res.data)
-                      console.log(retData)
+                      console.log('retData', retData)
                       //check user login is true or false by company setting
                       if (retData.ulogin) {
                         if (retData.success === "1") {

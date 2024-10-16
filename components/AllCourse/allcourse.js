@@ -140,7 +140,7 @@ const AllCoursetwo = () => {
         })
             .then(res => {
                 if (res.data) {
-                    console.log('getcoursedata', res.data)
+                    // console.log('getcoursedata', res.data)
                     if (res.data.length !== 0) {
                         setcourseData(res.data)
                         setcoursecount(res.data[0]['remain_course_count'])

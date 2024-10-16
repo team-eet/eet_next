@@ -19,7 +19,7 @@ const Content = ({ checkMatchCourses }) => {
     const url = window.location.href
     const parts = url.split("/");
     const courseId = parts[parts.length - 1]; // Gets the last part of the URL
-    // console.log(courseId)
+    console.log(courseId, EncryptData(0))
     Axios.get(`${API_URL}/api/section/GetCourseSummaryAll/${courseId}/${EncryptData(0)}`, {
       headers: {
         ApiKey: `${API_KEY}`
