@@ -1,0 +1,348 @@
+{
+  "accordion": [
+    {
+      "tag": "accordion",
+      "title": "Histudy Course student",
+      "subTitle": "can join with us.",
+      "imgOne": "/images/about/about-01.jpg",
+      "imgTwo": "/images/about/about-04.jpg",
+      "accordionBody": [
+        {
+          "collapse": "collapseOne",
+          "heading": "headingOne",
+          "expanded": true,
+          "collapsed": true,
+          "show": true,
+          "accordionTitle": "Diverse Teaching Opportunities",
+          "desc": "Online tutoring platforms cover a wide range of subjects and levels, providing opportunities to teach anything from academic subjects to language learning, test preparation, and specialized skills."
+        },
+        {
+          "collapse": "collapseTwo",
+          "heading": "headingTwo",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Convenience",
+          "desc": "Both tutors and students can enjoy the convenience of online tutoring. There's no need to commute to a physical location, saving time and money on transportation."
+        },
+        {
+          "collapse": "collapseThree",
+          "heading": "headingThree",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Accessibility",
+          "desc": "Online tutoring breaks down geographical barriers, allowing you to reach students from around the world. This expands your potential client base and increases opportunities for tutoring sessions."
+        }
+      ]
+    }
+  ],
+
+  "AccordionTwo": [
+    {
+      "tag": "faq",
+      "title": "Have a Question with ",
+      "subTitle": " Histudy University?",
+      "strong": "Its an educational platform",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since",
+      "imgOne": "/images/about/about-01.jpg",
+      "imgTwo": "/images/about/about-10.jpg",
+      "faqBody": [
+        {
+          "collapse": "collapseOne2",
+          "heading": "headingOne2",
+          "expanded": true,
+          "collapsed": true,
+          "show": true,
+          "accordionTitle": "What is Histudy ? How does it work?",
+          "desc": "You can run Histudy easily. Any School, University, College can be use this histudy education template for their educational purpose. A university can be run their online leaning management system by histudy education template."
+        },
+        {
+          "collapse": "collapseTwo2",
+          "heading": "headingTwo2",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How can I get the customer support?",
+          "desc": "After purchasing the product need you any support you can be share with us with sending mail to rainbowit10@gmail.com."
+        },
+        {
+          "collapse": "collapseThree2",
+          "heading": "headingThree2",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Can I get update regularly and For how long do I get updates?",
+          "desc": "Yes, We will get update the Histudy. And you can get it any time. Next time we will comes with more feature. You can be get update for unlimited times. Our dedicated team works for update."
+        },
+        {
+          "collapse": "collapseFour2",
+          "heading": "headingFour2",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "15 Things To Know About Education?",
+          "desc": "If you're looking for random paragraphs, you've come to the right place. When a random word or a random sentence isn't quite enough, the next logical step is to find a random paragraph."
+        }
+      ]
+    }
+  ],
+
+  "AccordionThree": [
+    {
+      "tag": "faq",
+      "title": "Have a Question with ",
+      "subTitle": " Histudy University?",
+      "strong": "Its an educational platform",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since",
+      "faqBody": [
+        {
+          "collapse": "collapseOne3",
+          "heading": "headingOne3",
+          "expanded": true,
+          "collapsed": true,
+          "show": true,
+          "accordionTitle": "What is EET English?",
+          "desc": "EET English is an online learning platform designed to help users improve their English language skills through interactive courses, practice exercises, and expert guidance."
+        },
+        {
+          "collapse": "collapseTwo3",
+          "heading": "headingTwo3",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How do I sign up for EET English?",
+          "desc": "To sign up, simply visit our website, click on the \"Sign Up\" button, and fill out the registration form with your details. You’ll receive a confirmation email to activate your account."
+        },
+        {
+          "collapse": "collapseThree3",
+          "heading": "headingThree3",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "What types of courses are available?",
+          "desc": "We offer a wide range of courses catering to different proficiency levels, from beginner to advanced. Our courses cover grammar, vocabulary, speaking, listening, reading, and writing skills, as well as specialized courses for business English and exam preparation."
+        },
+        {
+          "collapse": "collapseFour3",
+          "heading": "headingFour3",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Is there a free trial available?",
+          "desc": "Yes, we offer a free trial period for new users to explore our platform and experience the quality of our courses before committing to a subscription plan."
+        },
+        {
+          "collapse": "collapseFive3",
+          "heading": "headingFive3",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How can I interact with instructors or ask questions?",
+          "desc": "Our platform includes a dedicated forum and messaging system where you can interact with instructors and fellow learners, ask questions, and receive feedback."
+        },
+        {
+          "collapse": "collapseSix3",
+          "heading": "headingSix3",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Are there any certificates offered upon course completion?",
+          "desc": "Yes, upon completing a course, you will receive a certificate of completion that you can download and share to showcase your achievement."
+        },
+        {
+          "collapse": "collapseSeven3",
+          "heading": "headingSeven3",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "What kind of support is available if I have technical issues or questions?",
+          "desc": "We offer 24/7 customer support via email and live chat to assist you with any technical issues or questions you may have."
+        },
+        {
+          "collapse": "collapseEight3",
+          "heading": "headingEight3",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Can I cancel my subscription anytime?",
+          "desc": "Yes, you can cancel your subscription at any time through your account settings. If you cancel, you will still have access to the platform until the end of your current billing period."
+        }
+      ],
+      "faqBody2": [
+        {
+          "collapse": "collapseOne4",
+          "heading": "headingOne4",
+          "expanded": true,
+          "collapsed": true,
+          "show": true,
+          "accordionTitle": "How much does it cost to use EET English?",
+          "desc": "We offer several subscription plans to fit different budgets, including monthly, quarterly, and annual options. Detailed pricing information is available on our website under the “Pricing” section."
+        },
+        {
+          "collapse": "collapseTwo4",
+          "heading": "headingTwo4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Can I access the courses on mobile devices?",
+          "desc": "Absolutely! Our platform is fully responsive and accessible on all devices, including smartphones, tablets, and desktops, allowing you to learn anytime, anywhere."
+        },
+        {
+          "collapse": "collapseThree4",
+          "heading": "headingThree4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How do I track my learning progress?",
+          "desc": "You can track your progress through your personal dashboard, which provides insights into your completed lessons, quiz scores, and overall performance."
+        },
+        {
+          "collapse": "collapseFour4",
+          "heading": "headingFour4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "What happens if I miss a lesson or need to pause my learning?",
+          "desc": "Our learning system allows you to learn at your own pace. If you miss a lesson, you can always go back and review it. Additionally, you can pause your subscription and resume it whenever you're ready to continue learning."
+        },
+        {
+          "collapse": "collapseFive4",
+          "heading": "headingFive4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How do I reset my password if I forget it?",
+          "desc": "If you forget your password, click on the \"Forgot Password?\" link on the login page, enter your registered email address, and follow the instructions to reset your password."
+        },
+        {
+          "collapse": "collapseSix4",
+          "heading": "headingSix4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Does EET English offer any discounts or promotions?",
+          "desc": "We occasionally offer discounts and promotions, especially for new users or during special events. Be sure to subscribe to our newsletter to stay updated on the latest offers."
+        },
+        {
+          "collapse": "collapseSeven4",
+          "heading": "headingSeven4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How can I provide feedback or suggest improvements for the platform?",
+          "desc": "We welcome user feedback! You can provide feedback or suggest improvements directly through the platform’s feedback form or by contacting our support team."
+        }
+      ]
+    }
+  ],
+
+  "AccordionFour": [
+    {
+      "tag": "faq",
+      "title": "Have a Question with ",
+      "subTitle": " Histudy University?",
+      "strong": "Its an educational platform",
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since",
+      "imgOne": "/images/about/about-03.jpg",
+      "imgTwo": "/images/about/about-11.jpg",
+      "faqBody": [
+        {
+          "collapse": "collapseOne4",
+          "heading": "headingOne4",
+          "expanded": true,
+          "collapsed": true,
+          "show": true,
+          "accordionTitle": "What is Histudy ? How does it work?",
+          "desc": "You can run Histudy easily. Any School, University, College can be use this histudy education template for their educational purpose."
+        },
+        {
+          "collapse": "collapseTwo4",
+          "heading": "headingTwo4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How can I get the customer support?",
+          "desc": "After purchasing the product need you any support you can be share with us with sending mail to rainbowit10@gmail.com."
+        },
+        {
+          "collapse": "collapseThree4",
+          "heading": "headingThree4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "Can I get update regularly and For how long do I get updates?",
+          "desc": "Yes, We will get update the Histudy. And you can get it any time. Next time we will comes with more feature. You can be get update for unlimited times. Our dedicated team works for update."
+        },
+        {
+          "collapse": "collapseFour4",
+          "heading": "headingFour4",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "accordionTitle": "How can I run Histudy html template?",
+          "desc": "You can run Histudy easily. First You'll need to have node and npm on your machine. So Please open your command prompt then check your node."
+        }
+      ]
+    }
+  ],
+  "course": [
+    {
+      "tag": "COURSE PRICING",
+      "title": "Tuition & Fees",
+      "img": "/images/about/about-07.png",
+      "courseBody": [
+        {
+          "collapse": "tutioncollapseOne",
+          "heading": "tutionheadingOne",
+          "expanded": true,
+          "collapsed": true,
+          "show": true,
+          "subTitle": "Master of Business Administration (MBA)",
+          "text": "Total Cost Breakdown 2024",
+          "cost": 500
+        },
+        {
+          "collapse": "tutioncollapseTwo",
+          "heading": "tutionheadingTwo",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "subTitle": "MSS in Economics",
+          "text": "Admission Eligibility Breakdown 2024",
+          "cost": 4589
+        },
+        {
+          "collapse": "tutioncollapseThe",
+          "heading": "tutionheadingThree",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "subTitle": "MS in Applied Physics & Electronics",
+          "text": "Admission Eligibility Breakdown 2024",
+          "cost": 1400
+        },
+        {
+          "collapse": "tutioncollapseFour",
+          "heading": "tutionheadingFour",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "subTitle": "Master of Laws (LL.M.)",
+          "text": "Total Cost Breakdown 2024",
+          "cost": 4589
+        },
+        {
+          "collapse": "tutioncollapseFive",
+          "heading": "tutionheadingFive",
+          "expanded": false,
+          "collapsed": false,
+          "show": false,
+          "subTitle": "Master of Population, Reproductive Health",
+          "text": "Total Cost Breakdown 2024",
+          "cost": 5000
+        }
+      ]
+    }
+  ]
+}

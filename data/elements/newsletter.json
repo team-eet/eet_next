@@ -1,0 +1,45 @@
+{
+  "newsletterOne": [
+    {
+      "subTitle": "Get Latest Histudy Update",
+      "strong": "Subscribe",
+      "title": "Our Newsletter",
+      "desc": "Subscribe to our newsletter and never miss out on the latest updates, tips, and resources designed to help you excel in your English language learning journey."
+    }
+  ],
+  "newsletterTwo": [
+    {
+      "subTitle": "Get Latest Histudy Update",
+      "strong": "Subscribe",
+      "title": "Our Newsletter",
+      "text": "No ads, No trails, No commitments",
+      "desc": "Subscribe to our newsletter and never miss out on the latest updates, tips, and resources designed to help you excel in your English language learning journey.",
+      "body": [
+        {
+          "num": 500,
+          "title": "Successfully Trained",
+          "subTitle": "Learners & counting",
+          "offset": true
+        },
+        {
+          "num": 100,
+          "title": "Certification Students",
+          "subTitle": "Online Course",
+          "offset": false
+        }
+      ]
+    }
+  ],
+  "newsletterThree": [
+    {
+      "subTitle": "Subscribe",
+      "title": "Our Newsletter"
+    }
+  ],
+  "newsletterFour": [
+    {
+      "title": "Want to get special offers",
+      "subTitle": "and Course updates?"
+    }
+  ]
+}

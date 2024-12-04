@@ -1,0 +1,83 @@
+{
+  "siderbar": [
+    {
+      "link": "basics",
+      "text": "Basics",
+      "icon": "feather-home",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "profile-photo",
+      "text": "Profile Photo",
+      "icon": "feather-user",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"    },
+    {
+      "link": "cover-photo",
+      "text": "Cover Photo",
+      "icon": "feather-user",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "education",
+      "text": "Education",
+      "icon": "feather-book-open",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "certification",
+      "text": "Certification",
+      "icon": "feather-bookmark",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "teaching-experience",
+      "text": "Teaching Experience",
+      "icon": "feather-star",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "description",
+      "text": "Description",
+      "icon": "feather-help-circle",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "intro-video",
+      "text": "Intro Video",
+      "icon": "feather-shopping-bag",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "interest",
+      "text": "Interests",
+      "icon": "feather-monitor",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    },
+    {
+      "link": "time-availability",
+      "text": "Time Availability",
+      "icon": "feather-volume-2",
+      "pending": "feather-clock",
+      "approved": "feather-check-circle",
+      "disapproved": "feather-x-circle"
+    }
+  ]
+}

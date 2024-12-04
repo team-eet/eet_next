@@ -1,0 +1,122 @@
+{
+  "footerOne": [
+    {
+      "description": " We’re always in search for talented and motivated people.Don’t be shy introduce yourself!",
+      "phone": "(406) 555-0120",
+      "mail": "rainbow@example.com",
+      "address": "North America, USA",
+      "usefulLinks": [
+        {
+          "text": "Learn Courses",
+          "link": "/all-courses"
+        },
+        {
+          "text": "Join Batch",
+          "link": "/all-batches"
+        },
+        {
+          "text": "Fast track",
+          "link": "/"
+        },
+        {
+          "text": "FAQ",
+          "link": "/pages/faqs"
+        }
+      ],
+      "ourCompany": [
+        {
+          "text": "Contact Us",
+          "link": "/contact"
+        },
+        {
+          "text": "Become a teacher",
+          "link": "/become-a-teacher"
+        },
+        {
+          "text": "Blogs",
+          "link": "/blog-list"
+        },
+        {
+          "text": "Success Story",
+          "link": "/"
+        }
+      ],
+      "socialLink": [
+        {
+          "icon": "feather-facebook",
+          "link": "https://www.facebook.com/eet.englishetutorials"
+        },
+        {
+          "icon": "feather-twitter",
+          "link": "https://www.twitter.com"
+        },
+        {
+          "icon": "feather-instagram",
+          "link": "https://www.instagram.com/eet.english/"
+        },
+        {
+          "icon": "feather-youtube",
+          "link": "https://youtube.com"
+        }
+      ]
+    }
+  ],
+  "footerTwo": [
+    {
+      "description": " We’re always in search for talented and motivated people.Don’t be shy introduce yourself!",
+      "phone": "(406) 555-0120",
+      "mail": "rainbow@example.com",
+      "address": "North America, USA",
+      "usefulLinks": [
+        {
+          "text": "Home",
+          "link": "/12-marketplace"
+        },
+        {
+          "text": "About us",
+          "link": "/04-kindergarten"
+        },
+        {
+          "text": "My Learning",
+          "link": "/13-university-classic"
+        }
+      ],
+      "ourCompany": [
+        {
+          "text": "Contact us",
+          "link": "/contact"
+        },
+        {
+          "text": "Become a teacher",
+          "link": "/become-a-teacher"
+        },
+        {
+          "text": "Blog",
+          "link": "/blog-list"
+        },
+        {
+          "text": "Success Story",
+          "link": "/elements/team"
+        }
+      ],
+      "socialLink": [
+        {
+          "icon": "feather-facebook",
+          "link": "https://www.facebook.com/eet.englishetutorials"
+        },
+        {
+          "icon": "feather-twitter",
+          "link": "https://www.twitter.com"
+        },
+        {
+          "icon": "feather-instagram",
+          "link": "https://www.instagram.com/eet.english/"
+        },
+        {
+          "icon": "feather-youtube",
+          "link": "https://youtube.com"
+        }
+      ]
+    }
+  ]
+}
