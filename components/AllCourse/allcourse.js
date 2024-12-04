@@ -1592,7 +1592,7 @@ const AllCoursetwo = () => {
                                 <div className="col-lg-12 mt--60">
 
 
-                                    {recordsPerPage >= 7 ? <>
+                                    {recordsPerPage >= 6 ? <>
                                         <div className="pagination-controls mt-4">
                                             <button className="prev-btn" onClick={goToPreviousPage}
                                                     disabled={currentPage === 1}>
