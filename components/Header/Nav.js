@@ -38,6 +38,7 @@ const  Nav = () => {
         }
       })
           .then(res => {
+            // console.log("Hello")
             console.log(res.data)
             if (res.data.length !== 0) {
               setverifySts(res.data[0]['bVerifyStatus'])

@@ -134,21 +134,24 @@ const AllCoursetwo = () => {
 
     const getCourse = () => {
         Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2`, {
+            //timeout: 60000,
             headers: {
                 ApiKey: `${API_KEY}`
             }
         })
             .then(res => {
+                console.log(1)
                 if (res.data) {
                     // console.log('getcoursedata', res.data)
                     if (res.data.length !== 0) {
                         setcourseData(res.data)
                         setcoursecount(res.data[0]['remain_course_count'])
-                        // setisLoading(false)
+                        setisLoading(false)
                     }
                 }
             })
             .catch(err => {
+                console.log(11)
                 { ErrorDefaultAlert(err) }
             })
     }
@@ -361,9 +364,10 @@ const AllCoursetwo = () => {
     }
 
     useEffect(() => {
-        setTimeout(() => {
-            setisLoading(false)
-        }, 7000)
+        // setTimeout(() => {
+        //     setisLoading(false)
+        // }, 7000)
+
         bindCourseCategory()
         bindLevel()
         getCourse()
@@ -584,11 +588,11 @@ const AllCoursetwo = () => {
                                     <div className="inner">
                                         <h4 className="rbt-widget-title">Prices</h4>
                                         <ul className="rbt-sidebar-list-wrapper prices-list-check">
-                                            <li className="rbt-check-group">
-                                                <input id="prices-list-2" type="checkbox" onChange={getCourse()} name="prices-list-2"/>
-                                                <label htmlFor="prices-list-2">All <span
-                                                    className="rbt-lable count">{getAllCount}</span></label>
-                                            </li>
+                                            {/*<li className="rbt-check-group">*/}
+                                            {/*    <input id="prices-list-2" type="checkbox" onChange={getCourse()} name="prices-list-2"/>*/}
+                                            {/*    <label htmlFor="prices-list-2">All <span*/}
+                                            {/*        className="rbt-lable count">{getAllCount}</span></label>*/}
+                                            {/*</li>*/}
                                             {getpriceData.map((data, index) => {
                                                 return (
                                                     <>

@@ -70,6 +70,7 @@ const IntroVideo = () => {
   };
   const [regId, setregId] = useState('')
   const [verifySts, setverifySts] = useState()
+  const [isIntroVideoAlert, setisIntroVideoAlert] = useState(0)
 
   useEffect(() => {
     if (localStorage.getItem('userData')) {
@@ -82,8 +83,15 @@ const IntroVideo = () => {
       }
     })
         .then(res => {
+            console.log("Intro Video" , res.data[0].sIntroVideo_verify)
           if (res.data.length !== 0) {
-            setverifySts(res.data[0].sIntroVideo_verify)
+              if(res.data[0].sIntroVideo_verify !== null){
+                  setverifySts(res.data[0].sIntroVideo_verify)
+                  setisIntroVideoAlert(1)
+              }else {
+                  setverifySts()
+              }
+
           }
         })
         .catch(err => {
@@ -123,30 +131,33 @@ const IntroVideo = () => {
         <div className="content">
           <div className="section-title">
             <h4 className="rbt-title-style-3">Introduction video</h4>
-            {verifySts === 2 ? <>
-              <Alert color='success'>
-                <h6 className='alert-heading m-0 text-center'>
-                  Introduction video verification has been approved by admin
-                </h6>
-              </Alert>
+              {isIntroVideoAlert === 1 ? <>
+                      {verifySts === 2 ? <>
+                          <Alert color='success'>
+                              <h6 className='alert-heading m-0 text-center'>
+                                  Introduction video verification has been approved by admin
+                              </h6>
+                          </Alert>
 
-            </> : <>
-              {verifySts === 1 ? <>
-                <Alert color='warning'>
-                  <h6 className='alert-heading m-0 text-center'>
-                    Introduction video verification is in pending state
-                  </h6>
-                </Alert>
-              </> : <>
-                  {verifySts === 0 || verifySts === null ? <></> : <>
-                      <Alert color='danger'>
-                          <h6 className='alert-heading m-0 text-center'>
-                              Introduction video verification has been disapproved by admin
-                          </h6>
-                      </Alert>
-                  </>}
-              </>}
-            </>}
+                      </> : <>
+                          {verifySts === 1 ? <>
+                              <Alert color='warning'>
+                                  <h6 className='alert-heading m-0 text-center'>
+                                      Introduction video verification is in pending state
+                                  </h6>
+                              </Alert>
+                          </> : <>
+                              {verifySts === 0 || verifySts === null ? <></> : <>
+                                  <Alert color='danger'>
+                                      <h6 className='alert-heading m-0 text-center'>
+                                          Introduction video verification has been disapproved by admin
+                                      </h6>
+                                  </Alert>
+                              </>}
+                          </>}
+                      </>}
+                  </> : <></>}
+
             {/*<h3>Your profile photo is your first impression</h3>*/}
             <p>Add a landscape video of maximum 100 mb</p>
           </div>

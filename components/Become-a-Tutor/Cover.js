@@ -140,6 +140,7 @@ const Cover = () => {
     };
     const [regId, setregId] = useState('')
     const [verifysts, setverifySts] = useState([])
+    const [isCoverAlert, setisCoverAlert] = useState(0)
     useEffect(() => {
         if (localStorage.getItem('userData')) {
             setregId(JSON.parse(localStorage.getItem('userData')).regid)
@@ -151,9 +152,16 @@ const Cover = () => {
             }
         })
             .then(res => {
-                // console.log(res.data)
+                console.log(res.data)
                 if(res.data.length !== 0) {
-                    setverifySts(res.data[0])
+
+                    if (res.data[0].sCoverPhotoLeft_verify !== null || res.data[0].sCoverPhotoCenter_verify !== null || res.data[0].sCoverPhotoRight_verify !== null){
+                        setverifySts(res.data[0])
+                        setisCoverAlert(1)
+                    }else{
+                        setverifySts([])
+                    }
+
                 }
             })
             .catch(err => {
@@ -193,38 +201,43 @@ const Cover = () => {
                 <div className="content">
                     <div className="section-title">
                         <h4 className="rbt-title-style-3">Cover Photo</h4>
-                        {verifysts.sCoverPhotoLeft_verify === 2 && verifysts.sCoverPhotoCenter_verify === 2
-                            && verifysts.sCoverPhotoRight_verify === 2 ? <>
-                            <Alert color='success'>
-                                <h6 className='alert-heading m-0 text-center'>
-                                    Cover photo verification has been approved by admin
-                                </h6>
-                            </Alert>
-                        </> : <>
-                            {verifysts.sCoverPhotoLeft_verify === 1 && verifysts.sCoverPhotoCenter_verify === 1
-                            && verifysts.sCoverPhotoRight_verify === 1 ? <>
-                                <Alert color='warning'>
-                                    <h6 className='alert-heading m-0 text-center'>
-                                        Cover photo verification is in pending state
-                                    </h6>
-                                </Alert>
-                            </> : <>
-                                {verifysts.sCoverPhotoLeft_verify === 3 || verifysts.sCoverPhotoCenter_verify !== 3
-                                || verifysts.sCoverPhotoRight_verify === 3 ? <>
-                                    <Alert color='danger'>
+                        {
+                            isCoverAlert === 1 ? <>
+                                {verifysts.sCoverPhotoLeft_verify === 2 && verifysts.sCoverPhotoCenter_verify === 2
+                                && verifysts.sCoverPhotoRight_verify === 2 ? <>
+                                    <Alert color='success'>
                                         <h6 className='alert-heading m-0 text-center'>
-                                            Cover photo verification has been disapproved by admin
+                                            Cover photo verification has been approved by admin
                                         </h6>
-                                        {verifysts.sCoverPhotoLeft_comment !== "" || verifysts.sCoverPhotoRight_comment !== ""
-                                            || verifysts.sCoverPhotoCenter_comment !== "" ? <>
-                                            <p className={'text-center'}
-                                               style={{fontSize: '14px'}}>{verifysts.sCoverPhotoRight_comment}</p>
-                                        </> : <></>}
                                     </Alert>
-                                </> : <></>}
+                                </> : <>
+                                    {verifysts.sCoverPhotoLeft_verify === 1 && verifysts.sCoverPhotoCenter_verify === 1
+                                    && verifysts.sCoverPhotoRight_verify === 1 ? <>
+                                        <Alert color='warning'>
+                                            <h6 className='alert-heading m-0 text-center'>
+                                                Cover photo verification is in pending state
+                                            </h6>
+                                        </Alert>
+                                    </> : <>
+                                        {verifysts.sCoverPhotoLeft_verify === 3 || verifysts.sCoverPhotoCenter_verify !== 3
+                                        || verifysts.sCoverPhotoRight_verify === 3 ? <>
+                                            <Alert color='danger'>
+                                                <h6 className='alert-heading m-0 text-center'>
+                                                    Cover photo verification has been disapproved by admin
+                                                </h6>
+                                                {verifysts.sCoverPhotoLeft_comment !== "" || verifysts.sCoverPhotoRight_comment !== ""
+                                                || verifysts.sCoverPhotoCenter_comment !== "" ? <>
+                                                    <p className={'text-center'}
+                                                       style={{fontSize: '14px'}}>{verifysts.sCoverPhotoRight_comment}</p>
+                                                </> : <></>}
+                                            </Alert>
+                                        </> : <></>}
 
-                            </>}
-                        </>}
+                                    </>}
+                                </>}
+                            </> :
+                                <></>}
+
                         {/*<h3>Your profile photo is your first impression</h3>*/}
                         <p>
                             This image will be used on the cover page of courses and batches to display on our main

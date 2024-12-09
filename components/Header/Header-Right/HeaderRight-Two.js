@@ -26,11 +26,34 @@ const HeaderRightTwo = ({ btnClass, btnText, userType }) => {
       const lname = JSON.parse(localStorage.getItem('userData')).lname
       const profile = JSON.parse(localStorage.getItem('userData')).profile
       const cartcount =  JSON.parse(localStorage.getItem('cart'))
-      console.log('cart', cartcount.length)
-      setcartcnt(cartcount.length)
-      setfname(fname)
-      setlname(lname)
-      setprofile(profile)
+      // console.log('cart', cartcount.length)
+      // setcartcnt(cartcount.length)
+      if (cartcount) {
+        setcartcnt(cartcount.length);
+      } else {
+        setcartcnt(0);
+      }
+
+      if (fname !== ""){
+        setfname(fname)
+      }else{
+        setfname("")
+      }
+
+      if(lname !== ""){
+        setlname(lname)
+      }else{
+        setlname("")
+      }
+
+      if(profile !== ""){
+        setprofile(profile)
+      }else{
+        setprofile("")
+      }
+
+
+
     } else {
       setShowLogin(true)
     }

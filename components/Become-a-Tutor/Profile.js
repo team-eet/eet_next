@@ -72,6 +72,7 @@ const Profile = () => {
 
     const [regId, setregId] = useState('')
     const [verifysts, setverifySts] = useState([])
+    const [isProfileAlert, setisProfileAlert] = useState(0)
     useEffect(() => {
         // console.log(DecryptData(JSON.parse(localStorage.getItem('userData')).accessToken))
 
@@ -87,7 +88,13 @@ const Profile = () => {
                 .then(res => {
                     // console.log(res.data)
                     if(res.data.length !== 0) {
-                        setverifySts(res.data[0])
+                        if (res.data[0].sProfilePhoto_verify !== null){
+                            setverifySts(res.data[0])
+                            setisProfileAlert(1)
+                        }else{
+                            setverifySts({ sProfilePhoto_verify : 0 })
+                        }
+
                     }
 
                 })
@@ -128,35 +135,38 @@ const Profile = () => {
             <div className="content">
                 <div className="section-title">
                     <h4 className="rbt-title-style-3">Profile Photo</h4>
-                    {verifysts ? <>
-                        {verifysts.sProfilePhoto_verify === 2 ? <>
-                            <Alert color='success'>
-                                <h6 className='alert-heading m-0 text-center'>
-                                    Profile photo verification has been approved by admin
-                                </h6>
-                            </Alert>
-
-                        </> : <>
-                            {verifysts.sProfilePhoto_verify === 1 ? <>
-                                <Alert color='warning'>
-                                    <h6 className='alert-heading m-0 text-center'>
-                                        Profile photo verification is in pending state
-                                    </h6>
-                                </Alert>
-
-                            </> : <>
-                                {verifysts.sProfilePhoto_verify === null || verifysts.sProfilePhoto_verify === 0 ? <>
-
-                                </> : <>
-                                    <Alert color='danger'>
+                    {isProfileAlert === 1 ? <>
+                            {verifysts ? <>
+                                {verifysts.sProfilePhoto_verify === 2 ? <>
+                                    <Alert color='success'>
                                         <h6 className='alert-heading m-0 text-center'>
-                                            Profile photo verification has been disapproved by admin
+                                            Profile photo verification has been approved by admin
                                         </h6>
                                     </Alert>
+
+                                </> : <>
+                                    {verifysts.sProfilePhoto_verify === 1 ? <>
+                                        <Alert color='warning'>
+                                            <h6 className='alert-heading m-0 text-center'>
+                                                Profile photo verification is in pending state
+                                            </h6>
+                                        </Alert>
+
+                                    </> : <>
+                                        {verifysts.sProfilePhoto_verify === null || verifysts.sProfilePhoto_verify === 0 ? <>
+
+                                        </> : <>
+                                            <Alert color='danger'>
+                                                <h6 className='alert-heading m-0 text-center'>
+                                                    Profile photo verification has been disapproved by admin
+                                                </h6>
+                                            </Alert>
+                                        </>}
+                                    </>}
                                 </>}
-                            </>}
-                        </>}
-                    </> : <></>}
+                            </> : <></>}
+                        </> : <></>}
+
 
                     <h3>Your profile photo is your first impression</h3>
                     <p>Having a friendly and professional photo enriches your profile</p>

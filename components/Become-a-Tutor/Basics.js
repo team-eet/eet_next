@@ -55,6 +55,7 @@ const Basics = () => {
     const [cityId, setcityId] = useState('')
 
     const [isLoading, setisLoading] = useState(false)
+    const [isBasicAlert, setisBasicAlert] = useState(0)
     const handleFname = (e) => {
     setsFname(e.target.value)
   }
@@ -80,6 +81,7 @@ const Basics = () => {
         }
         return array;
     };
+
     const years = range(1960, new Date().getFullYear() + 1, 1);
     const months = [
         "January",
@@ -337,9 +339,11 @@ const Basics = () => {
 
     const [isAdded, setisAdded] = useState(true)
     const [tutorDetail, setTutorDetail] = useState([])
-    
+
     const [verifysts, setverifySts] = useState([])
+    // const [verifysts, setverifySts] = useState({ sBasic_verify: 0 })
     useEffect(() => {
+        bindCountry()
 
       if(localStorage.getItem('userData')) {
 
@@ -373,6 +377,7 @@ const Basics = () => {
                   console.log('GetTutorVerify', res.data)
                   if(res.data.length !== 0){
                       setverifySts(res.data[0])
+                      setisBasicAlert(1)
                   } else {
                       setverifySts({ sBasic_verify : 0 })
                   }
@@ -520,7 +525,7 @@ const Basics = () => {
       }
 
 
-      bindCountry()
+
 
   }, []);
   return (
@@ -580,32 +585,62 @@ const Basics = () => {
               return (
                   <>
                       <Form>
-                              {verifysts.sBasic_verify === 2 ? <>
-                                  <Alert color='success'>
-                                      <h6 className='alert-heading m-0 text-center'>
-                                          Basic information verification has been approved by admin
-                                      </h6>
-                                  </Alert>
-                              </> : <>
-                                  {verifysts.sBasic_verify === 1 ? <>
-                                      <Alert color='warning'>
+                              {/*{verifysts.sBasic_verify === 2 ? <>*/}
+                              {/*    <Alert color='success'>*/}
+                              {/*        <h6 className='alert-heading m-0 text-center'>*/}
+                              {/*            Basic information verification has been approved by admin*/}
+                              {/*        </h6>*/}
+                              {/*    </Alert>*/}
+                              {/*</> : <>*/}
+                              {/*    {verifysts.sBasic_verify === 1 ? <>*/}
+                              {/*        <Alert color='warning'>*/}
+                              {/*            <h6 className='alert-heading m-0 text-center'>*/}
+                              {/*                Basic information verification is pending state*/}
+                              {/*            </h6>*/}
+                              {/*        </Alert>*/}
+                              {/*    </> : <>*/}
+                              {/*        {verifysts.sBasic_verify === 0 || verifysts.sBasic_verify === null ? <></> : <>*/}
+                              {/*            <Alert color='danger'>*/}
+                              {/*                <h6 className='alert-heading m-0 text-center'>*/}
+                              {/*                    Basic information verification has been disapproved by admin*/}
+                              {/*                </h6>*/}
+                              {/*            </Alert>*/}
+                              {/*            <Alert color='danger'>*/}
+                              {/*                <h6 className='alert-heading m-0 text-center'>Reason : {verifysts.sBasic_comment}</h6>*/}
+                              {/*            </Alert>*/}
+                              {/*        </>}*/}
+                              {/*    </>}*/}
+                              {/*</>}*/}
+                          {/*<h1>{isAlert} {verifysts.sBasic_verify}</h1>*/}
+                          {isBasicAlert === 1 ? <>
+                                  {verifysts.sBasic_verify === 2 ? <>
+                                      <Alert color='success'>
                                           <h6 className='alert-heading m-0 text-center'>
-                                              Basic information verification is pending state
+                                              Basic information verification has been approved by admin
                                           </h6>
                                       </Alert>
                                   </> : <>
-                                      {verifysts.sBasic_verify === 0 || verifysts.sBasic_verify === null ? <></> : <>
-                                          <Alert color='danger'>
+                                      {verifysts.sBasic_verify === 1 ? <>
+                                          <Alert color='warning'>
                                               <h6 className='alert-heading m-0 text-center'>
-                                                  Basic information verification has been disapproved by admin
+                                                  Basic information verification is pending state
                                               </h6>
                                           </Alert>
-                                          <Alert color='danger'>
-                                              <h6 className='alert-heading m-0 text-center'>Reason : {verifysts.sBasic_comment}</h6>
-                                          </Alert>
+                                      </> : <>
+                                          {verifysts.sBasic_verify === 0 || verifysts.sBasic_verify === null ? <></> : <>
+                                              <Alert color='danger'>
+                                                  <h6 className='alert-heading m-0 text-center'>
+                                                      Basic information verification has been disapproved by admin
+                                                  </h6>
+                                              </Alert>
+                                              <Alert color='danger'>
+                                                  <h6 className='alert-heading m-0 text-center'>Reason : {verifysts.sBasic_comment}</h6>
+                                              </Alert>
+                                          </>}
                                       </>}
                                   </>}
-                              </>}
+                              </> : <></>}
+
 
 
                           <div className={'row row--15 mt-5'}>

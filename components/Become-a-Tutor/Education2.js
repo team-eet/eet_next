@@ -306,6 +306,7 @@ const Education = () => {
     const [updateArray, setUpdatearray] = useState([])
     const [deletedArray, setdeletedArray] = useState([])
     const [verifySts, setverifySts] = useState()
+    const [isEducationAlert, setisEducationAlert] = useState(0)
     const [verifyeduSts, setverifyeduSts] = useState()
     const [noeducation, setnoeducation] = useState(false)
     const bindCountry = () => {
@@ -380,8 +381,17 @@ const Education = () => {
                 .then(res => {
                     // console.log("GetTutorEducationVerify",res.data)
                     if (res.data.length !== 0) {
-                        setverifySts(res.data[0].sCertification_verify)
-                        setverifyeduSts(res.data[0].sEducation_verify)
+                        console.log("sCertification_verify ", res.data[0].sCertification_verify)
+                        console.log("sEducation_verify ", res.data[0].sEducation_verify)
+                        if(res.data[0].sEducation_verify !== null){
+                            // setverifySts(res.data[0].sCertification_verify)
+                            setverifySts(res.data[0].sEducation_verify)
+                            setverifyeduSts(res.data[0].sEducation_verify)
+                            setisEducationAlert(1)
+                        }else{
+                            setverifySts(0)
+                        }
+
                     }
                 })
                 .catch(err => {
@@ -632,33 +642,36 @@ const Education = () => {
                                         {/*{console.log(educationFields.length)}*/}
                                         <div className="section-title mb-3">
                                             <h4 className="rbt-title-style-3">Education</h4>
-                                            {verifySts === 2 ? <>
-                                                <Alert color='success'>
-                                                    <h6 className='alert-heading m-0 text-center'>
-                                                        Education verification has been approved by admin
-                                                    </h6>
-                                                </Alert>
-
-                                            </> : <>
-                                                {verifySts === 1 ? <>
-                                                    <Alert color='warning'>
-                                                        <h6 className='alert-heading m-0 text-center'>
-                                                            Education verification is pending state
-                                                        </h6>
-                                                    </Alert>
-
-                                                </> : <>
-                                                    {verifySts === 0 || verifySts === null ? <>
-
-                                                    </> : <>
-                                                        <Alert color='danger'>
+                                            {isEducationAlert === 1 ? <>
+                                                    {verifySts === 2 ? <>
+                                                        <Alert color='success'>
                                                             <h6 className='alert-heading m-0 text-center'>
-                                                                Education verification has been disapproved by admin
+                                                                Education verification has been approved by admin
                                                             </h6>
                                                         </Alert>
+
+                                                    </> : <>
+                                                        {verifySts === 1 ? <>
+                                                            <Alert color='warning'>
+                                                                <h6 className='alert-heading m-0 text-center'>
+                                                                    Education verification is pending state
+                                                                </h6>
+                                                            </Alert>
+
+                                                        </> : <>
+                                                            {verifySts === 0 || verifySts === null ? <>
+
+                                                            </> : <>
+                                                                <Alert color='danger'>
+                                                                    <h6 className='alert-heading m-0 text-center'>
+                                                                        Education verification has been disapproved by admin
+                                                                    </h6>
+                                                                </Alert>
+                                                            </>}
+                                                        </>}
                                                     </>}
-                                                </>}
-                                            </>}
+                                                </> : <></>}
+
                                             <small className={'text-warning'}>Note : Add the Highest Qualification only</small>
                                             <p>Let us know about Education</p>
                                             {isEducated === 'No Education' ? <>

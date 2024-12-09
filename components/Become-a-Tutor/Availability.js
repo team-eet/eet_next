@@ -103,6 +103,7 @@ const Availability = () => {
   }
   const [regId, setregId] = useState('')
     const [verifySts, setverifySts] = useState()
+    const [isAvailabililityAlert, setisAvailabililityAlert] = useState(0)
     const [tutorcnt, setTutorcnt] = useState('')
     const [tutoravailcnt, settutoravailcnt] = useState('')
   useEffect(() => {
@@ -116,9 +117,15 @@ const Availability = () => {
           }
       })
           .then(res => {
-              // console.log("GetTutorVerify",res.data)
+              // console.log("Ava",res.data[0].sTimeAvail_verify)
               if (res.data.length !== 0) {
-                  setverifySts(res.data[0].sTimeAvail_verify)
+                  if (res.data[0].sTimeAvail_verify !== null){
+                      setverifySts(res.data[0].sTimeAvail_verify)
+                      setisAvailabililityAlert(1)
+                  }else{
+                      setverifySts()
+                  }
+
               }
           })
           .catch(err => {
@@ -197,29 +204,34 @@ const Availability = () => {
           <div className="section-title">
             <h4 className="rbt-title-style-3">Time Availability</h4>
           </div>
-            {verifySts === 2 ? <>
-                <Alert color='success'>
-                    <h6 className='alert-heading m-0 text-center'>
-                        Time Availibility verification has been approved by admin
-                    </h6>
-                </Alert>
-            </> : <>
-                {verifySts === 1 ? <>
-                    <Alert color='warning'>
-                        <h6 className='alert-heading m-0 text-center'>
-                            Interests verification is in pending state
-                        </h6>
-                    </Alert>
-                </> : <>
-                    {verifySts === 0 || verifySts === null ? <></> : <>
-                        <Alert color='danger'>
+            {
+                isAvailabililityAlert === 1 ? <>
+                    {verifySts === 2 ? <>
+                        <Alert color='success'>
                             <h6 className='alert-heading m-0 text-center'>
-                                Interests verification has been disapproved by admin
+                                Time Availibility verification has been approved by admin
                             </h6>
                         </Alert>
+                    </> : <>
+                        {verifySts === 1 ? <>
+                            <Alert color='warning'>
+                                <h6 className='alert-heading m-0 text-center'>
+                                    Interests verification is in pending state
+                                </h6>
+                            </Alert>
+                        </> : <>
+                            {verifySts === 0 || verifySts === null ? <></> : <>
+                                <Alert color='danger'>
+                                    <h6 className='alert-heading m-0 text-center'>
+                                        Interests verification has been disapproved by admin
+                                    </h6>
+                                </Alert>
+                            </>}
+                        </>}
                     </>}
-                </>}
-            </>}
+                </> : <></>
+            }
+
           <Formik
               // validationSchema={UserValidationSchema}
               initialValues={{

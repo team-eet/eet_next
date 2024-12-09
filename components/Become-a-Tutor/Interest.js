@@ -71,6 +71,7 @@ const Interest = () => {
     }
     const [tutorcnt, setTutorcnt] = useState('')
     const [verifySts, setverifySts] = useState()
+    const [isInterestAlert, setisInterestAlert] = useState(0)
 
     const options = category.map(cat => ({
         value: cat.nCCId,
@@ -98,9 +99,15 @@ const Interest = () => {
             }
         })
             .then(res => {
-                // console.log("GetTutorVerify",res.data)
+                // console.log("Interest",res.data[0].sInterests_verify)
                 if (res.data.length !== 0) {
-                    setverifySts(res.data[0].sInterests_verify)
+                    if (res.data[0].sInterests_verify !== null){
+                        setverifySts(res.data[0].sInterests_verify)
+                        setisInterestAlert(1)
+                    }else{
+                        setverifySts()
+                    }
+
                 }
             })
             .catch(err => {
@@ -129,7 +136,7 @@ const Interest = () => {
             }
         })
             .then(res => {
-                console.log(res.data)
+                console.log("Interest", res.data)
                 setinterestcnt(res.data.length)
                 if(res.data.length !== 0){
                     const daysString = res.data[0]['sFieldOfInterest'];
@@ -148,6 +155,7 @@ const Interest = () => {
 
             })
             .catch(err => {
+                alert(err)
                 { ErrorDefaultAlert(err) }
 
             })
@@ -181,31 +189,36 @@ const Interest = () => {
         <div className="content">
           <div className="section-title">
             <h4 className="rbt-title-style-3">Interests</h4>
-              {verifySts === 2 ? <>
-                  <Alert color='success'>
-                      <h6 className='alert-heading m-0 text-center'>
-                          Interests verification has been approved by admin
-                      </h6>
-                  </Alert>
-
-              </> : <>
-                  {verifySts === 1 ? <>
-                      <Alert color='warning'>
-                          <h6 className='alert-heading m-0 text-center'>
-                              Interests verification is in pending state
-                          </h6>
-                      </Alert>
-
-                  </> : <>
-                      {verifySts === 0 || verifySts === null ? <></> : <>
-                          <Alert color='danger'>
+              {
+                  isInterestAlert === 1 ? <>
+                      {verifySts === 2 ? <>
+                          <Alert color='success'>
                               <h6 className='alert-heading m-0 text-center'>
-                                  Interests verification has been disapproved by admin
+                                  Interests verification has been approved by admin
                               </h6>
                           </Alert>
+
+                      </> : <>
+                          {verifySts === 1 ? <>
+                              <Alert color='warning'>
+                                  <h6 className='alert-heading m-0 text-center'>
+                                      Interests verification is in pending state
+                                  </h6>
+                              </Alert>
+
+                          </> : <>
+                              {verifySts === 0 || verifySts === null ? <></> : <>
+                                  <Alert color='danger'>
+                                      <h6 className='alert-heading m-0 text-center'>
+                                          Interests verification has been disapproved by admin
+                                      </h6>
+                                  </Alert>
+                              </>}
+                          </>}
                       </>}
-                  </>}
-              </>}
+                  </> : <></>
+              }
+
           </div>
                 <Formik
                     // validationSchema={UserValidationSchema}

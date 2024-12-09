@@ -274,6 +274,7 @@ const Certification = () => {
   const [updateArray, setUpdatearray] = useState([])
   const [deletedArray, setdeletedArray] = useState([])
   const [verifySts, setverifySts] = useState()
+  const [isCertificationAlert, setisCertificationAlert] = useState(0)
   const [nocertificate, setnocertificate] = useState(false)
 
   const [tutcerticnt, settutcerticnt] = useState('')
@@ -330,9 +331,15 @@ const Certification = () => {
       }
     })
         .then(res => {
-          // console.log("GetTutorEducationVerify",res.data)
+          console.log("GetTutorEducationVerify",res.data)
           if (res.data.length !== 0) {
-            setverifySts(res.data[0].sCertification_verify)
+            if (res.data[0].sCertification_verify !== null){
+              setverifySts(res.data[0].sCertification_verify)
+              setisCertificationAlert(1)
+            }else{
+              setverifySts()
+            }
+
           }
         })
         .catch(err => {
@@ -583,33 +590,38 @@ const Certification = () => {
                         {/*{console.log(educationFields.length)}*/}
                         <div className="section-title mb-3">
                           <h4 className="rbt-title-style-3">Certification</h4>
-                          {verifySts === 2 ? <>
-                            <Alert color='success'>
-                              <h6 className='alert-heading m-0 text-center'>
-                               Certification verification has been approved by admin
-                              </h6>
-                            </Alert>
-
-                          </> : <>
-                            {verifySts === 1 ? <>
-                              <Alert color='warning'>
-                                <h6 className='alert-heading m-0 text-center'>
-                                  Certification verification is pending state
-                                </h6>
-                              </Alert>
-
-                            </> : <>
-                              {verifySts === 0 || verifySts === null ? <>
-
-                              </> : <>
-                                <Alert color='danger'>
+                          {
+                            isCertificationAlert === 1 ? <>
+                              {verifySts === 2 ? <>
+                                <Alert color='success'>
                                   <h6 className='alert-heading m-0 text-center'>
-                                    Certification verification has been disapproved by admin
+                                    Certification verification has been approved by admin
                                   </h6>
                                 </Alert>
+
+                              </> : <>
+                                {verifySts === 1 ? <>
+                                  <Alert color='warning'>
+                                    <h6 className='alert-heading m-0 text-center'>
+                                      Certification verification is pending state
+                                    </h6>
+                                  </Alert>
+
+                                </> : <>
+                                  {verifySts === 0 || verifySts === null ? <>
+
+                                  </> : <>
+                                    <Alert color='danger'>
+                                      <h6 className='alert-heading m-0 text-center'>
+                                        Certification verification has been disapproved by admin
+                                      </h6>
+                                    </Alert>
+                                  </>}
+                                </>}
                               </>}
-                            </>}
-                          </>}
+                            </>:<></>
+                          }
+
                           <p>Let us know about teaching certification</p>
                           {isCertified === 'No Certification' ? <>
                             {verifySts === 2 ? <>

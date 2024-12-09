@@ -19,7 +19,7 @@ import SimilarCourses from "@/components/Course-Details/Course-Sections/SimilarC
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import {API_URL, API_KEY} from "../../../constants/constant";
-import {EncryptData} from "@/components/Services/encrypt-decrypt";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 const SingleCourse = () => {
@@ -40,12 +40,14 @@ const SingleCourse = () => {
     const url = window.location.href
     const parts = url.split("/");
     const courseId = parts[parts.length - 1];
+    console.log("Course Id",DecryptData(courseId))
     Axios.get(`${API_URL}/api/coursemain/GetCoursesView/${courseId}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
     })
         .then(res => {
+            console.log("Course Details",res.data)
           if (res.data) {
             // console.log(res.data)
             if (res.data.length !== 0) {

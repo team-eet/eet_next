@@ -58,6 +58,7 @@ const Description = () => {
   };
   const [regId, setregId] = useState('')
   const [verifySts, setverifySts] = useState()
+  const [isDescriptionAlert, setisDescriptionAlert] = useState(0)
   useEffect(() => {
 
     if (localStorage.getItem('userData')) {
@@ -69,9 +70,15 @@ const Description = () => {
       }
     })
         .then(res => {
-          // console.log("GetTutorVerify",res.data)
+          console.log("GetDescVerify",res.data[0].sDesc_verify)
           if (res.data.length !== 0) {
-            setverifySts(res.data[0].sDesc_verify)
+            if(res.data[0].sDesc_verify !== null){
+              setverifySts(res.data[0].sDesc_verify)
+              setisDescriptionAlert(1)
+            }else{
+              setverifySts()
+            }
+
           }
         })
         .catch(err => {
@@ -111,32 +118,38 @@ const Description = () => {
           <div className="section-title">
             <h4 className="rbt-title-style-3">Description</h4>
           </div>
-          {verifySts === 2 ? <>
-            <Alert color='success'>
-              <h6 className='alert-heading m-0 text-center'>
-                Description verification has been approved by admin
-              </h6>
-            </Alert>
+          {
+            isDescriptionAlert === 1 ?
+                <>
+                  {verifySts === 2 ? <>
+                    <Alert color='success'>
+                      <h6 className='alert-heading m-0 text-center'>
+                        Description verification has been approved by admin
+                      </h6>
+                    </Alert>
 
-          </> : <>
-            {verifySts === 1 ? <>
-              <Alert color='warning'>
-                <h6 className='alert-heading m-0 text-center'>
-                  Description verification is in pending state
-                </h6>
-              </Alert>
+                  </> : <>
+                    {verifySts === 1 ? <>
+                      <Alert color='warning'>
+                        <h6 className='alert-heading m-0 text-center'>
+                          Description verification is in pending state
+                        </h6>
+                      </Alert>
 
-            </> : <>
-              {verifySts === 0 || verifySts === null ? <></> : <>
-                <Alert color='danger'>
-                  <h6 className='alert-heading m-0 text-center'>
-                    Description verification has been disapproved by admin
-                  </h6>
-                </Alert>
-              </>}
+                    </> : <>
+                      {verifySts === 0 || verifySts === null ? <></> : <>
+                        <Alert color='danger'>
+                          <h6 className='alert-heading m-0 text-center'>
+                            Description verification has been disapproved by admin
+                          </h6>
+                        </Alert>
+                      </>}
 
-            </>}
-          </>}
+                    </>}
+                  </>}
+                </> :<></>
+          }
+
           <div>
             <p>
               Write minimum 100 words and maximum 200 words to describe yourself. This description will

@@ -359,6 +359,7 @@ const Experience = () => {
     const [updateArray, setUpdatearray] = useState([])
     const [deletedArray, setdeletedArray] = useState([])
     const [verifySts, setverifySts] = useState()
+    const [isExperienceAlert, setisExperienceAlert] = useState(0)
     const [nocertificate, setnocertificate] = useState(false)
 
     const [tutexpcnt, settutexpcnt] = useState('')
@@ -374,9 +375,14 @@ const Experience = () => {
                 }
             })
                 .then(res => {
-                    // console.log("GetTutorVerify",res.data)
+                    // console.log("GetTutorVerify",res.data[0].sTeachExper_verify)
                     if (res.data.length !== 0) {
-                        setverifySts(res.data[0].sTeachExper_verify)
+                        if(res.data[0].sTeachExper_verify !== null){
+                            setverifySts(res.data[0].sTeachExper_verify)
+                            setisExperienceAlert(1)
+                        }else{
+                            setverifySts()
+                        }
                     }
                 })
                 .catch(err => {
@@ -652,31 +658,36 @@ const Experience = () => {
                                         {/*{console.log(educationFields.length)}*/}
                                         <div className="section-title mb-3">
                                             <h4 className="rbt-title-style-3">Teaching Experience</h4>
-                                            {verifySts === 2 ? <>
-                                                <Alert color='success'>
-                                                    <h6 className='alert-heading m-0 text-center'>
-                                                        Teaching experience verification has been approved by admin
-                                                    </h6>
-                                                </Alert>
-
-                                            </> : <>
-                                                {verifySts === 1 ? <>
-                                                    <Alert color='warning'>
-                                                        <h6 className='alert-heading m-0 text-center'>
-                                                            Teaching experience verification is in pending state
-                                                        </h6>
-                                                    </Alert>
-
-                                                </> : <>
-                                                    {verifySts === 0 || verifySts === null ? <></> : <>
-                                                        <Alert color='danger'>
+                                            {
+                                                isExperienceAlert === 1 ? <>
+                                                    {verifySts === 2 ? <>
+                                                        <Alert color='success'>
                                                             <h6 className='alert-heading m-0 text-center'>
-                                                                Teaching experience verification has been disapproved by admin
+                                                                Teaching experience verification has been approved by admin
                                                             </h6>
                                                         </Alert>
+
+                                                    </> : <>
+                                                        {verifySts === 1 ? <>
+                                                            <Alert color='warning'>
+                                                                <h6 className='alert-heading m-0 text-center'>
+                                                                    Teaching experience verification is in pending state
+                                                                </h6>
+                                                            </Alert>
+
+                                                        </> : <>
+                                                            {verifySts === 0 || verifySts === null ? <></> : <>
+                                                                <Alert color='danger'>
+                                                                    <h6 className='alert-heading m-0 text-center'>
+                                                                        Teaching experience verification has been disapproved by admin
+                                                                    </h6>
+                                                                </Alert>
+                                                            </>}
+                                                        </>}
                                                     </>}
-                                                </>}
-                                            </>}
+                                                </> : <></>
+                                            }
+
                                         </div>
                                         <div className={'row'}>
                                             <div className={'col-lg-12'}>
