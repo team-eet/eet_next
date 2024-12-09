@@ -290,14 +290,21 @@ const Experience = () => {
     };
 
     const handleRemoveCertification = (id) => {
-        const updatedFields = certificationFields.filter((field) => field.nTCId !== id);
-        setcertificationFields(updatedFields);
+        // const updatedFields = certificationFields.filter((field) => field.nTCId !== id);
+        // setcertificationFields(updatedFields);
+        //
+        // const deletedFields = certificationFields.filter((field) => field.nTCId === id);
+        // console.log('deletedFields', deletedFields)
 
-        const deletedFields = certificationFields.filter((field) => field.nTCId === id);
+        const updatedFields = expFields.filter((field) => field.nTTEId !== id);
+        setExpFields(updatedFields);
+
+        const deletedFields = expFields.filter((field) => field.nTTEId === id);
         console.log('deletedFields', deletedFields)
 
+
         const deletedarray = deletedFields.map((item) => {
-            return item.nTCId
+            return item.nTTEId
         })
         console.log('deletedArray', deletedarray)
         setdeletedArray(deletedarray)
