@@ -200,7 +200,7 @@ const Certification = () => {
   const handleAddCertification = () => {
     const newId = certificationFields.length + 1;
     const newCertification = {
-      nTCId: 0,
+      nTCId: newId,
       sCerti_title:'',
       sIssued_by:'',
       sCerti_imagePath:'',

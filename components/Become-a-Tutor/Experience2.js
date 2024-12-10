@@ -107,7 +107,7 @@ const Experience = () => {
 
     const handleChangeOnlineExp = (e, index) => {
         const { value } = e.target;
-
+        let onlineExp = parseFloat(value);
         if (value === "") {
             const updatedFields = [...expFields];
             updatedFields[index].nTotal_online_exper = ""; // Set to empty string when input is cleared
@@ -115,7 +115,7 @@ const Experience = () => {
             return; // Stop further execution
         }
 
-        let onlineExp = parseFloat(value);
+
 
         // Validate that onlineExp is a number
         if (isNaN(onlineExp) || onlineExp < 0) {
@@ -276,7 +276,7 @@ const Experience = () => {
     const handleAddExperience = () => {
         const newId = expFields.length + 1;
         const newExperience = {
-            nTTEId: 0,
+            nTTEId: newId,
             sIs_fresher:Isfresher,
             nTotal_exper:'',
             nTotal_online_exper:'',
