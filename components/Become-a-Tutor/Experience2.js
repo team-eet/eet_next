@@ -9,7 +9,8 @@ import img from "@/public/images/others/thumbnail-placeholder.svg";
 import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {Alert} from "reactstrap";
 import * as Yup from "yup";
-
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const UserValidationSchema = Yup.object().shape({
     sIs_fresher: Yup.string()
@@ -70,7 +71,7 @@ const Experience = () => {
             sOrganization:'',
             sPosition:'',
             sFrom_years:'',
-            sTo_years:''
+            sTo_years:'',
         }
     ]);
 
@@ -238,7 +239,7 @@ const Experience = () => {
         updatedFields[index].sFrom_years = value;
 
         if (parseInt(value) < yearOfBirth) {
-            alert(`Year of study "From" should not be greater than the year of birth (${yearOfBirth}).`);
+            alert(`Year of work "From" should not be greater than the year of birth (${yearOfBirth}).`);
             return; // Stop further execution
         }
 
@@ -248,7 +249,7 @@ const Experience = () => {
             parseInt(updatedFields[index].sTo_years) < parseInt(value)
 
         ) {
-            alert("Year of study to should not be less than Year of study from.");
+            alert("Year of work to should not be less than Year of work from.");
             setExpFields('');
         }
 
@@ -267,7 +268,7 @@ const Experience = () => {
             parseInt(value) < parseInt(updatedFields[index].sFrom_years)
         ) {
             updatedFields[index].sTo_years = '';
-            alert("Year of study to should not be less than Year of study from.");
+            alert("Year of work to should not be less than Year of work from.");
         }
 
         setExpFields(updatedFields);
@@ -284,7 +285,8 @@ const Experience = () => {
             sOrganization:'',
             sPosition:'',
             sFrom_years:'',
-            sTo_years:''
+            sTo_years:'',
+            isAdded:'yes'
         };
         setExpFields([...expFields, newExperience]);
     };
@@ -318,7 +320,9 @@ const Experience = () => {
 
         setUpdatearray(filteredArray)
 
-        Axios.delete(`${API_URL}/api/TutorCertification/DeleteTutorCerti/${EncryptData(deletedarray[0])}`, {
+        console.log("delete Array" ,EncryptData(deletedarray[0]))
+
+        Axios.delete(`${API_URL}/api/TutorTeachExperience/DeleteTutorTeachExper/${EncryptData(deletedarray[0])}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
@@ -388,8 +392,10 @@ const Experience = () => {
                             setverifySts(res.data[0].sTeachExper_verify)
                             setisExperienceAlert(1)
                         }else{
-                            setverifySts()
+                            setverifySts(0)
                         }
+                    }else{
+                        setverifySts(0)
                     }
                 })
                 .catch(err => {
@@ -475,23 +481,114 @@ const Experience = () => {
         <>
             <div className="rbt-dashboard-content bg-color-white rbt-shadow-box">
                 <div className="content">
-                    <Formik
-                        // validationSchema={UserValidationSchema}
-                        initialValues={{
-                            nRegId : regId,
-                            sExperience : ExperienceList[0]
-                        }}
-                        enableReinitialize={true}
-                        onSubmit={async (values, {resetForm}) => {
-                            console.log(values)
-                            if(verifySts === 2) {
-                                router.push('/become-a-tutor/description')
-                            } else {
-                                if(tutorcnt !== 0) {
-                                    if (fields === false) {
-                                        // alert('hello')
-                                        // fresher
-                                        const noExperience = {
+
+                    {
+                        isExperienceAlert !== 1 && verifySts !== 0 && verifySts !== '' ? <>
+                            <div className="section-title">
+                                <Skeleton height={20} width={150} className='rbt-title-style-3 mb-0'/>
+                            </div>
+                            <div className={'mb-3'}>
+                                <Skeleton height={1} width={'100%'} className='my-4'/>
+                            </div>
+                            <Skeleton height={40} className="w-100 mb-4"/>
+                            <div className="section-title">
+                                <Skeleton height={20} width={350} className='rbt-title-style-3 mb-0'/>
+                            </div>
+                            <div className="form-group d-flex align-items-center mt-4">
+                                <Skeleton circle height={20} width={20} className="me-2"/> {/* Checkbox icon */}
+                                <Skeleton height={15} width={100}/> {/* Label text */}
+                                <Skeleton circle height={20} width={20} className="ms-4 me-2"/> {/* Checkbox icon */}
+                                <Skeleton height={15} width={100}/> {/* Label text */}
+                            </div>
+
+                            {
+                                Isfresher === 'Fresher' ? <>
+                                    <Skeleton height={40} className="w-100 mt-4"/>
+                                </> : <>
+                                    <div className={'row row--15 mt-3'}>
+                                        <div className={'col-lg-6 mb-3'}>
+                                            <Skeleton height={20} width="70%"/> {/* Label Text */}
+                                            <div className="form-group">
+                                                <Skeleton height={40} width="100%"/> {/* Input Field */}
+                                                <span className="focus-border"></span>
+                                            </div>
+
+                                        </div>
+                                        <div className={'col-lg-6 mb-3'}>
+                                            <Skeleton height={20} width="70%"/> {/* Label Text */}
+                                            <div className="form-group">
+                                                <Skeleton height={40} width="100%"/> {/* Input Field */}
+                                                <span className="focus-border"></span>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-12 mb-3'}>
+                                            <div>
+                                                <Skeleton height={1} width={'100%'} className='my-4'/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-12 mb-3'}>
+                                            <Skeleton height={20} width="30%"/> {/* Label Text */}
+                                        </div>
+                                        <div className={'col-lg-6 mb-3'}>
+                                            <div className="form-group">
+                                                <Skeleton height={40} className="w-100 mb-2"/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-6 mb-3'}>
+                                            <div className="form-group">
+                                                <Skeleton height={40} className="w-100 mb-2"/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-6 mb-3'}>
+                                            <div className="form-group">
+                                                <Skeleton height={40} className="w-100 mb-2"/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-6 mb-3'}>
+                                            <div className="form-group">
+                                                <Skeleton height={40} className="w-100 mb-2"/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-6 mb-5'}>
+                                            <div className="form-group">
+                                                <Skeleton height={40} className="w-100 mb-2"/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-12 mb-5'}>
+                                            <div className="form-group">
+                                                <Skeleton height={20} width={130} className="mb-2"/>
+                                            </div>
+                                        </div>
+                                        <div className={'col-lg-12'}>
+                                            <div className="form-group">
+                                                <Skeleton height={40} className="w-100 mb-2"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            }
+
+
+                        </> : <>
+
+                            <Formik
+                                // validationSchema={UserValidationSchema}
+                                initialValues={{
+                                    nRegId: regId,
+                                    sExperience: ExperienceList[0]
+                                }}
+                                enableReinitialize={true}
+                                onSubmit={async (values, {resetForm}) => {
+                                    console.log(values)
+
+                                    if (verifySts === 2) {
+                                        router.push('/become-a-tutor/description')
+                                    } else {
+                                        if (tutorcnt !== 0) {
+                                            if (fields === false) {
+                                                // alert('hello')
+                                                // fresher
+                                                const noExperience = {
                                             nRegId : regId,
                                             sIsExperience : "fresher"
                                         }
@@ -585,6 +682,7 @@ const Experience = () => {
                                                     })
                                             }
                                             else {
+                                                console.log("New Data",updateValues)
                                                 await Axios.put(`${API_URL}/api/TutorTeachExperience/UpdateTutorTeachExper`, updateValues, {
                                                     headers: {
                                                         ApiKey: `${API_KEY}`
@@ -831,53 +929,80 @@ const Experience = () => {
                                                 {verifySts !== 2 ? <>
                                                     {expFields.length >= 1 ? <>
                                                         {expFields && expFields.map((experience, index) => {
-                                                            // console.log(certification)
+                                                            console.log("Length" , expFields.length)
                                                             return (
                                                                 <>
                                                                     <div key={experience.nTTEId}>
                                                                         <div className={'row mt-4'}>
-                                                                            <div className="col-lg-6">
-                                                                                <label style={{fontSize: '15px'}}>
-                                                                                    How many years of total experience
-                                                                                    in teaching?
-                                                                                </label>
-                                                                                <div className="form-group">
-                                                                                    <input
-                                                                                        readOnly={verifySts === 2}
-                                                                                        onChange={(e) => handleChangeTotalExp(e, index)}
-                                                                                        value={experience.nTotal_exper}
-                                                                                        type="text"
-                                                                                        placeholder="Total Experience"
-                                                                                        name="nTotal_exper"
-                                                                                    />
-                                                                                    <ErrorMessage name='nTotal_exper'
-                                                                                                  component='div'
-                                                                                                  className='field-error text-danger'/>
-                                                                                    <span
-                                                                                        className="focus-border"></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="col-lg-6">
-                                                                                <label style={{fontSize: '16px'}}>
-                                                                                    Out of total how many years of
-                                                                                    online teaching experience?
-                                                                                </label>
-                                                                                <div className="form-group">
-                                                                                    <input
-                                                                                        readOnly={verifySts === 2}
-                                                                                        onChange={(e) => handleChangeOnlineExp(e, index)}
-                                                                                        value={experience.nTotal_online_exper}
-                                                                                        type="text"
-                                                                                        name="nTotal_online_exper"
-                                                                                        placeholder="Online Experience"/>
-                                                                                    <ErrorMessage
-                                                                                        name='nTotal_online_exper'
-                                                                                        component='div'
-                                                                                        className='field-error text-danger'/>
-                                                                                    <span
-                                                                                        className="focus-border"></span>
-                                                                                </div>
-                                                                            </div>
+                                                                            {
+                                                                                index === 0 ? <>
+                                                                                    <div className="col-lg-6">
+                                                                                        <label
+                                                                                            style={{fontSize: '15px'}}>
+                                                                                            How many years of total
+                                                                                            experience
+                                                                                            in <br/> english teaching?
+                                                                                        </label>
+                                                                                        <div className="form-group">
+                                                                                            <input
+                                                                                                readOnly={verifySts === 2}
+                                                                                                onChange={(e) => handleChangeTotalExp(e, index)}
+                                                                                                value={experience.nTotal_exper}
+                                                                                                type="text"
+                                                                                                placeholder="Total Experience"
+                                                                                                name="nTotal_exper"
+                                                                                            />
+                                                                                            <ErrorMessage
+                                                                                                name='nTotal_exper'
+                                                                                                component='div'
+                                                                                                className='field-error text-danger'/>
+                                                                                            <span
+                                                                                                className="focus-border"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="col-lg-6">
+                                                                                        <label
+                                                                                            style={{fontSize: '16px'}}>
+                                                                                            Out of total how many years
+                                                                                            of
+                                                                                            online
+                                                                                            english <br/> teaching
+                                                                                            experience?
+                                                                                        </label>
+                                                                                        <div className="form-group">
+                                                                                            <input
+                                                                                                readOnly={verifySts === 2}
+                                                                                                onChange={(e) => handleChangeOnlineExp(e, index)}
+                                                                                                value={experience.nTotal_online_exper}
+                                                                                                type="text"
+                                                                                                name="nTotal_online_exper"
+                                                                                                placeholder="Online Experience"/>
+                                                                                            <ErrorMessage
+                                                                                                name='nTotal_online_exper'
+                                                                                                component='div'
+                                                                                                className='field-error text-danger'/>
+                                                                                            <span
+                                                                                                className="focus-border"></span>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    <hr className={'mt-4 mb-0'} style={{height:'3px',background:'#c38ae8'}}/>
+                                                                                    <div className={'col-12 mt-3'}>
+                                                                                        <label
+                                                                                            style={{fontSize: '16px'}}>
+                                                                                            <b>
+                                                                                                Add Most Recent Experience
+                                                                                            </b>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </> : <>
+                                                                                    <hr className={'mt-4 mb-0'} style={{
+                                                                                        height: '3px',
+                                                                                        background: '#c38ae8'
+                                                                                    }}/>
+                                                                                </>
+                                                                            }
+
 
                                                                             <div className={'col-lg-6 mt-3'}>
                                                                                 <label style={{fontSize: '16px'}}>
@@ -921,7 +1046,7 @@ const Experience = () => {
                                                                             </div>
                                                                             <div className={'col-lg-6 mt-3'}>
                                                                                 <label style={{fontSize: '16px'}}>
-                                                                                    Year of study from
+                                                                                    Year of work from
                                                                                 </label>
                                                                                 <select disabled={verifySts === 2}
                                                                                         name={"sFrom_years"}
@@ -936,7 +1061,7 @@ const Experience = () => {
                                                                             </div>
                                                                             <div className={'col-lg-6 mt-3'}>
                                                                                 <label style={{fontSize: '16px'}}>
-                                                                                    Year of study to
+                                                                                    Year of work to
                                                                                 </label>
                                                                                 <select disabled={verifySts === 2}
                                                                                         value={experience.sTo_years}
@@ -979,7 +1104,7 @@ const Experience = () => {
                                                                             {verifySts === 2 ? <></> : <>
                                                                                 <div
                                                                                     className="col-lg-12 text-end mt-2">
-                                                                                    {expFields.length > 1 ? <>
+                                                                                    {index !== 0 ? <>
                                                                                         <button type={'button'}
                                                                                                 className="btn btn-danger"
                                                                                                 onClick={() => handleRemoveCertification(experience.nTTEId)}>Remove
@@ -1177,7 +1302,7 @@ const Experience = () => {
                         }}
 
                     </Formik>
-
+                        </>}
                 </div>
             </div>
         </>

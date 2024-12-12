@@ -12,6 +12,9 @@ import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import {useRouter} from "next/router";
 import {Alert, FormGroup} from "reactstrap";
 import {API_URL, API_KEY} from "../../constants/constant";
+import "venobox/dist/venobox.min.css";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 
 const UserValidationSchema = Yup.object().shape({
@@ -159,9 +162,19 @@ const Cover = () => {
                         setverifySts(res.data[0])
                         setisCoverAlert(1)
                     }else{
-                        setverifySts([])
+                        setverifySts({
+                            sCoverPhotoLeft_verify: null,
+                            sCoverPhotoCenter_verify: null,
+                            sCoverPhotoRight_verify: null,
+                        });
                     }
 
+                }else{
+                    setverifySts({
+                        sCoverPhotoLeft_verify: null,
+                        sCoverPhotoCenter_verify: null,
+                        sCoverPhotoRight_verify: null,
+                    });
                 }
             })
             .catch(err => {
@@ -195,296 +208,462 @@ const Cover = () => {
             })
         }
     }, []);
+    // Image Popup
+    const initializeVenobox = () => {
+        import("venobox/dist/venobox.min.js").then((venobox) => {
+            new venobox.default({
+                selector: ".child-gallery-single",
+                numeration: false, // Disable numeration for single image
+                infinigall: false,
+                spinner: "rotating-plane",
+            });
+        });
+    };
+    useEffect(() => {
+        if (sImagePathLeft || sImagePathCenter || sImagePathRight) {
+            initializeVenobox();
+        }
+    }, [sImagePathLeft,sImagePathCenter,sImagePathRight]);
+
+    // Close
     return (
         <>
             <div className="rbt-dashboard-content bg-color-white rbt-shadow-box">
                 <div className="content">
-                    <div className="section-title">
-                        <h4 className="rbt-title-style-3">Cover Photo</h4>
-                        {
-                            isCoverAlert === 1 ? <>
-                                {verifysts.sCoverPhotoLeft_verify === 2 && verifysts.sCoverPhotoCenter_verify === 2
-                                && verifysts.sCoverPhotoRight_verify === 2 ? <>
-                                    <Alert color='success'>
-                                        <h6 className='alert-heading m-0 text-center'>
-                                            Cover photo verification has been approved by admin
-                                        </h6>
-                                    </Alert>
-                                </> : <>
-                                    {verifysts.sCoverPhotoLeft_verify === 1 && verifysts.sCoverPhotoCenter_verify === 1
-                                    && verifysts.sCoverPhotoRight_verify === 1 ? <>
-                                        <Alert color='warning'>
-                                            <h6 className='alert-heading m-0 text-center'>
-                                                Cover photo verification is in pending state
-                                            </h6>
-                                        </Alert>
-                                    </> : <>
-                                        {verifysts.sCoverPhotoLeft_verify === 3 || verifysts.sCoverPhotoCenter_verify !== 3
-                                        || verifysts.sCoverPhotoRight_verify === 3 ? <>
-                                            <Alert color='danger'>
-                                                <h6 className='alert-heading m-0 text-center'>
-                                                    Cover photo verification has been disapproved by admin
-                                                </h6>
-                                                {verifysts.sCoverPhotoLeft_comment !== "" || verifysts.sCoverPhotoRight_comment !== ""
-                                                || verifysts.sCoverPhotoCenter_comment !== "" ? <>
-                                                    <p className={'text-center'}
-                                                       style={{fontSize: '14px'}}>{verifysts.sCoverPhotoRight_comment}</p>
-                                                </> : <></>}
-                                            </Alert>
-                                        </> : <></>}
-
-                                    </>}
-                                </>}
-                            </> :
-                                <></>}
-
-                        {/*<h3>Your profile photo is your first impression</h3>*/}
-                        <p>
-                            This image will be used on the cover page of courses and batches to display on our main
-                            website and you will have to upload 3 different images as left profile, center profile
-                            and right profile
-                        </p>
-
-                        <h6>Guidelines for capturing an exceptional photograph</h6>
-                    </div>
-                    <div className={'row'}>
-                        <div className={'col-lg-6 profile-sample-photo'}>
-                            <ul className="rbt-list-style-1">
-                                <li>
-                                    <i className="feather-check"></i>
-                                    Your photo must be half length
-                                </li>
-                                <li>
-                                    <i className="feather-check"></i>
-                                    Look straight at camera and smile
-                                </li>
-                                <li>
-                                    <i className="feather-check"></i>
-                                    Maintain genuine and engaging facial expression
-                                </li>
-
-                            </ul>
+                    {
+                        isCoverAlert !== 1 && verifysts.sCoverPhotoLeft_verify !== null && verifysts.sCoverPhotoCenter_verify !== null && verifysts.sCoverPhotoRight_verify !== null ? <>
+                        <div className="section-title">
+                            <Skeleton height={20} width={150} className='rbt-title-style-3 mb-0'/>
                         </div>
-                        <div className={'col-lg-6 profile-sample-photo'}>
-
-                            <ul className="rbt-list-style-1">
-                                <li>
-                                    <i className="feather-check"></i>
-                                    Make sure your head and shoulders are covered
-                                </li>
-                                <li>
-                                    <i className="feather-check"></i>
-                                    Simple, uncluttered and white background
-                                </li>
-                                <li>
-                                    <i className="feather-check"></i>
-                                    Use natural lighting
-                                </li>
-                            </ul>
+                        <div className={'mb-3'}>
+                            <Skeleton height={1} width={'100%'} className='my-4'/>
                         </div>
+                        <Skeleton height={40} className="w-100 mb-2"/>
+                        <div>
+                            <Skeleton height={30} width="80%" className="mb-4"/>
+                            <Skeleton height={20} width="60%"/>
+                        </div>
+                                <div className={'row row--15 mt-4'}>
+                                    <div className={'col-lg-6 mb-3'}>
+                                        <ul className="rbt-list-style-1">
+                                            {[...Array(6)].map((_, index) => (
+                                                <li key={index} className="d-block align-items-center mb-2">
+                                                    <Skeleton height={15} width={index === 2 || index === 3 || index === 4? "100%" : "75%"}/> {/* List text */}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div className={'col-lg-6 mb-3'}>
+                                        <div className={'row p-0'}>
+                                            <div className="col-6 col-sm-4 col-lg-4">
+                                                <div className="profile-sample-photo">
+                                                    <Skeleton height={110} width="100%"/>
+                                                    <Skeleton height={20} width="100%" className={'mt-3'}/>
+                                                </div>
+                                            </div>
+                                            <div className="col-6 col-sm-4 col-lg-4">
+                                                <div className="profile-sample-photo">
+                                                    <Skeleton height={110} width="100%"/>
+                                                    <Skeleton height={20} width="100%" className={'mt-3'}/>
+                                                </div>
+                                            </div>
+                                            <div className="col-6 col-sm-4 col-lg-4">
+                                                <div className="profile-sample-photo">
+                                                    <Skeleton height={110} width="100%"/>
+                                                    <Skeleton height={20} width="100%" className={'mt-3'}/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    </div>
+                                    <div className={'col-lg-12'}>
+                                        <div className="form-group">
+                                            <Skeleton height={40} className="w-100 mb-2"/>
+                                        </div>
+                                    </div>
+                                </div>
 
+                            </>
+                            : <>
 
-                    <Formik
-                        validationSchema={UserValidationSchema}
-                        initialValues={{
-                            nRegId: regId,
-                            sCoverPhotoLeftPath: sImagePathLeft,
-                            sCoverPhotoCenterPath: sImagePathCenter,
-                            sCoverPhotoRightPath: sImagePathRight
-                        }}
-                        enableReinitialize={true}
-                        onSubmit={async (values, {resetForm}) => {
-                            // console.log(values)
-                            if(verifysts.sCoverPhotoLeft_verify === 2 && verifysts.sCoverPhotoCenter_verify === 2
-                                && verifysts.sCoverPhotoRight_verify === 2)
-                            {
-                                router.push('/become-a-tutor/education')
-                            } else {
+                                <div className="section-title">
+                                    <h4 className="rbt-title-style-3">Cover Photo</h4>
+                                    {
+                                        isCoverAlert === 1 ? <>
+                                                {verifysts.sCoverPhotoLeft_verify === 2 && verifysts.sCoverPhotoCenter_verify === 2
+                                            && verifysts.sCoverPhotoRight_verify === 2 ? <>
+                                                <Alert color='success'>
+                                                    <h6 className='alert-heading m-0 text-center'>
+                                                        Cover photo verification has been approved by admin
+                                                    </h6>
+                                                </Alert>
+                                            </> : <>
+                                                {verifysts.sCoverPhotoLeft_verify === 1 && verifysts.sCoverPhotoCenter_verify === 1
+                                                && verifysts.sCoverPhotoRight_verify === 1 ? <>
+                                                    <Alert color='warning'>
+                                                        <h6 className='alert-heading m-0 text-center'>
+                                                            Cover photo verification is in pending state
+                                                        </h6>
+                                                    </Alert>
+                                                </> : <>
+                                                    {verifysts.sCoverPhotoLeft_verify === 3 || verifysts.sCoverPhotoCenter_verify !== 3
+                                                    || verifysts.sCoverPhotoRight_verify === 3 ? <>
+                                                        <Alert color='danger'>
+                                                            <h6 className='alert-heading m-0 text-center'>
+                                                                Cover photo verification has been disapproved by admin
+                                                            </h6>
+                                                            {verifysts.sCoverPhotoLeft_comment !== "" || verifysts.sCoverPhotoRight_comment !== ""
+                                                            || verifysts.sCoverPhotoCenter_comment !== "" ? <>
+                                                                <p className={'text-center'}
+                                                                   style={{fontSize: '14px'}}>{verifysts.sCoverPhotoRight_comment}</p>
+                                                            </> : <></>}
+                                                        </Alert>
+                                                    </> : <></>}
 
-                                await Axios.put(`${API_URL}/api/TutorBasics/UpdateTutorProfile`, values, {
-                                    headers: {
-                                        ApiKey: `${API_KEY}`
-                                    }
-                                }).then(res => {
-                                    // console.log(values)
-                                    // console.log(res.data)
-                                    setisLoading(true)
-                                    const retData = JSON.parse(res.data)
-                                    resetForm({})
-                                    if(retData.success === '1') {
+                                                </>}
+                                            </>}
+                                        </> :
+                                        <></>}
 
-                                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-                                            headers: {
-                                                ApiKey: `${API_KEY}`
-                                            }
-                                        })
-                                            .then(res => {
-                                                // console.log(res.data)
-                                                if(res.data.length !== 0) {
-                                                    const array2 = res.data.map((item) => {
-                                                        return item.verify_list
+                                {/*<h3>Your profile photo is your first impression</h3>*/}
+                                <p>
+                                    This image will be used on the cover page of courses and batches to display on our
+                                    main
+                                    website and you will have to upload 3 different images as left profile, center
+                                    profile
+                                    and right profile
+                                </p>
+
+                                <h6>Guidelines for capturing an exceptional photograph</h6>
+                            </div>
+                                <div className={'row'}>
+                                    <div className={'col-lg-6 profile-sample-photo'}>
+                                        <ul className="rbt-list-style-1">
+                                            <li>
+                                                <i className="feather-check"></i>
+                                                Your photo must be half length
+                                            </li>
+                                            <li>
+                                                <i className="feather-check"></i>
+                                                Look straight at camera and smile
+                                            </li>
+                                            <li>
+                                                <i className="feather-check"></i>
+                                                Maintain genuine and engaging facial expression
+                                            </li>
+                                            <li>
+                                                <i className="feather-check"></i>
+                                                Make sure your head and shoulders are covered
+                                            </li>
+                                            <li>
+                                                <i className="feather-check"></i>
+                                                Simple, uncluttered and white background
+                                            </li>
+                                            <li>
+                                                <i className="feather-check"></i>
+                                                Use natural lighting
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    <div className={'col-lg-6 profile-sample-photo'}>
+                                        <Formik
+                                            validationSchema={UserValidationSchema}
+                                            initialValues={{
+                                                nRegId: regId,
+                                                sCoverPhotoLeftPath: sImagePathLeft,
+                                                sCoverPhotoCenterPath: sImagePathCenter,
+                                                sCoverPhotoRightPath: sImagePathRight
+                                            }}
+                                            enableReinitialize={true}
+                                            onSubmit={async (values, {resetForm}) => {
+                                                // console.log(values)
+                                                if (verifysts.sCoverPhotoLeft_verify === 2 && verifysts.sCoverPhotoCenter_verify === 2
+                                                    && verifysts.sCoverPhotoRight_verify === 2) {
+                                                    router.push('/become-a-tutor/education')
+                                                } else {
+
+                                                    await Axios.put(`${API_URL}/api/TutorBasics/UpdateTutorProfile`, values, {
+                                                        headers: {
+                                                            ApiKey: `${API_KEY}`
+                                                        }
+                                                    }).then(res => {
+                                                        // console.log(values)
+                                                        // console.log(res.data)
+                                                        setisLoading(true)
+                                                        const retData = JSON.parse(res.data)
+                                                        resetForm({})
+                                                        if (retData.success === '1') {
+
+                                                            Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                                headers: {
+                                                                    ApiKey: `${API_KEY}`
+                                                                }
+                                                            })
+                                                                .then(res => {
+                                                                    // console.log(res.data)
+                                                                    if (res.data.length !== 0) {
+                                                                        const array2 = res.data.map((item) => {
+                                                                            return item.verify_list
+                                                                        })
+                                                                        // console.log(array2)
+                                                                        let array = array2[0].split(',').map(Number);
+                                                                        const url1 = window.location.href.split('/')
+                                                                        // console.log(url1[4])
+                                                                        // console.log('---------------', array);
+                                                                        let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification', 'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
+                                                                        const filter = array1.findIndex((item) => item === url1[4])
+                                                                        // console.log(filter)
+                                                                        let url = array1
+                                                                        let verify_string = array;
+                                                                        const final_verifySts = verify_string.slice(filter)
+                                                                        // console.log('-----------------', final_verifySts)
+                                                                        if (final_verifySts.length !== 0) {
+                                                                            // Check the 0th position in array2 and get the corresponding string from array1
+                                                                            let positionToCheck = verify_string[0];
+                                                                            let conditionString = url[positionToCheck + 1];
+
+                                                                            console.log(conditionString)
+                                                                            // Check the position of the first 3 numbers in array2
+                                                                            let positionOfThree = final_verifySts.findIndex(num => num === 3);
+
+                                                                            // Get the string at that position from array1
+                                                                            let stringForUrl = url[positionOfThree];
+
+                                                                            // console.log('stringForUrl', stringForUrl)
+                                                                            // router.push(`/become-a-tutor/${stringForUrl}`)
+                                                                            router.push(`/become-a-tutor/education`)
+                                                                        } else {
+                                                                            router.push('/become-a-tutor/cover-photo')
+                                                                        }
+                                                                    }
+                                                                })
+                                                                .catch(err => {
+                                                                    {
+                                                                        ErrorDefaultAlert(err)
+                                                                    }
+                                                                })
+                                                            // Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                            //     headers: {
+                                                            //         ApiKey: `${REACT_APP.API_KEY}`
+                                                            //     }
+                                                            // })
+                                                            //     .then(res => {
+                                                            //         // console.log(res.data)
+                                                            //         if(res.data.length !== 0) {
+                                                            //             const array2 = res.data.map((item) => {
+                                                            //                 return item.verify_list
+                                                            //             })
+                                                            //             // console.log(array2)
+                                                            //             let array = array2[0].split(',').map(Number);
+                                                            //             // console.log('---------------', array);
+                                                            //             let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification', 'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
+                                                            //
+                                                            //             let url = array1
+                                                            //             let verify_string = array;
+                                                            //             if(verify_string.length !== 0){
+                                                            //                 // Check the 0th position in array2 and get the corresponding string from array1
+                                                            //                 let positionToCheck = verify_string[0];
+                                                            //                 // let conditionString = url[positionToCheck - 1];
+                                                            //
+                                                            //                 // Check the position of the first 3 numbers in array2
+                                                            //                 let positionOfThree = verify_string.findIndex(num => num === 3);
+                                                            //
+                                                            //                 // Get the string at that position from array1
+                                                            //                 let stringForUrl = url[positionOfThree];
+                                                            //
+                                                            //                 console.log('stringForUrl', stringForUrl)
+                                                            //                 router.push(`/become-a-tutor/${stringForUrl}`)
+                                                            //             } else {
+                                                            //                 router.push('/become-a-tutor/education')
+                                                            //             }
+                                                            //
+                                                            //         }
+                                                            //     })
+                                                            //     .catch(err => {
+                                                            //         { ErrorDefaultAlert(err) }
+                                                            //     })
+
+                                                        }
                                                     })
-                                                    // console.log(array2)
-                                                    let array = array2[0].split(',').map(Number);
-                                                    const url1 = window.location.href.split('/')
-                                                    // console.log(url1[4])
-                                                    // console.log('---------------', array);
-                                                    let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification', 'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
-                                                    const filter = array1.findIndex((item) => item === url1[4])
-                                                    // console.log(filter)
-                                                    let url = array1
-                                                    let verify_string = array;
-                                                    const final_verifySts = verify_string.slice(filter)
-                                                    // console.log('-----------------', final_verifySts)
-                                                    if(final_verifySts.length !== 0){
-                                                        // Check the 0th position in array2 and get the corresponding string from array1
-                                                        let positionToCheck = verify_string[0];
-                                                        let conditionString = url[positionToCheck + 1];
-
-                                                        console.log(conditionString)
-                                                        // Check the position of the first 3 numbers in array2
-                                                        let positionOfThree = final_verifySts.findIndex(num => num === 3);
-
-                                                        // Get the string at that position from array1
-                                                        let stringForUrl = url[positionOfThree];
-
-                                                        // console.log('stringForUrl', stringForUrl)
-                                                        // router.push(`/become-a-tutor/${stringForUrl}`)
-                                                        router.push(`/become-a-tutor/education`)
-                                                    } else {
-                                                        router.push('/become-a-tutor/cover-photo')
-                                                    }
+                                                        .catch(err => {
+                                                            {
+                                                                ErrorDefaultAlert(JSON.stringify(err.response))
+                                                            }
+                                                        })
                                                 }
-                                            })
-                                            .catch(err => {
-                                                { ErrorDefaultAlert(err) }
-                                            })
-                                        // Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-                                        //     headers: {
-                                        //         ApiKey: `${REACT_APP.API_KEY}`
-                                        //     }
-                                        // })
-                                        //     .then(res => {
-                                        //         // console.log(res.data)
-                                        //         if(res.data.length !== 0) {
-                                        //             const array2 = res.data.map((item) => {
-                                        //                 return item.verify_list
-                                        //             })
-                                        //             // console.log(array2)
-                                        //             let array = array2[0].split(',').map(Number);
-                                        //             // console.log('---------------', array);
-                                        //             let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification', 'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
-                                        //
-                                        //             let url = array1
-                                        //             let verify_string = array;
-                                        //             if(verify_string.length !== 0){
-                                        //                 // Check the 0th position in array2 and get the corresponding string from array1
-                                        //                 let positionToCheck = verify_string[0];
-                                        //                 // let conditionString = url[positionToCheck - 1];
-                                        //
-                                        //                 // Check the position of the first 3 numbers in array2
-                                        //                 let positionOfThree = verify_string.findIndex(num => num === 3);
-                                        //
-                                        //                 // Get the string at that position from array1
-                                        //                 let stringForUrl = url[positionOfThree];
-                                        //
-                                        //                 console.log('stringForUrl', stringForUrl)
-                                        //                 router.push(`/become-a-tutor/${stringForUrl}`)
-                                        //             } else {
-                                        //                 router.push('/become-a-tutor/education')
-                                        //             }
-                                        //
-                                        //         }
-                                        //     })
-                                        //     .catch(err => {
-                                        //         { ErrorDefaultAlert(err) }
-                                        //     })
 
-                                    }
-                                })
-                                    .catch(err => {
-                                        {
-                                            ErrorDefaultAlert(JSON.stringify(err.response))
-                                        }
-                                    })
-                            }
+                                            }}
+                                        >
+                                            {({errors, touched}) => {
+                                                return (
+                                                    <>
+                                                        <Form>
+                                                            <div className={'row p-0'}>
+                                                                <div className={'col-6 col-sm-4 col-lg-4 firstImage'}>
+                                                                    <div className={'profile-sample-photo border'}>
+                                                                        <img src={'/images/client/ML1.png'}></img>
+                                                                    </div>
+                                                                </div>
+                                                                <div className={'col-6 col-sm-4 col-lg-4 secoundImage'}>
+                                                                    <div className={'profile-sample-photo border'}>
+                                                                        <img src={'/images/client/MC1.png'}></img>
+                                                                    </div>
+                                                                </div>
+                                                                <div className={'col-6 col-sm-4 col-lg-4 thirdImage'}>
+                                                                    <div className={'profile-sample-photo border'}>
+                                                                        <img src={'/images/client/MR1.png'}></img>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    className={'col-6 col-sm-4 col-lg-4 mt-3 firstImage'}>
+                                                                    <FormGroup>
+                                                                        <input type="file" id={'sFirstCover'}
+                                                                               name="sCoverPhotoLeftPath"
+                                                                               className={'p-0'}
+                                                                               onChange={onChangeLeftImage}
+                                                                               accept="image/*"/>
+                                                                        <label htmlFor="sFirstCover"
+                                                                               className="d-block btn btn-primary">
+                                                                            Choose File
+                                                                        </label>
+                                                                        <small>JPG or PNG format, maximum 2 MB</small>
+                                                                        {/*{sImagePathLeft ?*/}
+                                                                        {/*    <img src={sImagePathLeft} height={200}*/}
+                                                                        {/*         width={200}*/}
+                                                                        {/*         className={'coverImage ms-0'}/> : ''}*/}
+                                                                        {
+                                                                            sImagePathLeft ?
+                                                                                <a
+                                                                                    className="child-gallery-single col-lg-2 col-md-4 col-sm-6 col-6"
+                                                                                    href={sImagePathLeft} // This is required by Venobox
+                                                                                    data-gall="gallery01"
+                                                                                    onClick={(e) => e.preventDefault()} // Prevents default navigation
+                                                                                >
+                                                                                    <div className="rbt-gallery">
+                                                                                        <Image
+                                                                                            className="coverImage ms-0"
+                                                                                            src={sImagePathLeft}
+                                                                                            width={200}
+                                                                                            height={200}
+                                                                                            alt="Gallery Images"
+                                                                                        />
+                                                                                    </div>
+                                                                                </a>
+                                                                                : ''
+                                                                        }
+                                                                    </FormGroup>
+                                                                    <ErrorMessage name='sCoverPhotoLeftPath'
+                                                                                  component='div'
+                                                                                  className='field-error text-danger'/>
 
-                        }}
-                    >
-                        {({errors, touched}) => {
-                            return (
-                                <>
-                                    <Form>
-                                        <div className={'row mt-5 p-0'}>
-                                            <div className={'col-lg-6 '}>
-                                                <div className={'cover-sample-photo border'}>
-                                                    <img src={'/images/client/ML1.png'}></img>
-                                                </div>
-                                            </div>
-                                            <div className={'col-lg-6'}>
-                                                <FormGroup>
-                                                    <input type="file" name="sCoverPhotoLeftPath" className={'p-0'}
-                                                           onChange={onChangeLeftImage} accept="image/*" />
-                                                    <small>JPG or PNG format, maximum 2 MB</small>
-                                                    {sImagePathLeft ?
-                                                        <img src={sImagePathLeft} height={200} width={200}/> : ''}
-                                                </FormGroup>
-                                                <ErrorMessage name='sCoverPhotoLeftPath' component='div'
-                                                              className='field-error text-danger' />
+                                                                </div>
 
-                                            </div>
-                                            <div className={'col-lg-6 mt-5'}>
-                                                <div className={'cover-sample-photo border'}>
-                                                    <img src={'/images/client/MC1.png'}></img>
-                                                </div>
-                                            </div>
-                                            <div className={'col-lg-6 mt-5'}>
-                                                <FormGroup>
-                                                    <input type="file" name={"sCoverPhotoCenterPath"} className={'p-0'}
-                                                           onChange={onChangeCenterImage} accept="image/*"/>
-                                                    <small>JPG or PNG format, maximum 2 MB</small>
-                                                    {sImagePathCenter ?
-                                                        <img src={sImagePathCenter} height={200} width={200}/> : ''}
-                                                </FormGroup>
-                                                <ErrorMessage name='sCoverPhotoCenterPath' component='div'
-                                                              className='field-error text-danger'/>
+                                                                <div
+                                                                    className={'col-6 col-sm-4 col-lg-4 mt-3 secoundImage'}>
+                                                                    <FormGroup>
+                                                                        <input type="file" id={'sSecoundCover'}
+                                                                               name={"sCoverPhotoCenterPath"}
+                                                                               className={'p-0'}
+                                                                               onChange={onChangeCenterImage}
+                                                                               accept="image/*"/>
+                                                                        <label htmlFor="sSecoundCover"
+                                                                               className="d-block btn btn-primary">
+                                                                            Choose File
+                                                                        </label>
+                                                                        <small>JPG or PNG format, maximum 2 MB</small>
+                                                                        {/*{sImagePathCenter ?*/}
+                                                                        {/*    <img src={sImagePathCenter} height={200}*/}
+                                                                        {/*         width={200}*/}
+                                                                        {/*         className={'coverImage ms-0'}/> : ''}*/}
 
-                                            </div>
-                                            <div className={'col-lg-6 mt-5 mt-5'}>
-                                                <div className={'cover-sample-photo border'}>
-                                                    <img src={'/images/client/MR1.png'}></img>
-                                                </div>
-                                            </div>
-                                            <div className={'col-lg-6 mt-5'}>
-                                                <FormGroup>
-                                                    <input type="file" name={"sCoverPhotoRightPath"} className={'p-0'}
-                                                           onChange={onChangeRightImage} accept="image/*"/>
-                                                    <small>JPG or PNG format, maximum 2 MB</small>
-                                                    {sImagePathRight ? <img src={sImagePathRight} height={200} width={200}/> : ''}
-                                                </FormGroup>
-                                                <ErrorMessage name='sCoverPhotoRightPath' component='div'
-                                                              className='field-error text-danger'/>
+                                                                        {
+                                                                            sImagePathCenter ?
+                                                                                <a
+                                                                                    className="child-gallery-single col-lg-2 col-md-4 col-sm-6 col-6"
+                                                                                    href={sImagePathCenter} // This is required by Venobox
+                                                                                    data-gall="gallery01"
+                                                                                    onClick={(e) => e.preventDefault()} // Prevents default navigation
+                                                                                >
+                                                                                    <div className="rbt-gallery">
+                                                                                        <Image
+                                                                                            className="coverImage ms-0"
+                                                                                            src={sImagePathCenter}
+                                                                                            width={200}
+                                                                                            height={200}
+                                                                                            alt="Gallery Images"
+                                                                                        />
+                                                                                    </div>
+                                                                                </a>
+                                                                                : ''
+                                                                        }
+                                                                    </FormGroup>
+                                                                    <ErrorMessage name='sCoverPhotoCenterPath'
+                                                                                  component='div'
+                                                                                  className='field-error text-danger'/>
 
-                                            </div>
+                                                                </div>
 
-                                            <div className="col-lg-12 mt-5">
-                                                <div className="form-submit-group">
-                                                    {isLoading ? <>
-                                                        <button
-                                                            disabled={true}
-                                                            type="submit"
-                                                            className="rbt-btn btn-md btn-gradient w-100"
-                                                        >
+                                                                <div
+                                                                    className={'col-6 col-sm-4 col-lg-4 mt-3 thirdImage'}>
+                                                                    <FormGroup>
+                                                                        <input type="file" id={'sThirdCover'}
+                                                                               name={"sCoverPhotoRightPath"}
+                                                                               className={'p-0'}
+                                                                               onChange={onChangeRightImage}
+                                                                               accept="image/*"/>
+                                                                        <label htmlFor="sThirdCover"
+                                                                               className="d-block btn btn-primary">
+                                                                            Choose File
+                                                                        </label>
+                                                                        <small>JPG or PNG format, maximum 2 MB</small>
+                                                                        {/*{sImagePathRight ?*/}
+                                                                        {/*    <img src={sImagePathRight} height={200}*/}
+                                                                        {/*         width={200}*/}
+                                                                        {/*         className={'coverImage ms-0'}/> : ''}*/}
+                                                                        {
+                                                                            sImagePathRight ?
+                                                                                <a
+                                                                                    className="child-gallery-single col-lg-2 col-md-4 col-sm-6 col-6"
+                                                                                    href={sImagePathRight} // This is required by Venobox
+                                                                                    data-gall="gallery01"
+                                                                                    onClick={(e) => e.preventDefault()} // Prevents default navigation
+                                                                                >
+                                                                                    <div className="rbt-gallery">
+                                                                                        <Image
+                                                                                            className="coverImage ms-0"
+                                                                                            src={sImagePathRight}
+                                                                                            width={200}
+                                                                                            height={200}
+                                                                                            alt="Gallery Images"
+                                                                                        />
+                                                                                    </div>
+                                                                                </a>
+                                                                                : ''
+                                                                        }
+                                                                    </FormGroup>
+                                                                    <ErrorMessage name='sCoverPhotoRightPath'
+                                                                                  component='div'
+                                                                                  className='field-error text-danger'/>
+
+                                                                </div>
+
+                                                                <div className="col-lg-12 mt-5">
+                                                                    <div className="form-submit-group">
+                                                                        {isLoading ? <>
+                                                                            <button
+                                                                                disabled={true}
+                                                                                type="submit"
+                                                                                className="rbt-btn btn-md btn-gradient w-100"
+                                                                            >
                                                             <span className="btn-text"><i
                                                                 className="feather-loader"></i>isLoading...</span>
-                                                        </button>
-                                                    </> : <>
-                                                        <button
-                                                            type="submit"
-                                                            className="rbt-btn btn-md btn-gradient hover-icon-reverse w-100"
-                                                        >
+                                                                            </button>
+                                                                        </> : <>
+                                                                            <button
+                                                                                type="submit"
+                                                                                className="rbt-btn btn-md btn-gradient hover-icon-reverse w-100"
+                                                                            >
                                                         <span className="icon-reverse-wrapper">
                                                           <span className="btn-text">Continue</span>
                                                           <span className="btn-icon">
@@ -494,22 +673,26 @@ const Cover = () => {
                                                             <i className="feather-arrow-right"></i>
                                                           </span>
                                                         </span>
-                                                        </button>
-                                                    </>}
+                                                                            </button>
+                                                                        </>}
 
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </Form>
 
-                                </>
-                            )
-                        }}
-
-
-                    </Formik>
+                                                    </>
+                                                )
+                                            }}
 
 
+                                        </Formik>
+                                    </div>
+
+                                </div>
+
+
+                            </>}
                 </div>
             </div>
         </>

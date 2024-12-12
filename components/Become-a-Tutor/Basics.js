@@ -15,6 +15,8 @@ import {auth} from "@/context/firebase";
 import {toast} from "react-toastify";
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const UserValidationSchema = Yup.object().shape({
   sFName: Yup.string()
@@ -532,18 +534,90 @@ const Basics = () => {
     <>
       <div className="rbt-dashboard-content bg-color-white rbt-shadow-box mb--60">
         <div className="content">
-          <div className="section-title">
-            <h4 className="rbt-title-style-3">Basics</h4>
-          </div>
-          <Formik
-              validationSchema={UserValidationSchema}
-              initialValues={{
-                  nRegId : regId,
-                  sFName: sFname ? sFname : '',
-                  sLName: sLname ? sLname : '',
-                  sEmail: sEmail ? sEmail : '',
-                  sMobile: sMobile ? sMobile : '',
-                  dDOB : dDOB ? dDOB : '',
+            {
+                isBasicAlert !== 1  && verifysts.sBasic_verify !== 0 && verifysts.sBasic_verify !== '' ? <>
+                    <div className="section-title">
+                        <Skeleton height={20} width={150} className='rbt-title-style-3 mb-0'/>
+                    </div>
+                    <div className={'mb-3'}>
+                        <Skeleton height={1} width={'100%'} className='my-4'/>
+                    </div>
+                    <Skeleton height={40} className="w-100 mb-2"/>
+                    <div className={'row row--15 mt-5'}>
+                        <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-6 mb-3'}>
+                            <div className="d-flex">
+                                <div className={'d-flex'}>
+                                    <Skeleton circle={true} height={20} width={20} className="me-2"/>
+                                    <Skeleton height={20} width={50}/>
+                                </div>
+                                <div className={'d-flex ms-3'}>
+                                    <Skeleton circle={true} height={20} width={20} className="me-2"/>
+                                    <Skeleton height={20} width={50}/>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={'col-lg-4 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-4 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-4 mb-3'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                        <div className={'col-lg-12'}>
+                            <div className="form-group">
+                                <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </> : <>
+
+                    <div className="section-title">
+                        <h4 className="rbt-title-style-3">Basics</h4>
+                    </div>
+                    <Formik
+                        validationSchema={UserValidationSchema}
+                        initialValues={{
+                            nRegId: regId,
+                            sFName: sFname ? sFname : '',
+                            sLName: sLname ? sLname : '',
+                            sEmail: sEmail ? sEmail : '',
+                            sMobile: sMobile ? sMobile : '',
+                            dDOB : dDOB ? dDOB : '',
                   sGender: sGender ? sGender: '',
                   nCountryId: countryId ? countryId : '',
                   nStateId: stateId ? stateId : '',
@@ -1243,7 +1317,7 @@ const Basics = () => {
 
           </Formik>
 
-
+                </>}
         </div>
       </div>
     </>

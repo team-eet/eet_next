@@ -11,6 +11,8 @@ import Axios from 'axios'
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import { useRouter } from "next/router";
 import img from "@/public/images/others/thumbnail-placeholder.svg";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const MySwal = withReactContent(Swal)
 
@@ -76,9 +78,10 @@ const Description = () => {
               setverifySts(res.data[0].sDesc_verify)
               setisDescriptionAlert(1)
             }else{
-              setverifySts()
+              setverifySts(0)
             }
-
+          }else{
+            setverifySts(0)
           }
         })
         .catch(err => {
@@ -115,16 +118,68 @@ const Description = () => {
     <>
       <div className="rbt-dashboard-content bg-color-white rbt-shadow-box">
         <div className="content">
-          <div className="section-title">
-            <h4 className="rbt-title-style-3">Description</h4>
-          </div>
           {
-            isDescriptionAlert === 1 ?
-                <>
-                  {verifySts === 2 ? <>
-                    <Alert color='success'>
-                      <h6 className='alert-heading m-0 text-center'>
-                        Description verification has been approved by admin
+            isDescriptionAlert !== 1 && verifySts !== 0 && verifySts !== '' ? <>
+              <div className="section-title">
+                <Skeleton height={20} width={150} className='rbt-title-style-3 mb-0'/>
+              </div>
+              <div className={'mb-3'}>
+                <Skeleton height={1} width={'100%'} className='my-4'/>
+              </div>
+              <Skeleton height={40} className="w-100 mb-4"/>
+              <Skeleton height={50} className="w-100 mb-4"/>
+              <div className={'row row--15 mt-3'}>
+                <div className={'col-lg-6 mb-3'}>
+                  <Skeleton height={20} width={120} className="mb-2"/>
+                  <div className="form-group">
+                    <Skeleton height={220} className="w-100 mb-2"/>
+                  </div>
+                  <div className={'d-flex justify-content-end'}>
+                    <Skeleton height={20} width={120} className="mb-2"/>
+                  </div>
+                </div>
+                <div className={'col-lg-6 mb-2'}>
+                  <Skeleton height={20} width={120} className="mb-5"/>
+                  <div className="form-group">
+                    <ul className="rbt-list-style-1">
+                      {[...Array(5)].map((_, index) => (
+
+                          <li key={index} className="d-block align-items-center mb-2">
+                            <Skeleton
+                                height={15}
+                                width={index === 1 || index === 3 || index === 5 ? 150 : 170}
+                            />
+                          </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className={'col-lg-12 mb-3'}>
+                  <Skeleton height={1} width={'100%'} className='my-4'/>
+                </div>
+                <div className={'col-lg-12 mb-3'}>
+                  <Skeleton height={100} className="w-100 mb-2"/>
+                  <Skeleton height={100} className="w-100 mb-2"/>
+                  <Skeleton height={100} className="w-100"/>
+                </div>
+                <div className={'col-lg-12'}>
+                  <div className="form-group">
+                    <Skeleton height={40} className="w-100 mb-2"/>
+                  </div>
+                </div>
+              </div>
+            </> : <>
+
+              <div className="section-title">
+                <h4 className="rbt-title-style-3">Description</h4>
+              </div>
+              {
+                isDescriptionAlert === 1 ?
+                    <>
+                      {verifySts === 2 ? <>
+                        <Alert color='success'>
+                          <h6 className='alert-heading m-0 text-center'>
+                            Description verification has been approved by admin
                       </h6>
                     </Alert>
 
@@ -359,7 +414,7 @@ const Description = () => {
 
 
           </div>
-
+            </>}
 
         </div>
       </div>

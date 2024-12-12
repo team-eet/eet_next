@@ -10,6 +10,8 @@ import img from "@/public/images/others/thumbnail-placeholder.svg";
 import { useRouter } from "next/router";
 import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {Alert} from "reactstrap";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const Certification = () => {
   const REACT_APP = API_URL
@@ -205,7 +207,8 @@ const Certification = () => {
       sIssued_by:'',
       sCerti_imagePath:'',
       sFrom_year:'',
-      sTo_year:''
+      sTo_year:'',
+      isAdded:'yes'
     };
     setcertificationFields([...certificationFields, newCertification]);
   };
@@ -337,9 +340,11 @@ const Certification = () => {
               setverifySts(res.data[0].sCertification_verify)
               setisCertificationAlert(1)
             }else{
-              setverifySts()
+              setverifySts(0)
             }
 
+          }else{
+            setverifySts(0)
           }
         })
         .catch(err => {
@@ -432,24 +437,97 @@ const Certification = () => {
       <>
         <div className="rbt-dashboard-content bg-color-white rbt-shadow-box">
           <div className="content">
+            {
+              isCertificationAlert !== 1 && verifySts !== 0 && verifySts !== '' ? <>
+                <div className="section-title">
+                  <Skeleton height={20} width={150} className='rbt-title-style-3 mb-0'/>
+                </div>
+                <div className={'mb-3'}>
+                  <Skeleton height={1} width={'100%'} className='my-4'/>
+                </div>
+                <Skeleton height={40} className="w-100 mb-2"/>
+                <div className="mb-3">
+                  <Skeleton height={20} width="60%"/> {/* Note text */}
+                  <Skeleton height={15} width="80%" className="mt-2"/> {/* Paragraph text */}
+                </div>
 
-            <Formik
-                initialValues={{
-                  nRegId : regId,
-                  sCertification : CertificationList[0]
-                }}
-                enableReinitialize={true}
-                onSubmit={async (values, {resetForm}) => {
-                  // console.log([values])
-                  // console.log([values])
-                  if(verifySts === 2) {
-                    router.push('/become-a-tutor/teaching-experience')
-                  } else {
-                    if (tutorcnt !== 0) {
-                        if (hideFields === false) {
-                        //no education
-                        setisLoading(true)
-                        const noEducation = {
+                {
+                  isCertified !== 'No Certification' ? <>
+                        <div className="form-group d-flex align-items-center mt-3">
+                          <Skeleton circle height={20} width={20} className="me-2"/> {/* Checkbox icon */}
+                          <Skeleton height={15} width={200}/> {/* Label text */}
+                        </div>
+                        <div className={'row row--15 mt-3'}>
+                          <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                              <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                          </div>
+                          <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                              <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                          </div>
+                          <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                              <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                          </div>
+                          <div className={'col-lg-6 mb-3'}>
+                            <div className="form-group">
+                              <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                          </div>
+                          <div className={'col-lg-12 mb-5'}>
+                            <div className="rounded-2 p-3"
+                                 style={{background: 'rgb(244, 244, 248)'}}>
+                              <Skeleton height={30} width="70%"/> {/* Title */}
+                              <Skeleton height={20} width="100%"
+                                        className="mt-2"/> {/* Description text */}
+                              <div className="mt-3">
+                                <Skeleton height={40} width={180}/> {/* Upload Button */}
+                              </div>
+                            </div>
+                          </div>
+                          <div className={'col-lg-12 mb-5'}>
+                            <div className="form-group">
+                              <Skeleton height={20} width={130} className="mb-2"/>
+                            </div>
+                          </div>
+                          <div className={'col-lg-12'}>
+                            <div className="form-group">
+                              <Skeleton height={40} className="w-100 mb-2"/>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                      : <>
+                        <div className="form-group d-flex align-items-center mt-3">
+                          <Skeleton circle height={20} width={20} className="me-2"/> {/* Checkbox icon */}
+                          <Skeleton height={15} width={200}/> {/* Label text */}
+                        </div>
+                      </>
+                }
+
+              </> : <>
+
+                <Formik
+                    initialValues={{
+                      nRegId: regId,
+                      sCertification: CertificationList[0]
+                    }}
+                    enableReinitialize={true}
+                    onSubmit={async (values, {resetForm}) => {
+                      // console.log([values])
+                      // console.log([values])
+                      if (verifySts === 2) {
+                        router.push('/become-a-tutor/teaching-experience')
+                      } else {
+                        if (tutorcnt !== 0) {
+                          if (hideFields === false) {
+                            //no education
+                            setisLoading(true)
+                            const noEducation = {
                           nRegId : regId,
                           sIsCertification : "true"
                         }
@@ -509,7 +587,7 @@ const Certification = () => {
                           }]
                           setisLoading(true)
                           // console.log(updateValues)
-                          await Axios.put(`${API_URL}/api/TutorCertification/UpdateTutorCertification  `, updateValues, {
+                          await Axios.put(`${API_URL}/api/TutorCertification/UpdateTutorCertification`, updateValues, {
                             headers: {
                               ApiKey: `${API_KEY}`
                             }
@@ -668,6 +746,13 @@ const Certification = () => {
                                       <>
                                         <div key={certification.nTCId}>
                                           <div className={'row'}>
+
+                                            {
+                                              index === 0 ? <></> : <>
+                                                <hr className={'mt-4 mb-3'}
+                                                    style={{height: '3px', background: '#c38ae8'}}/>
+                                              </>
+                                            }
                                             <div className="col-lg-6">
                                               <label>
                                                 Certification Title
@@ -719,7 +804,8 @@ const Certification = () => {
                                             <div className={'col-lg-12 mt-5 mb-3'}>
                                               <div className={'rounded-2 p-3'} style={{background: "#f4f4f8"}}>
                                                 <h5>Get a certification verified badge</h5>
-                                                <small>Upload your diploma to boost your credibility! Our team will review
+                                                <small>Upload your diploma to boost your credibility! Our team will
+                                                  review
                                                   it and add
                                                   the badge to your profile.
                                                   Once reviewed, your files will be deleted.
@@ -735,7 +821,8 @@ const Certification = () => {
                                                   </label>
                                                   <div>
                                                     {certification.sCerti_imagePath && (
-                                                        <img className={'mt-3'} src={certification.sCerti_imagePath} alt="Uploaded"
+                                                        <img className={'mt-3'} src={certification.sCerti_imagePath}
+                                                             alt="Uploaded"
                                                              style={{width: 100}}/>
                                                     )}
                                                   </div>
@@ -745,7 +832,7 @@ const Certification = () => {
                                             </div>
                                             {verifySts === 2 ? <></> : <>
                                               <div className="col-lg-12 text-end mt-2">
-                                                {certificationFields.length > 1 ? <>
+                                                {index !== 0 ? <>
                                                   <button type={'button'} className="btn btn-danger"
                                                           onClick={() => handleRemoveCertification(certification.nTCId)}>Remove
                                                   </button>
@@ -755,6 +842,7 @@ const Certification = () => {
 
                                               </div>
                                             </>}
+
 
                                           </div>
                                         </div>
@@ -926,7 +1014,7 @@ const Certification = () => {
 
 
             </Formik>
-
+              </>}
           </div>
         </div>
 

@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {Alert} from "reactstrap";
 import * as Yup from "yup";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 
 const UserValidationSchema = Yup.object().shape({
@@ -392,6 +394,8 @@ const Education = () => {
                             setverifySts(0)
                         }
 
+                    }else{
+                        setverifySts(0)
                     }
                 })
                 .catch(err => {
@@ -486,19 +490,97 @@ const Education = () => {
             <div className="rbt-dashboard-content bg-color-white rbt-shadow-box">
                 <div className="content">
 
-                    <Formik
-                        // validationSchema={UserValidationSchema}
-                        initialValues={{
-                            nRegId : regId,
-                            sEducation : EducationList[0]
-                        }}
-                        enableReinitialize={true}
+                    {
+                        isEducationAlert !== 1 && verifySts !== 0 && verifySts !== '' ? <>
+                            <div className="section-title">
+                                <Skeleton height={20} width={150} className='rbt-title-style-3 mb-0'/>
+                            </div>
+                            <div className={'mb-3'}>
+                                <Skeleton height={1} width={'100%'} className='my-4'/>
+                            </div>
+                            <Skeleton height={40} className="w-100 mb-2"/>
+                            <div className="mb-3">
+                                <Skeleton height={20} width="60%"/> {/* Note text */}
+                                <Skeleton height={15} width="80%" className="mt-2"/> {/* Paragraph text */}
+                            </div>
+                            {
+                                isEducated !== 'No Education' ? <>
+                                        <div className="form-group d-flex align-items-center mt-3">
+                                            <Skeleton circle height={20} width={20} className="me-2"/> {/* Checkbox icon */}
+                                            <Skeleton height={15} width={200}/> {/* Label text */}
+                                        </div>
+                                        <div className={'row row--15 mt-3'}>
+                                            <div className={'col-lg-6 mb-3'}>
+                                                <div className="form-group">
+                                                    <Skeleton height={40} className="w-100 mb-2"/>
+                                                </div>
+                                            </div>
+                                            <div className={'col-lg-6 mb-3'}>
+                                                <div className="form-group">
+                                                    <Skeleton height={40} className="w-100 mb-2"/>
+                                                </div>
+                                            </div>
+                                            <div className={'col-lg-6 mb-3'}>
+                                                <div className="form-group">
+                                                    <Skeleton height={40} className="w-100 mb-2"/>
+                                                </div>
+                                            </div>
+                                            <div className={'col-lg-6 mb-3'}>
+                                                <div className="form-group">
+                                                    <Skeleton height={40} className="w-100 mb-2"/>
+                                                </div>
+                                            </div>
+                                            <div className={'col-lg-6 mb-3'}>
+                                                <div className="form-group">
+                                                    <Skeleton height={40} className="w-100 mb-2"/>
+                                                </div>
+                                            </div>
+                                            <div className={'col-lg-6 mb-3'}>
+                                                <div className="form-group">
+                                                    <Skeleton height={40} className="w-100 mb-2"/>
+                                                </div>
+                                            </div>
+                                            <div className={'col-lg-12 mb-3'}>
+                                                <div className="rounded-2 p-3"
+                                                     style={{background: 'rgb(244, 244, 248)'}}>
+                                                    <Skeleton height={30} width="70%"/> {/* Title */}
+                                                    <Skeleton height={20} width="100%"
+                                                              className="mt-2"/> {/* Description text */}
+                                                    <div className="mt-3">
+                                                        <Skeleton height={40} width={180}/> {/* Upload Button */}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={'col-lg-12'}>
+                                                <div className="form-group">
+                                                    <Skeleton height={40} className="w-100 mb-2"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                    : <>
+                                        <div className="form-group d-flex align-items-center mt-3">
+                                            <Skeleton circle height={20} width={20} className="me-2"/> {/* Checkbox icon */}
+                                            <Skeleton height={15} width={200}/> {/* Label text */}
+                                    </div>
+                                </>
+                                    }
+                                </> : <>
 
 
-                        onSubmit={async (values, {resetForm}) => {
-                            console.log([values])
-                            // console.log([values])s
-                            if(verifySts === 2) {
+                                    <Formik
+                                        // validationSchema={UserValidationSchema}
+                                        initialValues={{
+                                            nRegId: regId,
+                                            sEducation: EducationList[0]
+                                        }}
+                                        enableReinitialize={true}
+
+
+                                        onSubmit={async (values, {resetForm}) => {
+                                            console.log([values])
+                                            // console.log([values])s
+                                            if(verifySts === 2) {
                                 router.push('/become-a-tutor/certification')
                             } else {
                                 if (tutorcnt !== 0) {
@@ -1034,6 +1116,7 @@ const Education = () => {
 
                     </Formik>
 
+                        </>}
                 </div>
             </div>
 

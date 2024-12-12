@@ -3401,3 +3401,27 @@ react-autosuggest__input {
     background-color: #eaeaea;
     cursor: not-allowed;
 }
+
+/*New Css Pc1 */
+.profilePhoto{
+    height: 150px;
+    width: 150px;
+    border-radius: 7px;
+    border: 3px dotted transparent;
+}
+.profilePhoto:hover{
+    border: 3px dotted rgb(195, 138, 232);
+}
+
+.coverImage{
+    border-radius: 7px;
+    border: 3px dotted transparent;
+}
+.coverImage:hover{
+    border: 3px dotted rgb(195, 138, 232);
+}
+
+#sFirstCover[type="file"], #sSecoundCover[type="file"], #sThirdCover[type="file"],#sProfilePhoto[type="file"]{
+    display: none; /* Hide the default input field */
+}
+/*Close */

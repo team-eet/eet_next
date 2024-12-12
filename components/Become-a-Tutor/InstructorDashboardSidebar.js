@@ -190,7 +190,6 @@ const InstructorDashboardSidebar = ({ url }) => {
                           return (
                               <>
                                 {tutorcnt === 0 ? <>
-
                                   {index === 0 ? <>
                                     <li className="nav-item" key={index} role="presentation">
                                       <Link className={`${path === data.link ? "active" : ""}`}
@@ -210,9 +209,9 @@ const InstructorDashboardSidebar = ({ url }) => {
                                     </li>
                                   </>}
                                 </> : <>
-                                  <li className="nav-item" key={index} role="presentation">
+                                  <li className="nav-item d-flex align-items-center" key={index} role="presentation">
                                     <Link
-                                        className={`${path === data.link ? "active" : ""}`}
+                                        className={`${path === `/become-a-tutor/${data.link}` ? "active" : ""}`}
                                         href={`/become-a-tutor/${data.link}`}
                                     >
                                       <i className={data.icon}/>
