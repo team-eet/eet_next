@@ -16,18 +16,18 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 
 const UserValidationSchema = Yup.object().shape({
-    nCountryId: Yup.string()
-        .required('This field is required'),
-    sDegree: Yup.string()
-        .required('This field is required'),
-    sUniversity: Yup.string()
-        .required('This field is required'),
-    sSpecialization: Yup.string()
-        .required('This field is required'),
-    sFrom_year: Yup.string()
-        .required('This field is required'),
-    sTo_year: Yup.string()
-        .required('This field is required')
+    sEducation: Yup.array().of(
+        Yup.object().shape({
+            sDegree: Yup.string()
+                .required('Degree is required'),
+            sUniversity: Yup.string()
+                .required('University is required'),
+            sSpecialization: Yup.string()
+                .required('Specialization is required'),
+            sFrom_year: Yup.string().trim()
+                .required('Year of study from is required'),
+        })
+    ),
 })
 
 const Education = () => {
@@ -201,6 +201,7 @@ const Education = () => {
         ) {
             alert("Year of study to should not be less than Year of study from.");
             seteducationFields('');
+            updatedFields[index].sFrom_year = "";
         }
 
         seteducationFields(updatedFields)
@@ -569,7 +570,7 @@ const Education = () => {
 
 
                                     <Formik
-                                        // validationSchema={UserValidationSchema}
+                                        validationSchema={UserValidationSchema}
                                         initialValues={{
                                             nRegId: regId,
                                             sEducation: EducationList[0]
@@ -717,7 +718,7 @@ const Education = () => {
 
                         }}
                     >
-                        {({errors, touched}) => {
+                        {({values,errors, touched}) => {
                             return (
                                 <>
                                     <Form>
@@ -797,7 +798,7 @@ const Education = () => {
                                                 {verifyeduSts !== 2 ? <>
                                                     {educationFields.length >= 1 ? <>
 
-                                                        {educationFields && educationFields.map((education, index) => {
+                                                        {values.sEducation.map((education, index) => {
                                                             // console.log(certification)
                                                             return (
                                                                 <>
@@ -838,11 +839,17 @@ const Education = () => {
                                                                                         readOnly={verifySts === 2}
                                                                                         onChange={(e) => handleChangeUniversity(e, index)}
                                                                                         value={education.sUniversity}
+                                                                                        className={`form-control ${errors.sEducation?.[index]?.sUniversity && errors.sEducation?.[index]?.sUniversity && 'is-invalid'}`}
                                                                                         type="text"
                                                                                         name={"sUniversity"}
                                                                                         placeholder="university"/>
-                                                                                    <ErrorMessage name='sUniversity' component='div'
-                                                                                                  className='field-error text-danger' />
+                                                                                    {
+                                                                                        index === 0 ? <div className={'field-error text-danger'}>
+                                                                                            {errors.sEducation?.[index]?.sUniversity}
+                                                                                        </div> : <ErrorMessage name={`sEducation.${index}.sUniversity`}
+                                                                                                               component='div'
+                                                                                                               className='field-error text-danger'/>
+                                                                                    }
                                                                                     <span className="focus-border"></span>
                                                                                 </div>
                                                                             </div>
@@ -854,11 +861,17 @@ const Education = () => {
                                                                                     type="text"
                                                                                     readOnly={verifySts === 2}
                                                                                     value={education.sDegree}
+                                                                                    className={`form-control ${errors.sEducation?.[index]?.sDegree && errors.sEducation?.[index]?.sDegree && 'is-invalid'}`}
                                                                                     name={"sDegree"}
                                                                                     onChange={(e) => handleChangeDegree(e, index)}
                                                                                 />
-                                                                                <ErrorMessage name='sDegree' component='div'
-                                                                                              className='field-error text-danger' />
+                                                                                {
+                                                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                                                        {errors.sEducation?.[index]?.sDegree}
+                                                                                    </div> : <ErrorMessage name={`sEducation.${index}.sDegree`}
+                                                                                                           component='div'
+                                                                                                           className='field-error text-danger'/>
+                                                                                }
                                                                                 <span className="focus-border"></span>
                                                                             </div>
                                                                             <div className={'col-lg-6 mt-3'}>
@@ -870,10 +883,16 @@ const Education = () => {
                                                                                     readOnly={verifySts === 2}
                                                                                     name={"sSpecialization"}
                                                                                     value={education.sSpecialization}
+                                                                                    className={`form-control ${errors.sEducation?.[index]?.sSpecialization && errors.sEducation?.[index]?.sSpecialization && 'is-invalid'}`}
                                                                                     onChange={(e) => handleChangeSpecialization(e, index)}
                                                                                 />
-                                                                                <ErrorMessage name='sSpecialization' component='div'
-                                                                                              className='field-error text-danger' />
+                                                                                {
+                                                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                                                        {errors.sEducation?.[index]?.sSpecialization}
+                                                                                    </div> : <ErrorMessage name={`sEducation.${index}.sSpecialization`}
+                                                                                                           component='div'
+                                                                                                           className='field-error text-danger'/>
+                                                                                }
                                                                                 <span className="focus-border"></span>
                                                                             </div>
                                                                             <div className={'col-lg-6'}>
@@ -881,11 +900,20 @@ const Education = () => {
                                                                                 <select value={education.sFrom_year}
                                                                                         name={"sFrom_year"}
                                                                                         disabled={verifySts === 2}
-                                                                                        onChange={(e) => handleYearFromChange(e, index)}>
+                                                                                        onChange={(e) => handleYearFromChange(e, index)}
+                                                                                        className={`form-select ${errors.sEducation?.[index]?.sFrom_year && errors.sEducation?.[index]?.sFrom_year && 'is-invalid'}`}
+                                                                                >
+                                                                                    <option value="">Select
+                                                                                    </option>
                                                                                     {options}
                                                                                 </select>
-                                                                                <ErrorMessage name='sFrom_year' component='div'
-                                                                                              className='field-error text-danger' />
+                                                                                {
+                                                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                                                        {errors.sEducation?.[index]?.sFrom_year}
+                                                                                    </div> : <ErrorMessage name={`sEducation.${index}.sFrom_year`}
+                                                                                                           component='div'
+                                                                                                           className='field-error text-danger'/>
+                                                                                }
                                                                                 <span className="focus-border"></span>
                                                                             </div>
                                                                             <div className={'col-lg-6'}>
@@ -1087,7 +1115,7 @@ const Education = () => {
                                                             className="rbt-btn btn-md btn-gradient w-100"
                                                         >
                                                             <span className="btn-text"><i
-                                                                className="feather-loader"></i>isLoading...</span>
+                                                                className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
                                                         </button>
                                                     </> : <>
                                                         <button type="submit"

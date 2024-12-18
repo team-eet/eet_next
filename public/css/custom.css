@@ -3424,4 +3424,39 @@ react-autosuggest__input {
 #sFirstCover[type="file"], #sSecoundCover[type="file"], #sThirdCover[type="file"],#sProfilePhoto[type="file"]{
     display: none; /* Hide the default input field */
 }
+.react-loading-skeleton{
+    --base-color: #e1bcf8a8 !important;
+    --highlight-color: #cfd7fb !important;
+}
+.custIcon a, .custIcon li {
+    cursor: pointer;
+}
+.custIcon .feather-clock, .custIcon .feather-check-circle, .custIcon .feather-x-circle {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+.custIcon:hover .feather-clock, .custIcon:hover .feather-check-circle, .custIcon:hover .feather-x-circle{
+    transform: scale(1.5) rotate(360deg);
+}
+.custIcon:hover .feather-clock{
+    filter: drop-shadow(2px 4px 6px #59590a);
+}
+.custIcon:hover .feather-check-circle{
+    filter: drop-shadow(2px 4px 6px #045004);
+}
+.custIcon:hover .feather-x-circle{
+    filter: drop-shadow(2px 4px 6px #530303);
+}
+
+.progress{
+    height: 15px;
+}
+.progress .progress-bar{
+    background-color: #3f59ee;
+}
+.progress-bar-striped{
+    background-image: linear-gradient(45deg, rgb(185 102 231) 25%, transparent 25%, transparent 50%, rgb(180 101 232) 50%, rgb(183 102 232) 75%, transparent 75%, transparent);
+}
+.form-select{
+    font-size: 16px;
+}
 /*Close */

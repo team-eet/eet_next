@@ -18,7 +18,7 @@ const MySwal = withReactContent(Swal)
 
 const UserValidationSchema = Yup.object().shape({
   sDesc: Yup.string()
-      .required('This field is required')
+      .required('Description is required')
 })
 
 
@@ -55,6 +55,8 @@ const Description = () => {
       const words = desc.trim().split(/\s+/);
       return words.filter(word => word !== '').length;
 
+    }else{
+      return 0;
     }
 
   };
@@ -294,13 +296,14 @@ const Description = () => {
                         <div className={'row'}>
                           <div className={'col-lg-6'}>
                             <label htmlFor="aboutCourse">Description</label>
-                            <textarea readOnly={verifySts === 2} name={"sDesc"} value={text}
-                                      onChange={handleTextChange} id="aboutCourse" rows="10"></textarea>
-                            <div className={'text-end'}>
+                            <textarea className={`form-control ${errors.sDesc && touched.sDesc && 'is-invalid'}`} readOnly={verifySts === 2} name={"sDesc"} value={text}
+                                      onChange={handleTextChange} id="aboutCourse" rows="10" style={{fontSize: '16px'}}></textarea>
+                            <div className={`d-flex align-items-center ${errors.sDesc && touched.sDesc ? 'justify-content-between' : 'justify-content-end'}`}>
+                              <ErrorMessage name='sDesc' component='div'
+                                            className='field-error text-danger'/>
                               <small>Word Count: {countWords(text)}</small>
                             </div>
-                            <ErrorMessage name='sDesc' component='div'
-                                          className='field-error text-danger'/>
+
                           </div>
                           <div className={'col-lg-6'}>
                             <h6>You can include : </h6>
@@ -383,7 +386,7 @@ const Description = () => {
                                     className="rbt-btn btn-md btn-gradient w-100"
                                 >
                                                             <span className="btn-text"><i
-                                                                className="feather-loader"></i>isLoading...</span>
+                                                                className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
                                 </button>
                               </> : <>
                                 <button type="submit"

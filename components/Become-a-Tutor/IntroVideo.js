@@ -13,19 +13,46 @@ import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 
+// const UserValidationSchema = Yup.object().shape({
+//   sIntroVideoPath: Yup.string()
+//       .required('This field is required'),
+//   sIntroVideoUrl: Yup.string()
+//       .required('This field is required')
+// })
 const UserValidationSchema = Yup.object().shape({
-  sIntroVideoPath: Yup.string()
-      .required('This field is required'),
-  sIntroVideoUrl: Yup.string()
-      .required('This field is required')
-})
+    sIntroVideoPath: Yup.string()
+        .test(
+            'sIntroVideoPathOrUrl',
+            'You must provide either a video file or a video URL',
+            function (value) {
+                // Check if at least one is provided
+                return !!value || !!this.parent.sIntroVideoUrl;
+            }
+        ),
+    sIntroVideoUrl: Yup.string()
+        .url('Must be a valid URL')
+        .test(
+            'sIntroVideoUrlOrPath',
+            'You must provide either a video URL or a video file',
+            function (value) {
+                // Check if at least one is provided
+                return !!value || !!this.parent.sIntroVideoPath;
+            }
+        ),
+});
+
 const IntroVideo = () => {
   const REACT_APP = API_URL
   const router = useRouter();
   const [IntroVideo, setIntroVideo] = useState('');
   const [videoUrl, setvideoUrl] = useState('')
 
-  const [thumbnail, setthumbnail] = useState();
+    // New Code
+    const [uploadPercentage, setUploadPercentage] = useState(0); // Progress value
+    const [isUploading, setIsUploading] = useState(false); // To track upload state
+ // Close
+
+    const [thumbnail, setthumbnail] = useState();
   const [isLoading, setisLoading] = useState(false);
   function handleChangeThumbnail(e) {
     // console.log(e.target.files);
@@ -51,8 +78,9 @@ const IntroVideo = () => {
   }
   const [video, setVideo] = useState('')
   const handleChange = (event) => {
+      setvideoUrl('')
     const fileext = ['video/mp4']
-    if (event.target.files[0].size < 1000000000) {
+    if (event.target.files[0].size < 10485760) {
       if (fileext.includes(event.target.files[0].type)) {
         getBase64(event.target.files[0])
             .then(result => {
@@ -67,7 +95,7 @@ const IntroVideo = () => {
         alert("Only select video file type")
       }
     } else {
-      alert("Please upload file less than 100MB")
+      alert("Please upload file less than 10MB")
     }
   };
   const [regId, setregId] = useState('')
@@ -128,6 +156,7 @@ const IntroVideo = () => {
 
   const handleChangeURL = (e) => {
     setvideoUrl(e.target.value)
+      setVideo('')
   }
   return (
     <>
@@ -221,19 +250,25 @@ const IntroVideo = () => {
                           </> : <></>}
 
                           {/*<h3>Your profile photo is your first impression</h3>*/}
-                          <p>Add a landscape video of maximum 100 mb</p>
+                          <p>Add a landscape video of maximum 10 mb</p>
                       </div>
 
                       <Formik
-                          // validationSchema={UserValidationSchema}
+                          validationSchema={UserValidationSchema}
                           initialValues={{
                               nRegId: regId,
-                              sIntroVideoPath: video ? video : '',
-                              sIntroVideoUrl: videoUrl ? videoUrl : ''
+                              sIntroVideoPath: video || '', // Pre-fill with existing video if available
+                              sIntroVideoUrl: videoUrl || '', // Pre-fill with existing URL if available
                           }}
                           enableReinitialize={true}
                           onSubmit={async (values, {resetForm}) => {
-                              console.log(values)
+                              console.log("Value",values)
+                              setIsUploading(true); // Start upload
+                              setUploadPercentage(0); // Reset progress to 0%
+
+                              const formData = new FormData();
+                              formData.append('file', values.sIntroVideoPath);
+
                               if (verifySts === 2) {
                                   router.push('/become-a-tutor/interest')
                               } else {
@@ -241,18 +276,28 @@ const IntroVideo = () => {
                                   await Axios.put(`${API_URL}/api/TutorBasics/UpdateTutorProfile`, values, {
                                       headers: {
                                           ApiKey: `${API_KEY}`
+                                      },
+                                      onUploadProgress: (progressEvent) => {
+                                          // Real-time upload progress
+                                          const percentCompleted = Math.round(
+                                              (progressEvent.loaded * 100) / progressEvent.total
+                                          );
+                                          setUploadPercentage(percentCompleted);
                                       }
                                   }).then(res => {
                                       console.log(values)
                                       const retData = JSON.parse(res.data)
                                       console.log(retData)
                                       resetForm({})
+                                      setIsUploading(false);
+                                      setUploadPercentage(100);
                                       if (retData.success === '1') {
                                           router.push('/become-a-tutor/interest')
                                       }
                                   })
                                       .catch(err => {
                                           {
+                                              setIsUploading(false);
                                               ErrorDefaultAlert(JSON.stringify(err.response))
                                           }
                                       })
@@ -274,28 +319,40 @@ const IntroVideo = () => {
                                                                  onChange={handleChange}
                                                                  accept="video/* "/>
                                                       </label>
-                                                      <div className={'mt-3'}>
-                                                          {video ? <ReactPlayer
-                                                              // playing={this.state.videoplay}
-                                                              controls
-                                                              width="100%"
-                                                              height="200px"
-                                                              url={video}></ReactPlayer> : ''}
-                                                      </div>
                                                       {/*<ErrorMessage name='sIntroVideoPath' component='div'*/}
                                                       {/*              className='field-error text-danger'/>*/}
                                                       {/*<span className="focus-border"></span>*/}
+                                                  </div>
+                                                  <ErrorMessage name='sIntroVideoUrl' component='div'
+                                                                className='field-error text-danger'/>
+                                                  <span className="focus-border"></span>
+                                                  <div className={'mt-3'}>
+                                                      {video ? <ReactPlayer
+                                                          // playing={this.state.videoplay}
+                                                          controls
+                                                          width="100%"
+                                                          height="200px"
+                                                          url={video}></ReactPlayer> : ''}
                                                   </div>
 
                                                   <p className={'mt-5 m-0'}>Or</p>
                                                   <p className={'m-0 mb-3'}>Paste a link of video</p>
                                                   <div className="form-group">
                                                       <input required={verifySts === 2} onChange={handleChangeURL}
-                                                             name="sIntroVideoUrl" type="text"
+                                                             value={videoUrl} className={`form-control ${errors.sIntroVideoUrl && touched.sIntroVideoUrl && 'is-invalid'}`} name="sIntroVideoUrl" type="text"
                                                              placeholder="Video Url"/>
                                                       {/*<ErrorMessage name='sIntroVideoUrl' component='div'*/}
                                                       {/*              className='field-error text-danger'/>*/}
                                                       {/*<span className="focus-border"></span>*/}
+                                                  </div>
+                                                  <ErrorMessage name='sIntroVideoUrl' component='div'
+                                                                className='field-error text-danger'/>
+                                                  <span className="focus-border"></span>
+                                                  <div className={'mt-3'}>
+                                                      {videoUrl ? <iframe src={videoUrl + "&controls=0&loop=0"}
+                                                                          frameborder='0' height={240} width={450}
+                                                                          allow='autoplay; encrypted-media'
+                                                                          allowfullscreentitle='video'/> : ''}
                                                   </div>
                                               </div>
                                               <div className={'col-lg-6 thumbnail-preview'}>
@@ -328,21 +385,34 @@ const IntroVideo = () => {
                                                   {/*    <small className={'p-0 mt-5 ms-5'}>JPG or PNG format, maximum 2 MB</small>*/}
                                                   {/*{thumbnail ? <img className={'mt-5 ms-5'} src={thumbnail}/> : ''}*/}
                                               </div>
-
-                                              <div className="col-lg-12 mt-5">
-                                                  <div className="form-submit-group">
-                                                      {isLoading ? <>
-                                                          <button
-                                                              disabled={true}
-                                                              type="submit"
-                                                              className="rbt-btn btn-md btn-gradient w-100"
+                                              {/* Real-time Progress Bar */}
+                                              {isUploading && (
+                                                  <div className="col-lg-12 mt-5">
+                                                      <div className="progress mt-3">
+                                                          <div
+                                                              className="progress-bar progress-bar-striped progress-bar-animated"
+                                                              role="progressbar"
+                                                              style={{width: `${uploadPercentage}%`}}
                                                           >
+                                                              {uploadPercentage}%
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              )}
+                                                      <div className="col-lg-12 mt-5">
+                                                          <div className="form-submit-group">
+                                                              {isLoading ? <>
+                                                                  <button
+                                                                      disabled={true}
+                                                                      type="submit"
+                                                                      className="rbt-btn btn-md btn-gradient w-100"
+                                                                  >
                                                             <span className="btn-text"><i
-                                                                className="feather-loader"></i>isLoading...</span>
-                                                          </button>
-                                                      </> : <>
-                                                          <button type="submit"
-                                                                  className="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                                                className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
+                                                                  </button>
+                                                              </> : <>
+                                                                  <button type="submit"
+                                                                          className="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
                                                          <span className="icon-reverse-wrapper">
                                                            <span className="btn-text">Continue</span>
                                                            <span className="btn-icon">
@@ -352,12 +422,12 @@ const IntroVideo = () => {
                                                             <i className="feather-arrow-right"></i>
                                                            </span>
                                                         </span>
-                                                          </button>
-                                                      </>}
+                                                                  </button>
+                                                              </>}
+                                                          </div>
+                                                      </div>
                                                   </div>
-                                              </div>
-                                          </div>
-                                      </Form>
+                                                  </Form>
 
                                   </>
                               )

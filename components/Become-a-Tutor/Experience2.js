@@ -13,22 +13,23 @@ import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 const UserValidationSchema = Yup.object().shape({
-    sIs_fresher: Yup.string()
-        .required('This field is required'),
-    nTotal_exper: Yup.string()
-        .required('This field is required'),
-    nTotal_online_exper: Yup.string()
-        .required('This field is required'),
-    nCountryId: Yup.string()
-        .required('This field is required'),
-    sOrganization: Yup.string()
-        .required('This field is required'),
-    sPosition: Yup.string()
-        .required('This field is required'),
-    sFrom_years: Yup.string()
-        .required('This field is required'),
-    sTo_years: Yup.string()
-        .required('This field is required')
+
+    sExperience: Yup.array().of(
+        Yup.object().shape({
+            sIs_fresher: Yup.string()
+                .required('This field is required'),
+            nTotal_exper: Yup.string()
+                .required('This field is required'),
+            nTotal_online_exper: Yup.string()
+                .required('This field is required'),
+            sOrganization: Yup.string()
+                .required('Organization is required'),
+            sPosition: Yup.string()
+                .required('Position is required'),
+            sFrom_years: Yup.string().trim()
+                .required('Year of work from is required')
+        })
+    ),
 })
 const Experience = () => {
     const REACT_APP = API_URL
@@ -251,6 +252,7 @@ const Experience = () => {
         ) {
             alert("Year of work to should not be less than Year of work from.");
             setExpFields('');
+            updatedFields[index].sFrom_years = " ";
         }
 
         setExpFields(updatedFields)
@@ -279,8 +281,8 @@ const Experience = () => {
         const newExperience = {
             nTTEId: newId,
             sIs_fresher:Isfresher,
-            nTotal_exper:'',
-            nTotal_online_exper:'',
+            nTotal_exper: expFields.some(exp => exp.nTotal_exper !== '') ? expFields[0].nTotal_exper : '', // Only if there is no existing value
+            nTotal_online_exper: expFields.some(exp => exp.nTotal_online_exper !== '') ? expFields[0].nTotal_online_exper : '', // Only if there is no existing value
             nCountryId:'',
             sOrganization:'',
             sPosition:'',
@@ -572,7 +574,7 @@ const Experience = () => {
                         </> : <>
 
                             <Formik
-                                // validationSchema={UserValidationSchema}
+                                validationSchema={UserValidationSchema}
                                 initialValues={{
                                     nRegId: regId,
                                     sExperience: ExperienceList[0]
@@ -756,7 +758,7 @@ const Experience = () => {
 
                         }}
                     >
-                        {({errors, touched}) => {
+                        {({values,errors, touched}) => {
                             return (
                                 <>
                                     <Form>
@@ -928,8 +930,10 @@ const Experience = () => {
                                             {fields ? <>
                                                 {verifySts !== 2 ? <>
                                                     {expFields.length >= 1 ? <>
-                                                        {expFields && expFields.map((experience, index) => {
+                                                        {values.sExperience.map((experience, index) => {
                                                             console.log("Length" , expFields.length)
+
+                                                            console.log("Errors Message" , errors)
                                                             return (
                                                                 <>
                                                                     <div key={experience.nTTEId}>
@@ -948,14 +952,17 @@ const Experience = () => {
                                                                                                 readOnly={verifySts === 2}
                                                                                                 onChange={(e) => handleChangeTotalExp(e, index)}
                                                                                                 value={experience.nTotal_exper}
+                                                                                                className={`form-control ${errors.sExperience?.[index]?.nTotal_exper && errors.sExperience?.[index]?.nTotal_exper && 'is-invalid'}`}
                                                                                                 type="text"
                                                                                                 placeholder="Total Experience"
                                                                                                 name="nTotal_exper"
+                                                                                                maxLength={3}
                                                                                             />
-                                                                                            <ErrorMessage
-                                                                                                name='nTotal_exper'
-                                                                                                component='div'
-                                                                                                className='field-error text-danger'/>
+                                                                                            {
+                                                                                                index === 0 ? <div className={'field-error text-danger'}>
+                                                                                                    {errors.sExperience?.[index]?.nTotal_exper}
+                                                                                                </div> : <></>
+                                                                                            }
                                                                                             <span
                                                                                                 className="focus-border"></span>
                                                                                         </div>
@@ -974,13 +981,22 @@ const Experience = () => {
                                                                                                 readOnly={verifySts === 2}
                                                                                                 onChange={(e) => handleChangeOnlineExp(e, index)}
                                                                                                 value={experience.nTotal_online_exper}
+                                                                                                className={`form-control ${errors.sExperience?.[index]?.nTotal_online_exper && errors.sExperience?.[index]?.nTotal_online_exper && 'is-invalid'}`}
                                                                                                 type="text"
                                                                                                 name="nTotal_online_exper"
-                                                                                                placeholder="Online Experience"/>
-                                                                                            <ErrorMessage
-                                                                                                name='nTotal_online_exper'
-                                                                                                component='div'
-                                                                                                className='field-error text-danger'/>
+                                                                                                placeholder="Online Experience"
+                                                                                                onKeyPress={(event) => {
+                                                                                                    if (!/[0-9]/.test(event.key)) {
+                                                                                                        event.preventDefault();
+                                                                                                    }
+                                                                                                }}
+                                                                                                maxLength={3}
+                                                                                            />
+                                                                                            {
+                                                                                                index === 0 ? <div className={'field-error text-danger'}>
+                                                                                                    {errors.sExperience?.[index]?.nTotal_online_exper}
+                                                                                                </div> : <></>
+                                                                                            }
                                                                                             <span
                                                                                                 className="focus-border"></span>
                                                                                         </div>
@@ -1013,13 +1029,18 @@ const Experience = () => {
                                                                                         readOnly={verifySts === 2}
                                                                                         onChange={(e) => handleChangeOrganization(e, index)}
                                                                                         value={experience.sOrganization}
+                                                                                        className={`form-control ${errors.sExperience?.[index]?.sOrganization && errors.sExperience?.[index]?.sOrganization && 'is-invalid'}`}
                                                                                         name="sOrganization"
                                                                                         type="text"
                                                                                         placeholder="Organization"
                                                                                     />
-                                                                                    <ErrorMessage name='sOrganization'
-                                                                                                  component='div'
-                                                                                                  className='field-error text-danger'/>
+                                                                                    {
+                                                                                        index === 0 ? <div className={'field-error text-danger'}>
+                                                                                            {errors.sExperience?.[index]?.sOrganization}
+                                                                                        </div> : <ErrorMessage name={`sExperience.${index}.sOrganization`}
+                                                                                                               component='div'
+                                                                                                               className='field-error text-danger'/>
+                                                                                    }
                                                                                     <span
                                                                                         className="focus-border"></span>
                                                                                 </div>
@@ -1033,13 +1054,18 @@ const Experience = () => {
                                                                                         readOnly={verifySts === 2}
                                                                                         onChange={(e) => handleChangePosition(e, index)}
                                                                                         value={experience.sPosition}
+                                                                                        className={`form-control ${errors.sExperience?.[index]?.sPosition && errors.sExperience?.[index]?.sPosition && 'is-invalid'}`}
                                                                                         name="sPosition"
                                                                                         type="text"
                                                                                         placeholder="Position"
                                                                                     />
-                                                                                    <ErrorMessage name='sPosition'
-                                                                                                  component='div'
-                                                                                                  className='field-error text-danger'/>
+                                                                                    {
+                                                                                        index === 0 ? <div className={'field-error text-danger'}>
+                                                                                            {errors.sExperience?.[index]?.sPosition}
+                                                                                        </div> : <ErrorMessage name={`sExperience.${index}.sPosition`}
+                                                                                                               component='div'
+                                                                                                               className='field-error text-danger'/>
+                                                                                    }
                                                                                     <span
                                                                                         className="focus-border"></span>
                                                                                 </div>
@@ -1051,12 +1077,20 @@ const Experience = () => {
                                                                                 <select disabled={verifySts === 2}
                                                                                         name={"sFrom_years"}
                                                                                         value={experience.sFrom_years}
-                                                                                        onChange={(e) => handleYearFromChange(e, index)}>
+                                                                                        onChange={(e) => handleYearFromChange(e, index)}
+                                                                                        className={`form-select ${errors.sExperience?.[index]?.sFrom_years && errors.sExperience?.[index]?.sFrom_years && 'is-invalid'}`}
+                                                                                >
+                                                                                    <option value="">Select
+                                                                                    </option>
                                                                                     {options}
                                                                                 </select>
-                                                                                <ErrorMessage name='sFrom_years'
-                                                                                              component='div'
-                                                                                              className='field-error text-danger'/>
+                                                                                {
+                                                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                                                        {errors.sExperience?.[index]?.sFrom_years}
+                                                                                    </div> : <ErrorMessage name={`sExperience.${index}.sFrom_years`}
+                                                                                                           component='div'
+                                                                                                           className='field-error text-danger'/>
+                                                                                }
                                                                                 <span className="focus-border"></span>
                                                                             </div>
                                                                             <div className={'col-lg-6 mt-3'}>
@@ -1071,10 +1105,6 @@ const Experience = () => {
                                                                                     </option>
                                                                                     {options}
                                                                                 </select>
-                                                                                <ErrorMessage name='sTo_years'
-                                                                                              component='div'
-                                                                                              className='field-error text-danger'/>
-                                                                                <span className="focus-border"></span>
                                                                             </div>
                                                                             <div className="col-lg-6 mt-3">
                                                                                 <label style={{fontSize: '16px'}}>
@@ -1095,10 +1125,6 @@ const Experience = () => {
                                                                                         )
                                                                                     })}
                                                                                 </select>
-                                                                                <ErrorMessage name='nCountryId'
-                                                                                              component='div'
-                                                                                              className='field-error text-danger'/>
-                                                                                <span className="focus-border"></span>
                                                                             </div>
 
                                                                             {verifySts === 2 ? <></> : <>
@@ -1275,7 +1301,7 @@ const Experience = () => {
                                                         <button disabled={true} type="submit"
                                                                 className="rbt-btn btn-md btn-gradient w-100">
                                                             <span className="btn-text">
-                                                                <i className="feather-loader"></i>isLoading...</span>
+                                                                <i className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
                                                         </button>
                                                     </> : <>
                                                         <button type="submit"

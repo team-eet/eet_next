@@ -732,7 +732,7 @@ const Availability = () => {
                                                                 className="rbt-btn btn-md btn-gradient w-100"
                                                             >
                                                             <span className="btn-text"><i
-                                                                className="feather-loader"></i>isLoading...</span>
+                                                                className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
                                                             </button>
                                                         </> : <>
                                                             <button type="submit"

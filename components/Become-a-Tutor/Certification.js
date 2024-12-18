@@ -3,7 +3,8 @@ import CourseWidgets from "./Dashboard-Section/widgets/CourseWidget";
 import Link from "next/link";
 import React, {useEffect, useState} from "react";
 import { API_URL, API_KEY } from "../../constants/constant";
-import {Form, Formik} from "formik";
+import * as Yup from 'yup'
+import {Form, ErrorMessage, Formik} from "formik";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import img from "@/public/images/others/thumbnail-placeholder.svg";
@@ -12,6 +13,17 @@ import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {Alert} from "reactstrap";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+
+
+const UserValidationSchema = Yup.object().shape({
+  sCertification: Yup.array().of(
+      Yup.object().shape({
+        sCerti_title: Yup.string().required("Certification Title is required"),
+        sIssued_by: Yup.string().required("Issued By is required"),
+        sFrom_year: Yup.string().trim().required("Year of study from is required"),
+      })
+  ),
+});
 
 const Certification = () => {
   const REACT_APP = API_URL
@@ -173,6 +185,7 @@ const Certification = () => {
     ) {
       alert("Year of study to should not be less than Year of study from.");
       setcertificationFields('');
+      updatedFields[index].sFrom_year = " ";
     }
 
     setcertificationFields(updatedFields)
@@ -328,87 +341,87 @@ const Certification = () => {
       setregId(JSON.parse(localStorage.getItem('userData')).regid)
 
 
-    Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-      headers: {
-        ApiKey: `${API_KEY}`
-      }
-    })
-        .then(res => {
-          console.log("GetTutorEducationVerify",res.data)
-          if (res.data.length !== 0) {
-            if (res.data[0].sCertification_verify !== null){
-              setverifySts(res.data[0].sCertification_verify)
-              setisCertificationAlert(1)
+      Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+        headers: {
+          ApiKey: `${API_KEY}`
+        }
+      })
+          .then(res => {
+            console.log("GetTutorEducationVerify",res.data)
+            if (res.data.length !== 0) {
+              if (res.data[0].sCertification_verify !== null){
+                setverifySts(res.data[0].sCertification_verify)
+                setisCertificationAlert(1)
+              }else{
+                setverifySts(0)
+              }
+
             }else{
               setverifySts(0)
             }
-
-          }else{
-            setverifySts(0)
-          }
-        })
-        .catch(err => {
-          { ErrorDefaultAlert(err) }
-        })
-
-
-    Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-      headers: {
-        ApiKey: `${API_KEY}`
-      }
-    })
-        .then(res => {
-          // console.log(res.data)
-          if(res.data[0].cnt !== 0) {
-            setTutorcnt(res.data[0].cnt)
-          }
-        })
-        .catch(err => {
-          { ErrorDefaultAlert(err) }
-        })
-
-    Axios.get(`${API_URL}/api/TutorCertification/GetTutorCertiData/${JSON.parse(localStorage.getItem('userData')).regid}`, {
-      headers: {
-        ApiKey: `${API_KEY}`
-      }
-    })
-        .then(res => {
-          console.log('GetTutorCertiData', res.data)
-          if(res.data.length !== 0) {
-            settutcerticnt(res.data[0].certification_data)
-          }
-
-          if(verifySts === 2 ) {
-            setnocertificate(true)
-          }
-          const array = res.data.map((item, index) => {
-            return item.nTCId
+          })
+          .catch(err => {
+            { ErrorDefaultAlert(err) }
           })
 
-          // console.log(array)
-          setUpdatearray(array)
 
-          // ---------------------
-          if(res.data.length !== 0) {
-            const certivalue = res.data.map((item, index) => {
-              return item.sCertification_comment
-            })
-            // console.log(certivalue)
-            if(certivalue[0] === 'No Certification') {
-              sethideFields(false)
+      Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+        headers: {
+          ApiKey: `${API_KEY}`
+        }
+      })
+          .then(res => {
+            // console.log(res.data)
+            if(res.data[0].cnt !== 0) {
+              setTutorcnt(res.data[0].cnt)
             }
-            setisCertified(certivalue[0])
-            setcertificationFields(res.data)
-          } else {
+          })
+          .catch(err => {
+            { ErrorDefaultAlert(err) }
+          })
 
-            setcertificationFields(certificationFields)
-          }
-          // ---------------------
+      Axios.get(`${API_URL}/api/TutorCertification/GetTutorCertiData/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+        headers: {
+          ApiKey: `${API_KEY}`
+        }
+      })
+          .then(res => {
+            console.log('GetTutorCertiData', res.data)
+            if(res.data.length !== 0) {
+              settutcerticnt(res.data[0].certification_data)
+            }
 
-        })
-        .catch(err => {
-          { ErrorDefaultAlert(err) }
-        })
+            if(verifySts === 2 ) {
+              setnocertificate(true)
+            }
+            const array = res.data.map((item, index) => {
+              return item.nTCId
+            })
+
+            // console.log(array)
+            setUpdatearray(array)
+
+            // ---------------------
+            if(res.data.length !== 0) {
+              const certivalue = res.data.map((item, index) => {
+                return item.sCertification_comment
+              })
+              // console.log(certivalue)
+              if(certivalue[0] === 'No Certification') {
+                sethideFields(false)
+              }
+              setisCertified(certivalue[0])
+              setcertificationFields(res.data)
+            } else {
+
+              setcertificationFields(certificationFields)
+            }
+            // ---------------------
+
+          })
+          .catch(err => {
+            { ErrorDefaultAlert(err) }
+          })
 
       Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
         headers: {
@@ -510,14 +523,22 @@ const Certification = () => {
                 }
 
               </> : <>
-
                 <Formik
                     initialValues={{
                       nRegId: regId,
                       sCertification: CertificationList[0]
                     }}
+                    validationSchema={hideFields ? UserValidationSchema : undefined}
                     enableReinitialize={true}
-                    onSubmit={async (values, {resetForm}) => {
+                    onSubmit={async (values, {resetForm, validateForm}) => {
+
+                      validateForm(values).then((errors) => {
+                        if (Object.keys(errors).length === 0) {
+                          console.log("Form is valid: ", values);
+                        } else {
+                          console.log("Form has errors: ", errors);
+                        }
+                      });
                       // console.log([values])
                       // console.log([values])
                       if (verifySts === 2) {
@@ -528,468 +549,504 @@ const Certification = () => {
                             //no education
                             setisLoading(true)
                             const noEducation = {
-                          nRegId : regId,
-                          sIsCertification : "true"
-                        }
-                        // console.log(noEducation)
-                        await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorBasicCertificate`, noEducation, {
-                          headers: {
-                            ApiKey: `${API_KEY}`
-                            // 'Content-Type' : 'application/json'
-                          }
-                        }).then(res => {
-                          // console.log(res.data)
-                          const retData = JSON.parse(res.data)
-                          resetForm({})
-                          if(retData.success === '1') {
-                            router.push('/become-a-tutor/teaching-experience')
-                          }
-                        })
-                            .catch(err => {
-                              {
-                                ErrorDefaultAlert(JSON.stringify(err.response))
+                              nRegId : regId,
+                              sIsCertification : "true"
+                            }
+                            // console.log(noEducation)
+                            await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorBasicCertificate`, noEducation, {
+                              headers: {
+                                ApiKey: `${API_KEY}`
+                                // 'Content-Type' : 'application/json'
+                              }
+                            }).then(res => {
+                              // console.log(res.data)
+                              const retData = JSON.parse(res.data)
+                              resetForm({})
+                              if(retData.success === '1') {
+                                router.push('/become-a-tutor/teaching-experience')
                               }
                             })
-                      }
-                        else {
-                        // alert('yes education')
-                        if (tutcerticnt === "0") {
-
-                          setisLoading(true)
-                          // alert('yes education')
-                          await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorCertificate  `, [values], {
-                            headers: {
-                              ApiKey: `${API_KEY}`
-                            }
-                          }).then(res => {
-                            // console.log(res.data)
-                            const retData = JSON.parse(res.data)
-                            // localStorage.removeItem('verify_uname')
-                            // console.log(retData)
-                            resetForm({})
-                            if (retData.success === '1') {
-                              router.push('/become-a-tutor/teaching-experience')
-                            }
-                          })
-                              .catch(err => {
-                                // console.log(err)
-                                {
-                                  ErrorDefaultAlert(JSON.stringify(err.response))
-                                }
-                              })
-                        }
+                                .catch(err => {
+                                  {
+                                    ErrorDefaultAlert(JSON.stringify(err.response))
+                                  }
+                                })
+                          }
                           else {
-                          const updateValues = [{
-                            nRegId : regId,
-                            updateId: updateArray,
-                            deleteId: deletedArray,
-                            sCertification : CertificationList[0]
-                          }]
-                          setisLoading(true)
-                          // console.log(updateValues)
-                          await Axios.put(`${API_URL}/api/TutorCertification/UpdateTutorCertification`, updateValues, {
-                            headers: {
-                              ApiKey: `${API_KEY}`
-                            }
-                          }).then(res => {
-                            console.log(res.data)
-                            const retData = JSON.parse(res.data)
-                            // localStorage.removeItem('verify_uname')
-                            // console.log(retData)
-                            resetForm({})
-                            if(retData.success === '1') {
+                            // alert('yes education')
+                            if (tutcerticnt === "0") {
 
-                              Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                              setisLoading(true)
+                              // alert('yes education')
+                              await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorCertificate  `, [values], {
                                 headers: {
                                   ApiKey: `${API_KEY}`
                                 }
+                              }).then(res => {
+                                // console.log(res.data)
+                                const retData = JSON.parse(res.data)
+                                // localStorage.removeItem('verify_uname')
+                                // console.log(retData)
+                                resetForm({})
+                                if (retData.success === '1') {
+                                  router.push('/become-a-tutor/teaching-experience')
+                                }
                               })
-                                  .then(res => {
-                                    // console.log(res.data)
-                                    if(res.data.length !== 0) {
-                                      const array2 = res.data.map((item) => {
-                                        return item.verify_list
-                                      })
-                                      // console.log(array2)
-                                      let array = array2[0].split(',').map(Number);
-                                      console.log('---------------', array);
-                                      let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification',
-                                        'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
-
-                                      let url = array1
-                                      let verify_string = array;
-                                      if(verify_string.length !== 0){
-                                        // Check the 0th position in array2 and get the corresponding string from array1
-                                        let positionToCheck = verify_string[0];
-                                        let conditionString = url[positionToCheck + 1];
-                                        console.log(conditionString)
-
-
-                                        // Check the position of the first 3 numbers in array2
-                                        let positionOfThree = verify_string.findIndex(num => num === 3);
-
-                                        let stringForUrl = url[positionOfThree];
-                                        let result = array1.indexOf(stringForUrl)
-
-
-                                        console.log('stringForUrl', stringForUrl, result)
-                                        router.push(`/become-a-tutor/teaching-experience`)
-                                      } else {
-                                        router.push('/become-a-tutor/teaching-experience')
-                                      }
-
+                                  .catch(err => {
+                                    // console.log(err)
+                                    {
+                                      ErrorDefaultAlert(JSON.stringify(err.response))
                                     }
                                   })
-                                  .catch(err => {
-                                    { ErrorDefaultAlert(err) }
-                                  })
-
                             }
-                          })
-                              .catch(err => {
-                                // console.log(err)
-                                {
-                                  ErrorDefaultAlert(JSON.stringify(err.response))
+                            else {
+                              const updateValues = [{
+                                nRegId : regId,
+                                updateId: updateArray,
+                                deleteId: deletedArray,
+                                sCertification : CertificationList[0]
+                              }]
+                              setisLoading(true)
+                              // console.log(updateValues)
+                              await Axios.put(`${API_URL}/api/TutorCertification/UpdateTutorCertification`, updateValues, {
+                                headers: {
+                                  ApiKey: `${API_KEY}`
+                                }
+                              }).then(res => {
+                                console.log(res.data)
+                                const retData = JSON.parse(res.data)
+                                // localStorage.removeItem('verify_uname')
+                                // console.log(retData)
+                                resetForm({})
+                                if(retData.success === '1') {
+
+                                  Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                    headers: {
+                                      ApiKey: `${API_KEY}`
+                                    }
+                                  })
+                                      .then(res => {
+                                        // console.log(res.data)
+                                        if(res.data.length !== 0) {
+                                          const array2 = res.data.map((item) => {
+                                            return item.verify_list
+                                          })
+                                          // console.log(array2)
+                                          let array = array2[0].split(',').map(Number);
+                                          console.log('---------------', array);
+                                          let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification',
+                                            'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
+
+                                          let url = array1
+                                          let verify_string = array;
+                                          if(verify_string.length !== 0){
+                                            // Check the 0th position in array2 and get the corresponding string from array1
+                                            let positionToCheck = verify_string[0];
+                                            let conditionString = url[positionToCheck + 1];
+                                            console.log(conditionString)
+
+
+                                            // Check the position of the first 3 numbers in array2
+                                            let positionOfThree = verify_string.findIndex(num => num === 3);
+
+                                            let stringForUrl = url[positionOfThree];
+                                            let result = array1.indexOf(stringForUrl)
+
+
+                                            console.log('stringForUrl', stringForUrl, result)
+                                            router.push(`/become-a-tutor/teaching-experience`)
+                                          } else {
+                                            router.push('/become-a-tutor/teaching-experience')
+                                          }
+
+                                        }
+                                      })
+                                      .catch(err => {
+                                        { ErrorDefaultAlert(err) }
+                                      })
+
                                 }
                               })
+                                  .catch(err => {
+                                    // console.log(err)
+                                    {
+                                      ErrorDefaultAlert(JSON.stringify(err.response))
+                                    }
+                                  })
+                            }
+                          }
                         }
+                        else {
+                          alert('No tutor added')
                         }
-                    }
-                    else {
-                      alert('No tutor added')
-                    }
-                  }
-                }}
-            >
-              {({errors, touched}) => {
-                return (
-                    <>
-                      <Form>
-                        {/*{console.log(educationFields.length)}*/}
-                        <div className="section-title mb-3">
-                          <h4 className="rbt-title-style-3">Certification</h4>
-                          {
-                            isCertificationAlert === 1 ? <>
-                              {verifySts === 2 ? <>
-                                <Alert color='success'>
-                                  <h6 className='alert-heading m-0 text-center'>
-                                    Certification verification has been approved by admin
-                                  </h6>
-                                </Alert>
-
-                              </> : <>
-                                {verifySts === 1 ? <>
-                                  <Alert color='warning'>
-                                    <h6 className='alert-heading m-0 text-center'>
-                                      Certification verification is pending state
-                                    </h6>
-                                  </Alert>
-
-                                </> : <>
-                                  {verifySts === 0 || verifySts === null ? <>
-
-                                  </> : <>
-                                    <Alert color='danger'>
+                      }
+                    }}
+                >
+                  {({values,errors, touched}) => {
+                    return (
+                        <>
+                          <Form>
+                            {/*{console.log(educationFields.length)}*/}
+                            <div className="section-title mb-3">
+                              <h4 className="rbt-title-style-3">Certification</h4>
+                              {
+                                isCertificationAlert === 1 ? <>
+                                  {verifySts === 2 ? <>
+                                    <Alert color='success'>
                                       <h6 className='alert-heading m-0 text-center'>
-                                        Certification verification has been disapproved by admin
+                                        Certification verification has been approved by admin
                                       </h6>
                                     </Alert>
+
+                                  </> : <>
+                                    {verifySts === 1 ? <>
+                                      <Alert color='warning'>
+                                        <h6 className='alert-heading m-0 text-center'>
+                                          Certification verification is pending state
+                                        </h6>
+                                      </Alert>
+
+                                    </> : <>
+                                      {verifySts === 0 || verifySts === null ? <>
+
+                                      </> : <>
+                                        <Alert color='danger'>
+                                          <h6 className='alert-heading m-0 text-center'>
+                                            Certification verification has been disapproved by admin
+                                          </h6>
+                                        </Alert>
+                                      </>}
+                                    </>}
                                   </>}
+                                </>:<></>
+                              }
+
+                              <p>Let us know about teaching certification</p>
+                              {isCertified === 'No Certification' ? <>
+                                {verifySts === 2 ? <>
+                                  <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
+                                         onChange={handleIsCertification}/>
+                                  <label htmlFor="Certifcation">
+                                    I have not pursued any professional teaching certification
+                                  </label>
+                                </> : <>
+                                  <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
+                                         onChange={handleIsCertification}/>
+                                  <label htmlFor="Certifcation">
+                                    I have not pursued any professional teaching certification
+                                  </label>
+                                </>}
+                              </> : <>
+                                {verifySts === 2 ? <>
+                                  <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
+                                         onChange={handleIsCertification}/>
+                                  <label htmlFor="Certifcation">
+                                    I have not pursued any professional teaching certification
+                                  </label>
+                                </> : <>
+                                  <input id="Certifcation" type="checkbox" value={isCertified} name="isCertification"
+                                         onChange={handleIsCertification}/>
+                                  <label htmlFor="Certifcation">
+                                    I have not pursued any professional teaching certification
+                                  </label>
                                 </>}
                               </>}
-                            </>:<></>
-                          }
-
-                          <p>Let us know about teaching certification</p>
-                          {isCertified === 'No Certification' ? <>
-                            {verifySts === 2 ? <>
-                              <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
-                                     onChange={handleIsCertification}/>
-                              <label htmlFor="Certifcation">
-                                I have not pursued any professional teaching certification
-                              </label>
-                            </> : <>
-                              <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
-                                     onChange={handleIsCertification}/>
-                              <label htmlFor="Certifcation">
-                                I have not pursued any professional teaching certification
-                              </label>
-                            </>}
-                          </> : <>
-                            {verifySts === 2 ? <>
-                              <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
-                                     onChange={handleIsCertification}/>
-                              <label htmlFor="Certifcation">
-                                I have not pursued any professional teaching certification
-                              </label>
-                            </> : <>
-                              <input id="Certifcation" type="checkbox" value={isCertified} name="isCertification"
-                                     onChange={handleIsCertification}/>
-                              <label htmlFor="Certifcation">
-                                I have not pursued any professional teaching certification
-                              </label>
-                            </>}
-                          </>}
 
 
-                        </div>
-                        <div className={'row'}>
-                          {/*{console.log(certificationFields)}*/}
-                          {/*<form action="#" className="row row--15 mt-5">*/}
-                          {hideFields ? <>
-                            {verifySts !== 2 ? <>
-                              {certificationFields.length >= 1 ? <>
+                            </div>
+                            <div className={'row'}>
+                              {/*{console.log(certificationFields)}*/}
+                              {/*<form action="#" className="row row--15 mt-5">*/}
+                              {hideFields ? <>
+                                {verifySts !== 2 ? <>
+                                  {certificationFields.length >= 1 ? <>
 
-                                {certificationFields && certificationFields.map((certification, index) => {
-                                  // console.log(certification)
-                                  return (
-                                      <>
-                                        <div key={certification.nTCId}>
-                                          <div className={'row'}>
+                                    {values.sCertification.map((certification, index) => {
+                                      console.log("certification",certification)
+                                      console.log("index",index)
+                                      console.log("Errors Message" , errors)
+                                      console.log("Message:", errors.sCertification?.[index]?.sCerti_title);
+                                      return (
+                                          <>
+                                            <div key={certification.nTCId}>
+                                              <div className={`row`}>
 
-                                            {
-                                              index === 0 ? <></> : <>
-                                                <hr className={'mt-4 mb-3'}
-                                                    style={{height: '3px', background: '#c38ae8'}}/>
-                                              </>
-                                            }
-                                            <div className="col-lg-6">
-                                              <label>
-                                                Certification Title
-                                              </label>
-                                              <div className="form-group">
-                                                <input
-                                                    readOnly={verifySts === 2}
-                                                    onChange={(e) => handleChangeTitle(e, index)}
-                                                    value={certification.sCerti_title}
-                                                    type="text"
-                                                    placeholder="Certification Title"/>
-                                                <span className="focus-border"></span>
-                                              </div>
-                                            </div>
-                                            <div className="col-lg-6">
-                                              <label>
-                                                Issued By
-                                              </label>
-                                              <div className="form-group">
-                                                <input
-                                                    readOnly={verifySts === 2}
-                                                    onChange={(e) => handleChangeIssuedBy(e, index)}
-                                                    value={certification.sIssued_by}
-                                                    type="text"
-                                                    placeholder="Issued By"/>
-                                                <span className="focus-border"></span>
-                                              </div>
-                                            </div>
-                                            <div className={'col-lg-6 mt-3'}>
-                                              <label>
-                                                Year of study from
-                                              </label>
-                                              <select disabled={verifySts === 2} value={certification.sFrom_year}
-                                                      onChange={(e) => handleYearFromChange(e, index)}>
-                                                {options}
-                                              </select>
-
-                                            </div>
-                                            <div className={'col-lg-6 mt-3'}>
-                                              <label>
-                                                Year of study to
-                                              </label>
-                                              <select disabled={verifySts === 2} value={certification.sTo_year}
-                                                      onChange={(e) => handleYearToChange(e, index)}>
-                                                <option value="Present">Present</option>
-                                                {options}
-                                              </select>
-                                            </div>
-                                            <div className={'col-lg-12 mt-5 mb-3'}>
-                                              <div className={'rounded-2 p-3'} style={{background: "#f4f4f8"}}>
-                                                <h5>Get a certification verified badge</h5>
-                                                <small>Upload your diploma to boost your credibility! Our team will
-                                                  review
-                                                  it and add
-                                                  the badge to your profile.
-                                                  Once reviewed, your files will be deleted.
-                                                  JPG or PNG format; maximum size of 2MB</small>
-
-                                                <div>
-                                                  <label id='label'
-                                                         className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
-                                                    image
-                                                    <input type="file" id="file" name="file"
-                                                           onChange={(e) => handleChangeImage(e, index)}
-                                                           accept="image/*"/>
+                                                {
+                                                  index === 0 ? <></> : <>
+                                                    <hr className={'mt-4 mb-3'}
+                                                        style={{height: '3px', background: '#c38ae8'}}/>
+                                                  </>
+                                                }
+                                                <div className="col-lg-6">
+                                                  <label>
+                                                    Certification Title
                                                   </label>
-                                                  <div>
-                                                    {certification.sCerti_imagePath && (
-                                                        <img className={'mt-3'} src={certification.sCerti_imagePath}
-                                                             alt="Uploaded"
-                                                             style={{width: 100}}/>
-                                                    )}
+                                                  <div className="form-group">
+                                                    <input
+                                                        readOnly={verifySts === 2}
+                                                        onChange={(e) => handleChangeTitle(e, index)}
+                                                        value={certification.sCerti_title}
+                                                        className={`form-control ${errors.sCertification?.[index]?.sCerti_title && errors.sCertification?.[index]?.sCerti_title && 'is-invalid'}`}
+                                                        type="text"
+                                                        placeholder="Certification Title"/>
+
+                                                    {
+                                                      index === 0 ? <div className={'field-error text-danger'}>
+                                                        {errors.sCertification?.[index]?.sCerti_title}
+                                                      </div> : <ErrorMessage name={`sCertification.${index}.sCerti_title`}
+                                                                             component='div'
+                                                                             className='field-error text-danger'/>
+                                                    }
+
+
+                                                    <span className="focus-border"></span>
                                                   </div>
-
                                                 </div>
-                                              </div>
-                                            </div>
-                                            {verifySts === 2 ? <></> : <>
-                                              <div className="col-lg-12 text-end mt-2">
-                                                {index !== 0 ? <>
-                                                  <button type={'button'} className="btn btn-danger"
-                                                          onClick={() => handleRemoveCertification(certification.nTCId)}>Remove
-                                                  </button>
-                                                </> : <>
+                                                <div className="col-lg-6">
+                                                  <label>
+                                                    Issued By
+                                                  </label>
+                                                  <div className="form-group">
+                                                    <input
+                                                        readOnly={verifySts === 2}
+                                                        onChange={(e) => handleChangeIssuedBy(e, index)}
+                                                        className={`form-control ${errors.sCertification?.[index]?.sIssued_by && errors.sCertification?.[index]?.sIssued_by && 'is-invalid'}`}
+                                                        value={certification.sIssued_by}
+                                                        type="text"
+                                                        placeholder="Issued By"/>
 
+                                                    {
+                                                      index === 0 ? <div className={'field-error text-danger'}>
+                                                        {errors.sCertification?.[index]?.sIssued_by}
+                                                      </div> : <ErrorMessage name={`sCertification.${index}.sIssued_by`}
+                                                                             component='div'
+                                                                             className='field-error text-danger'/>
+                                                    }
+
+                                                    <span className="focus-border"></span>
+                                                  </div>
+                                                </div>
+                                                <div className={'col-lg-6 mt-3'}>
+                                                  <label>
+                                                    Year of study from
+                                                  </label>
+                                                  <select disabled={verifySts === 2} value={certification.sFrom_year}
+                                                          onChange={(e) => handleYearFromChange(e, index)}
+                                                          className={`form-select ${errors.sCertification?.[index]?.sFrom_year && errors.sCertification?.[index]?.sFrom_year && 'is-invalid'}`}
+                                                  >
+                                                    <option value="">Select
+                                                    </option>
+                                                    {options}
+                                                  </select>
+                                                  {
+                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                      {errors.sCertification?.[index]?.sFrom_year}
+                                                    </div> : <ErrorMessage name={`sCertification.${index}.sFrom_year`}
+                                                                           component='div'
+                                                                           className='field-error text-danger'/>
+                                                  }
+
+                                                  <span className="focus-border"></span>
+                                                </div>
+                                                <div className={'col-lg-6 mt-3'}>
+                                                  <label>
+                                                    Year of study to
+                                                  </label>
+                                                  <select disabled={verifySts === 2} value={certification.sTo_year}
+                                                          onChange={(e) => handleYearToChange(e, index)}>
+                                                    <option value="Present">Present</option>
+                                                    {options}
+                                                  </select>
+                                                </div>
+                                                <div className={'col-lg-12 mt-5 mb-3'}>
+                                                  <div className={'rounded-2 p-3'} style={{background: "#f4f4f8"}}>
+                                                    <h5>Get a certification verified badge</h5>
+                                                    <small>Upload your diploma to boost your credibility! Our team will
+                                                      review
+                                                      it and add
+                                                      the badge to your profile.
+                                                      Once reviewed, your files will be deleted.
+                                                      JPG or PNG format; maximum size of 2MB</small>
+
+                                                    <div>
+                                                      <label id='label'
+                                                             className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
+                                                        image
+                                                        <input type="file" id="file" name="file"
+                                                               onChange={(e) => handleChangeImage(e, index)}
+                                                               accept="image/*"/>
+                                                      </label>
+                                                      <div>
+                                                        {certification.sCerti_imagePath && (
+                                                            <img className={'mt-3'} src={certification.sCerti_imagePath}
+                                                                 alt="Uploaded"
+                                                                 style={{width: 100}}/>
+                                                        )}
+                                                      </div>
+
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                {verifySts === 2 ? <></> : <>
+                                                  <div className="col-lg-12 text-end mt-2">
+                                                    {index !== 0 ? <>
+                                                      <button type={'button'} className="btn btn-danger"
+                                                              onClick={() => handleRemoveCertification(certification.nTCId)}>Remove
+                                                      </button>
+                                                    </> : <>
+
+                                                    </>}
+
+                                                  </div>
                                                 </>}
 
+
                                               </div>
-                                            </>}
+                                            </div>
 
+                                          </>
+                                      )
+                                    })
+                                    }
 
-                                          </div>
-                                        </div>
+                                    {verifySts === 2 ? <></> : <>
+                                      <div className={'col-lg-5 mt-5 mb-5'}>
+                                        <button
+                                            type={'button'}
+                                            className="rbt-btn-link left-icon border-0 bg-white"
+                                            onClick={handleAddCertification}
+                                        >
+                                          <i className="feather-plus"></i>Add Certification
+                                        </button>
+                                      </div>
+                                    </>}
+                                  </> : ''}
+                                </> : <></>}
 
-                                      </>
-                                  )
-                                })
-                                }
-
-                                {verifySts === 2 ? <></> : <>
-                                  <div className={'col-lg-5 mt-5 mb-5'}>
-                                    <button
-                                        type={'button'}
-                                        className="rbt-btn-link left-icon border-0 bg-white"
-                                        onClick={handleAddCertification}
-                                    >
-                                      <i className="feather-plus"></i>Add Certification
-                                    </button>
-                                  </div>
-                                </>}
-                              </> : ''}
-                            </> : <></>}
-
-                            </> : <>
-                              {/*<div key={certificationFields.nTCId}>*/}
-                              {/*  <div className={'row'}>*/}
-                              {/*    <div className="col-lg-6">*/}
-                              {/*      <label>*/}
-                              {/*        Certification Title*/}
-                              {/*      </label>*/}
-                              {/*      <div className="form-group">*/}
-                              {/*        <input*/}
-                              {/*            readOnly={verifySts === 2}*/}
-                              {/*            onChange={(e) => handleChangeTitle(e)}*/}
-                              {/*            value={certificationFields.sCerti_title}*/}
-                              {/*            type="text"*/}
-                              {/*            placeholder="Certification Title"/>*/}
-                              {/*        <span className="focus-border"></span>*/}
-                              {/*      </div>*/}
-                              {/*    </div>*/}
-                              {/*    <div className="col-lg-6">*/}
-                              {/*      <label>*/}
-                              {/*        Issued By*/}
-                              {/*      </label>*/}
-                              {/*      <div className="form-group">*/}
-                              {/*        <input*/}
-                              {/*            readOnly={verifySts === 2}*/}
-                              {/*            onChange={(e) => handleChangeIssuedBy(e)}*/}
-                              {/*            value={certificationFields.sIssued_by}*/}
-                              {/*            type="text"*/}
-                              {/*            placeholder="Issued By"/>*/}
-                              {/*        <span className="focus-border"></span>*/}
-                              {/*      </div>*/}
-                              {/*    </div>*/}
-                              {/*    <div className={'col-lg-6 mt-3'}>*/}
-                              {/*      <label>*/}
-                              {/*        Year of study from*/}
-                              {/*      </label>*/}
-                              {/*      <select disabled={verifySts === 2} value={certificationFields.sFrom_year}*/}
-                              {/*              onChange={(e) => handleYearFromChange(e)}>*/}
-                              {/*        {options}*/}
-                              {/*      </select>*/}
-
-                              {/*    </div>*/}
-                              {/*    <div className={'col-lg-6 mt-3'}>*/}
-                              {/*      <label>*/}
-                              {/*        Year of study to*/}
-                              {/*      </label>*/}
-                              {/*      <select disabled={verifySts === 2} value={certificationFields.sTo_year}*/}
-                              {/*              onChange={(e) => handleYearToChange(e)}>*/}
-                              {/*        <option value="Present">Present</option>*/}
-                              {/*        {options}*/}
-                              {/*      </select>*/}
-                              {/*    </div>*/}
-                              {/*    <div className={'col-lg-12 mt-5 mb-3'}>*/}
-                              {/*      <div className={'rounded-2 p-3'} style={{background: "#f4f4f8"}}>*/}
-                              {/*        <h5>Get a certification verified badge</h5>*/}
-                              {/*        <small>Upload your diploma to boost your credibility! Our team will review*/}
-                              {/*          it and add*/}
-                              {/*          the badge to your profile.*/}
-                              {/*          Once reviewed, your files will be deleted.*/}
-                              {/*          JPG or PNG format; maximum size of 7MB</small>*/}
-
-
-                              {/*        <div>*/}
-                              {/*          <label id='label'*/}
-                              {/*                 className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload*/}
-                              {/*            image*/}
-                              {/*            <input type="file" id="file" name="file"*/}
-                              {/*                   onChange={(e) => handleChangeImage(e, index)}*/}
-                              {/*                   accept="image/*"/>*/}
-                              {/*          </label>*/}
-                              {/*          <div>*/}
-                              {/*            {certificationFields.sCerti_imagePath && (*/}
-                              {/*                <img src={certificationFields.sCerti_imagePath} alt="Uploaded"*/}
-                              {/*                     style={{width: 100}}/>*/}
-                              {/*            )}*/}
-                              {/*          </div>*/}
-
-                              {/*        </div>*/}
-
-
-                              {/*      </div>*/}
-                              {/*    </div>*/}
-                              {/*    {verifySts === 2 ? <></> : <>*/}
-                              {/*      <div className="col-lg-12 text-end mt-2">*/}
-                              {/*        <button type={'button'} className="btn btn-danger"*/}
-                              {/*                onClick={() => handleRemoveCertification(certificationFields.nTCId)}>Remove*/}
-                              {/*        </button>*/}
-                              {/*      </div>*/}
-                              {/*    </>}*/}
-
-                              {/*  </div>*/}
-                              {/*  {verifySts === 2 ? <></> : <>*/}
-                              {/*    <div className={'col-lg-5 mt-5 mb-5'}>*/}
-                              {/*      <button*/}
-                              {/*          type={'button'}*/}
-                              {/*          className="rbt-btn-link left-icon border-0 bg-white"*/}
-                              {/*          onClick={handleAddCertification}*/}
-                              {/*      >*/}
-                              {/*        <i className="feather-plus"></i>Add Certification*/}
-                              {/*      </button>*/}
-                              {/*    </div>*/}
-                              {/*  </>}*/}
-
-                              {/*</div>*/}
-
-
-                            </>}
-
-
-                          <div className="col-lg-12 mt-5">
-                            <div className="form-submit-group">
-                              {isLoading ? <>
-                                <button
-                                    disabled={true}
-                                    type="submit"
-                                    className="rbt-btn btn-md btn-gradient w-100"
-                                >
-                                                            <span className="btn-text"><i
-                                                                className="feather-loader"></i>isLoading...</span>
-                                </button>
                               </> : <>
-                                <button
-                                    type="submit"
-                                    className="rbt-btn btn-md btn-gradient hover-icon-reverse w-100"
-                                >
+                                {/*<div key={certificationFields.nTCId}>*/}
+                                {/*  <div className={'row'}>*/}
+                                {/*    <div className="col-lg-6">*/}
+                                {/*      <label>*/}
+                                {/*        Certification Title*/}
+                                {/*      </label>*/}
+                                {/*      <div className="form-group">*/}
+                                {/*        <input*/}
+                                {/*            readOnly={verifySts === 2}*/}
+                                {/*            onChange={(e) => handleChangeTitle(e)}*/}
+                                {/*            value={certificationFields.sCerti_title}*/}
+                                {/*            type="text"*/}
+                                {/*            placeholder="Certification Title"/>*/}
+                                {/*        <span className="focus-border"></span>*/}
+                                {/*      </div>*/}
+                                {/*    </div>*/}
+                                {/*    <div className="col-lg-6">*/}
+                                {/*      <label>*/}
+                                {/*        Issued By*/}
+                                {/*      </label>*/}
+                                {/*      <div className="form-group">*/}
+                                {/*        <input*/}
+                                {/*            readOnly={verifySts === 2}*/}
+                                {/*            onChange={(e) => handleChangeIssuedBy(e)}*/}
+                                {/*            value={certificationFields.sIssued_by}*/}
+                                {/*            type="text"*/}
+                                {/*            placeholder="Issued By"/>*/}
+                                {/*        <span className="focus-border"></span>*/}
+                                {/*      </div>*/}
+                                {/*    </div>*/}
+                                {/*    <div className={'col-lg-6 mt-3'}>*/}
+                                {/*      <label>*/}
+                                {/*        Year of study from*/}
+                                {/*      </label>*/}
+                                {/*      <select disabled={verifySts === 2} value={certificationFields.sFrom_year}*/}
+                                {/*              onChange={(e) => handleYearFromChange(e)}>*/}
+                                {/*        {options}*/}
+                                {/*      </select>*/}
+
+                                {/*    </div>*/}
+                                {/*    <div className={'col-lg-6 mt-3'}>*/}
+                                {/*      <label>*/}
+                                {/*        Year of study to*/}
+                                {/*      </label>*/}
+                                {/*      <select disabled={verifySts === 2} value={certificationFields.sTo_year}*/}
+                                {/*              onChange={(e) => handleYearToChange(e)}>*/}
+                                {/*        <option value="Present">Present</option>*/}
+                                {/*        {options}*/}
+                                {/*      </select>*/}
+                                {/*    </div>*/}
+                                {/*    <div className={'col-lg-12 mt-5 mb-3'}>*/}
+                                {/*      <div className={'rounded-2 p-3'} style={{background: "#f4f4f8"}}>*/}
+                                {/*        <h5>Get a certification verified badge</h5>*/}
+                                {/*        <small>Upload your diploma to boost your credibility! Our team will review*/}
+                                {/*          it and add*/}
+                                {/*          the badge to your profile.*/}
+                                {/*          Once reviewed, your files will be deleted.*/}
+                                {/*          JPG or PNG format; maximum size of 7MB</small>*/}
+
+
+                                {/*        <div>*/}
+                                {/*          <label id='label'*/}
+                                {/*                 className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload*/}
+                                {/*            image*/}
+                                {/*            <input type="file" id="file" name="file"*/}
+                                {/*                   onChange={(e) => handleChangeImage(e, index)}*/}
+                                {/*                   accept="image/*"/>*/}
+                                {/*          </label>*/}
+                                {/*          <div>*/}
+                                {/*            {certificationFields.sCerti_imagePath && (*/}
+                                {/*                <img src={certificationFields.sCerti_imagePath} alt="Uploaded"*/}
+                                {/*                     style={{width: 100}}/>*/}
+                                {/*            )}*/}
+                                {/*          </div>*/}
+
+                                {/*        </div>*/}
+
+
+                                {/*      </div>*/}
+                                {/*    </div>*/}
+                                {/*    {verifySts === 2 ? <></> : <>*/}
+                                {/*      <div className="col-lg-12 text-end mt-2">*/}
+                                {/*        <button type={'button'} className="btn btn-danger"*/}
+                                {/*                onClick={() => handleRemoveCertification(certificationFields.nTCId)}>Remove*/}
+                                {/*        </button>*/}
+                                {/*      </div>*/}
+                                {/*    </>}*/}
+
+                                {/*  </div>*/}
+                                {/*  {verifySts === 2 ? <></> : <>*/}
+                                {/*    <div className={'col-lg-5 mt-5 mb-5'}>*/}
+                                {/*      <button*/}
+                                {/*          type={'button'}*/}
+                                {/*          className="rbt-btn-link left-icon border-0 bg-white"*/}
+                                {/*          onClick={handleAddCertification}*/}
+                                {/*      >*/}
+                                {/*        <i className="feather-plus"></i>Add Certification*/}
+                                {/*      </button>*/}
+                                {/*    </div>*/}
+                                {/*  </>}*/}
+
+                                {/*</div>*/}
+
+
+                              </>}
+
+
+                              <div className="col-lg-12 mt-5">
+                                <div className="form-submit-group">
+                                  {isLoading ? <>
+                                    <button
+                                        disabled={true}
+                                        type="submit"
+                                        className="rbt-btn btn-md btn-gradient w-100"
+                                    >
+                                                            <span className="btn-text"><i
+                                                                className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
+                                    </button>
+                                  </> : <>
+                                    <button
+                                        type="submit"
+                                        className="rbt-btn btn-md btn-gradient hover-icon-reverse w-100"
+                                    >
                                 <span className="icon-reverse-wrapper">
                                       <span className="btn-text">Continue</span>
                                       <span className="btn-icon">
@@ -999,21 +1056,21 @@ const Certification = () => {
                                         <i className="feather-arrow-right"></i>
                                       </span>
                                     </span>
-                                </button>
-                              </>}
+                                    </button>
+                                  </>}
 
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
 
-                      </Form>
+                          </Form>
 
-                    </>
-                )
-              }}
+                        </>
+                    )
+                  }}
 
 
-            </Formik>
+                </Formik>
               </>}
           </div>
         </div>
@@ -1023,3 +1080,4 @@ const Certification = () => {
 };
 
 export default Certification;
+

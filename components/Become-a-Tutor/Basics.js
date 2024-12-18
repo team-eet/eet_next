@@ -20,19 +20,19 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 const UserValidationSchema = Yup.object().shape({
   sFName: Yup.string()
-      .required('This field is required'),
+      .required('First Name is required'),
   sLName: Yup.string()
-      .required('This field is required'),
+      .required('Last Name is required'),
   sMobile: Yup.string()
-      .required('This field is required'),
+      .required('Mobile is required'),
   dDOB: Yup.string()
-      .required('This field is required'),
+      .required('Date Of Birth is required'),
   nCountryId: Yup.string()
-      .required('This field is required'),
+      .required('Country is required'),
   nStateId: Yup.string()
-      .required('This field is required'),
+      .required('State is required'),
   nCityId: Yup.string()
-      .required('This field is required')
+      .required('City is required')
 })
 
 const emailpattern = /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
@@ -121,8 +121,9 @@ const Basics = () => {
             }
         }
     }
+
     const handleGender = (e) => {
-    setsGender(e.target.value)
+    setsGender(Number(e.target.value))
   }
     const bindCountry = () => {
     Axios.get(`${API_URL}/api/registration/BindCountry`, {
@@ -355,7 +356,7 @@ const Basics = () => {
               }
           })
               .then(res => {
-                  console.log(res.data)
+                  console.log("Details",res.data)
 
                   if(res.data.length !== 0) {
                       // if(res.data[0].bIsReview !== 0) {
@@ -460,7 +461,7 @@ const Basics = () => {
               }
           })
               .then(res => {
-                  console.log(res.data)
+                  console.log("Basic Details",res.data)
                   if(res.data.length !== 0) {
                       setsFname(res.data[0].sFName)
                       setsLname(res.data[0].sLName)
@@ -626,7 +627,7 @@ const Basics = () => {
               }}
               enableReinitialize={true}
               onSubmit={async (values, {resetForm}) => {
-                console.log(values)
+                console.log("values",values)
                   if(verifysts.sBasic_verify === 2) {
                     // router.push('/become-a-tutor/profile-photo')
                     router.push(`/become-a-tutor/profile-photo`)
@@ -726,7 +727,7 @@ const Basics = () => {
                                       <input
                                           onChange={handleFname}
                                           value={sFname}
-                                          className={`form-control ${errors.sFName && touched.sFName && 'is-invalid'}`}
+                                          className={`form-control ${verifysts.sBasic_verify === 2?'bg-secondary-opacity' : ''} ${errors.sFName && touched.sFName && 'is-invalid'}`}
                                           name="sFName"
                                           type="text"
                                           readOnly={verifysts.sBasic_verify === 2}
@@ -748,7 +749,7 @@ const Basics = () => {
                                       <input
                                           onChange={handleLname}
                                           value={sLname}
-                                          className={`form-control  ${errors.sLName && touched.sLName && 'is-invalid'}`}
+                                          className={`form-control ${verifysts.sBasic_verify === 2?'bg-secondary-opacity' : ''} ${errors.sLName && touched.sLName && 'is-invalid'}`}
                                           name="sLName"
                                           readOnly={verifysts.sBasic_verify === 2}
                                           type="text"
@@ -815,7 +816,7 @@ const Basics = () => {
                                               <input
                                                   // onChange={handleMobile}
                                                   value={sEmail}
-                                                  className={`form-control bg-secondary-opacity ${errors.sMobile && touched.sMobile && 'is-invalid'}`}
+                                                  className={`form-control ${verifysts.sBasic_verify === 2?'bg-secondary-opacity' : ''} bg-secondary-opacity ${errors.sMobile && touched.sMobile && 'is-invalid'}`}
                                                   name="sEmail"
                                                   type="text"
                                                   readOnly={verifysts.sBasic_verify === 2}
@@ -841,7 +842,7 @@ const Basics = () => {
                                               <input
                                                   onChange={handleEmail}
                                                   value={sEmail}
-                                                  className={`form-control ${errors.sMobile && touched.sMobile && 'is-invalid'}`}
+                                                  className={`form-control ${verifysts.sBasic_verify === 2?'bg-secondary-opacity' : ''} ${errors.sMobile && touched.sMobile && 'is-invalid'}`}
                                                   name="sEmail"
                                                   type="text"
                                                   placeholder="Email"
@@ -956,15 +957,53 @@ const Basics = () => {
                                   <div className="form-group">
                                       {verifysts.sBasic_verify === 2 ? <>
 
-                                          <input
+                                          {/*<input*/}
+                                          {/*    onChange={handleDOB}*/}
+                                          {/*    value={dDOB}*/}
+                                          {/*    className={`form-control bg-secondary-opacity ${errors.dDOB && touched.dDOB && 'is-invalid'}`}*/}
+                                          {/*    name="dDOB"*/}
+                                          {/*    readOnly*/}
+                                          {/*    type="date"*/}
+                                          {/*    placeholder="DOB"*/}
+                                          {/*/>*/}
+
+                                          <DatePicker
+                                              renderCustomHeader={({ date, changeYear, changeMonth, decreaseMonth, increaseMonth, prevMonthButtonDisabled, nextMonthButtonDisabled }) => (
+                                                  <div
+                                                      style={{
+                                                          display: "flex",
+                                                          justifyContent: "center",
+                                                      }}
+                                                  >
+                                                      <select
+                                                          onChange={({ target: { value } }) => changeYear(value)}
+                                                          disabled={true} // Disable dropdown
+                                                      >
+                                                          {years.map((option) => (
+                                                              <option key={option} value={option}>
+                                                                  {option}
+                                                              </option>
+                                                          ))}
+                                                      </select>
+
+                                                      <select
+                                                          onChange={({ target: { value } }) => changeMonth(months.indexOf(value))}
+                                                          disabled={true} // Disable dropdown
+                                                      >
+                                                          {months.map((option) => (
+                                                              <option key={option} value={option}>
+                                                                  {option}
+                                                              </option>
+                                                          ))}
+                                                      </select>
+                                                  </div>
+                                              )}
+                                              selected={dDOB}
                                               onChange={handleDOB}
-                                              value={dDOB}
-                                              className={`form-control bg-secondary-opacity ${errors.dDOB && touched.dDOB && 'is-invalid'}`}
-                                              name="dDOB"
-                                              readOnly
-                                              type="date"
-                                              placeholder="DOB"
+                                              className={verifysts.sBasic_verify === 2?'bg-secondary-opacity' : ''}
+                                              readOnly={true} // Completely disable DatePicker
                                           />
+
                                       </> : <>
                                           {/*<DatePicker*/}
                                           {/*    selected={dDOB}*/}
@@ -1045,104 +1084,33 @@ const Basics = () => {
                                   </label>
                                   <div className="form-group d-flex">
                                       <div>
-                                          {verifysts.sBasic_verify === 2 ? <>
-                                              {sGender === 1 ? <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sMale"
-                                                      type="radio"
-                                                      name="sGender"
-                                                      checked
-                                                      disabled={true}
-                                                  />
-                                              </> : <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sMale"
-                                                      type="radio"
-                                                      checked
-                                                      name="sGender"
-                                                      disabled={true}
-                                                  />
-                                              </>}
-                                          </> : <>
-                                              {sGender === 1 ? <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sMale"
-                                                      type="radio"
-                                                      name="sGender"
-                                                      checked
-                                                  />
-                                              </> : <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sMale"
-                                                      type="radio"
-                                                      name="sGender"
-                                                      checked
-                                                  />
-                                              </>}
-                                          </>}
-
-                                          <label htmlFor="sMale">
-                                              Male
-                                          </label>
+                                          {/* Male Radio Button */}
+                                          <input
+                                              onChange={handleGender}
+                                              value="1" // Male's value
+                                              id="sMale"
+                                              type="radio"
+                                              name="sGender"
+                                              checked={sGender === 1} // Dynamically checks state
+                                              disabled={verifysts.sBasic_verify === 2} // Disable if verification is 2
+                                          />
+                                          <label htmlFor="sMale">Male</label>
                                       </div>
-                                      <div className={"ms-3"}>
 
-                                          {verifysts.sBasic_verify === 2 ? <>
-                                              {sGender === 0 ? <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sFemale"
-                                                      type="radio"
-                                                      name="sGender"
-                                                      checked
-                                                      disabled={true}
-                                                  />
-                                              </> : <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sFemale"
-                                                      type="radio"
-                                                      name="sGender"
-                                                      disabled={true}
-                                                      checked
-                                                  />
-                                              </>}
-                                          </> : <>
-                                              {sGender === 0 ? <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sFemale"
-                                                      type="radio"
-                                                      name="sGender"
-                                                      checked
-                                                  />
-                                              </> : <>
-                                                  <input
-                                                      onChange={handleGender}
-                                                      value={sGender}
-                                                      id="sFemale"
-                                                      type="radio"
-                                                      name="sGender"
-                                                  />
-                                              </>}
-                                          </>}
-
-
-                                          <label htmlFor="sFemale">
-                                              Female
-                                          </label>
+                                      <div className="ms-3">
+                                          {/* Female Radio Button */}
+                                          <input
+                                              onChange={handleGender}
+                                              value="0" // Female's value
+                                              id="sFemale"
+                                              type="radio"
+                                              name="sGender"
+                                              checked={sGender === 0} // Dynamically checks state
+                                              disabled={verifysts.sBasic_verify === 2} // Disable if verification is 2
+                                          />
+                                          <label htmlFor="sFemale">Female</label>
                                       </div>
+
 
                                       <span className="focus-border"></span>
                                   </div>
@@ -1284,7 +1252,7 @@ const Basics = () => {
                                               type="submit"
                                               className="rbt-btn btn-md btn-gradient w-100"
                                           >
-                                              <span className="btn-text"><i className="feather-loader"></i>isLoading...</span>
+                                              <span className="btn-text"><i className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
                                           </button>
                                       </> : <>
                                           <button

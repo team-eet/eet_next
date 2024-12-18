@@ -20,6 +20,7 @@ const InstructorDashboardSidebar = ({ url }) => {
 
   const [verifysts, setverifySts] = useState([])
   const [cover_verify, setcover_verify] = useState(0)
+  const [isCheck, setIsCheck] = useState(0)
 
   useEffect(() => {
 
@@ -50,9 +51,16 @@ const InstructorDashboardSidebar = ({ url }) => {
         }
       })
           .then(res => {
-            console.log(res.data)
             if(res.data.length !== 0) {
-              setverifySts(res.data[0])
+              console.log(res.data[0])
+              let res_data = res.data[0];
+              for (let key in res_data) {
+                if (res_data[key] === null) {
+                  res_data[key] = 0;
+                }
+              }
+
+              setverifySts(res_data)
               const verify_cover1 = res.data[0].sCoverPhotoLeft_verify
               const verify_cover2 = res.data[0].sCoverPhotoCenter_verify
               const verify_cover3 = res.data[0].sCoverPhotoRight_verify
@@ -68,6 +76,8 @@ const InstructorDashboardSidebar = ({ url }) => {
               } else {
                 setcover_verify(0)
               }
+
+              setIsCheck(1)
             }
           })
           .catch(err => {
@@ -101,6 +111,7 @@ const InstructorDashboardSidebar = ({ url }) => {
     {
       "sectionName": "Profile Photo",
       "status": verifysts.sProfilePhoto_verify
+      // "status": 0
     },
     {
       "sectionName": "Cover Photo",
@@ -138,8 +149,7 @@ const InstructorDashboardSidebar = ({ url }) => {
     ]
   const [percentage, setPercentages] = useState(0);
 
-  const countStatus2 = options.filter(option => option.status === 1).length;
-  // console.log(countStatus2)
+  const countStatus2 = options.filter(option => option.status !== 0).length;
   // Calculate the percentage
   const totalOptions = options.length;
   const percentagecount = (countStatus2 / totalOptions) * 100;
@@ -161,8 +171,8 @@ const InstructorDashboardSidebar = ({ url }) => {
                         <CircularProgressbar
                             className="circle-text count"
                             strokeWidth={5}
-                            value={percentagecount}
-                            text={`${percentagecount}%`}
+                            value={isCheck === 1 ? percentagecount : 0 }
+                            text={isCheck === 1 ? `${percentagecount}%` : 0}
                             styles={buildStyles({
                               textColor: "#6b7385",
                               pathColor: "#059DFF",
@@ -187,82 +197,112 @@ const InstructorDashboardSidebar = ({ url }) => {
                         if (!verificationStatus) return null; // Handle if no status found
 
                         const { status } = verificationStatus;
-                          return (
-                              <>
-                                {tutorcnt === 0 ? <>
-                                  {index === 0 ? <>
-                                    <li className="nav-item" key={index} role="presentation">
-                                      <Link className={`${path === data.link ? "active" : ""}`}
-                                            href={`/become-a-tutor/${data.link}`}>
-                                        <i className={data.icon}/>
-                                        <span>{data.text}</span>
-                                      </Link>
-                                    </li>
-                                  </> : <>
-                                    <li className="nav-item" key={index} role="presentation">
+                        return (
+                            <>
+                              {
+                                isCheck !== 1 ? <>
+                                  {
+                                    index === 0 ?
+                                        <li className="nav-item d-flex align-items-center custIcon" key={index}
+                                            role="presentation">
+                                          <Link className={`w-100 ${path === data.link ? "active" : ""}`}
+                                                href={`/become-a-tutor/${data.link}`}>
+                                            <i className={data.icon}/>
+                                            <span>{data.text}</span>
+                                          </Link>
+                                        </li> :
+
+                                        <li className="nav-item d-flex align-items-center custIcon" key={index}
+                                            role="presentation">
+                                          <span
+                                              className="blur-bg">
+                                            <i className={data.icon}/>
+                                            <span>{data.text}</span>
+                                          </span>
+                                          {/*<i className={data.icon2}/>*/}
+                                        </li>
+                                  }
+
+                                </> : <>
+
+
+                                  {tutorcnt === 0 ? <>
+                                    {index === 0 ? <>
+                                      <li className="nav-item d-flex align-items-center custIcon" key={index}
+                                          role="presentation">
+                                        <Link className={`w-100 ${path === data.link ? "active" : ""}`}
+                                              href={`/become-a-tutor/${data.link}`}>
+                                          <i className={data.icon}/>
+                                          <span>{data.text}</span>
+                                        </Link>
+                                      </li>
+                                    </> : <>
+                                      <li className="nav-item d-flex align-items-center custIcon" key={index} role="presentation">
                                     <span id={'other-sidebar'}
                                           className={`${path === data.link ? "active" : "blur-bg"} `}>
                                       <i className={data.icon}/>
                                       <span>{data.text}</span>
                                     </span>
-                                      {/*<i className={data.icon2}/>*/}
+                                        {/*<i className={data.icon2}/>*/}
+                                      </li>
+                                    </>}
+                                  </> : <>
+                                    <li className="nav-item d-flex align-items-center custIcon" key={index} role="presentation">
+                                      <Link
+                                          // className={`w-100 ${path === `/become-a-tutor/${data.link}` ? "active" : ""}`}
+                                          className={status === 0 && `/become-a-tutor/${data.link}` !== path? "blur-bg" : `/become-a-tutor/${data.link}` === path ? "active" : ""}
+                                          // href={`/become-a-tutor/${data.link}`}
+                                          href={status === 0 && `/become-a-tutor/${data.link}` !== path ? "javascript:void(0)" : `/become-a-tutor/${data.link}`}
+                                      >
+                                        <i className={data.icon}/>
+                                        <span>{data.text}</span>
+                                      </Link>
+
+                                      {status === 0 && (
+                                          ''
+                                          // <i className={data.pending} style={{ color: "#d1d122" }} />
+                                      )}
+                                      {status === 1 && (
+                                          <i className={data.pending} style={{ color: "#d1d122" }} />
+                                      )}
+                                      {status === 2 && (
+                                          <i className={data.approved} style={{ color: "green" }} />
+                                      )}
+                                      {status === 3 && (
+                                          <i className={data.disapproved} style={{ color: "red" }} />
+                                      )}
+                                      {/*{verifysts.map((item, index) => {*/}
+                                      {/*  return (*/}
+                                      {/*      <>*/}
+                                      {/*        {item.sBasic_verify === 0 ? <>*/}
+                                      {/*          <i className={data.pending} style={{color: '#d1d122'}}/>*/}
+                                      {/*        </> : <>*/}
+                                      {/*          {item.sBasic_verify=== 1  ? <>*/}
+                                      {/*            <i className={data.approved} style={{color: 'green'}}/>*/}
+                                      {/*          </> : <>*/}
+                                      {/*            <i className={data.disapproved} style={{color: 'red'}}/>*/}
+                                      {/*          </>}*/}
+                                      {/*        </>}*/}
+                                      {/*        */}
+                                      {/*        {item.sProfilePhoto_verify === 0 ? <>*/}
+                                      {/*          <i className={data.pending} style={{color: '#d1d122'}}/>*/}
+                                      {/*        </> : <>*/}
+                                      {/*          {item.sProfilePhoto_verify === 1  ? <>*/}
+                                      {/*            <i className={data.approved} style={{color: 'green'}}/>*/}
+                                      {/*          </> : <>*/}
+                                      {/*            <i className={data.disapproved} style={{color: 'red'}}/>*/}
+                                      {/*          </>}*/}
+                                      {/*        </>}*/}
+
+                                      {/*      </>*/}
+                                      {/*  )*/}
+                                      {/*})}*/}
+
                                     </li>
                                   </>}
-                                </> : <>
-                                  <li className="nav-item d-flex align-items-center" key={index} role="presentation">
-                                    <Link
-                                        className={`${path === `/become-a-tutor/${data.link}` ? "active" : ""}`}
-                                        href={`/become-a-tutor/${data.link}`}
-                                    >
-                                      <i className={data.icon}/>
-                                      <span>{data.text}</span>
-                                    </Link>
-
-                                    {status === 0 && (
-                                        ''
-                                        // <i className={data.pending} style={{ color: "#d1d122" }} />
-                                    )}
-                                    {status === 1 && (
-                                        <i className={data.pending} style={{ color: "#d1d122" }} />
-                                    )}
-                                    {status === 2 && (
-                                        <i className={data.approved} style={{ color: "green" }} />
-                                    )}
-                                    {status === 3 && (
-                                        <i className={data.disapproved} style={{ color: "red" }} />
-                                    )}
-                                    {/*{verifysts.map((item, index) => {*/}
-                                    {/*  return (*/}
-                                    {/*      <>*/}
-                                    {/*        {item.sBasic_verify === 0 ? <>*/}
-                                    {/*          <i className={data.pending} style={{color: '#d1d122'}}/>*/}
-                                    {/*        </> : <>*/}
-                                    {/*          {item.sBasic_verify=== 1  ? <>*/}
-                                    {/*            <i className={data.approved} style={{color: 'green'}}/>*/}
-                                    {/*          </> : <>*/}
-                                    {/*            <i className={data.disapproved} style={{color: 'red'}}/>*/}
-                                    {/*          </>}*/}
-                                    {/*        </>}*/}
-                                    {/*        */}
-                                    {/*        {item.sProfilePhoto_verify === 0 ? <>*/}
-                                    {/*          <i className={data.pending} style={{color: '#d1d122'}}/>*/}
-                                    {/*        </> : <>*/}
-                                    {/*          {item.sProfilePhoto_verify === 1  ? <>*/}
-                                    {/*            <i className={data.approved} style={{color: 'green'}}/>*/}
-                                    {/*          </> : <>*/}
-                                    {/*            <i className={data.disapproved} style={{color: 'red'}}/>*/}
-                                    {/*          </>}*/}
-                                    {/*        </>}*/}
-
-                                    {/*      </>*/}
-                                    {/*  )*/}
-                                    {/*})}*/}
-
-                                  </li>
                                 </>}
-
-                              </>
-                          )
+                            </>
+                        )
 
                       })}
                 </ul>

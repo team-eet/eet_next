@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Courses from "../../data/dashboard/instructor/instructor.json";
 import CourseWidgets from "./Dashboard-Section/widgets/CourseWidget";
-import React, {useState, useCallback, useEffect} from "react";
+import React, {useState, useCallback, useEffect,useMemo} from "react";
 import { ReactTags } from 'react-tag-autocomplete'
 import {API_URL, API_KEY} from '../../constants/constant'
 import Axios from "axios";
@@ -15,26 +15,21 @@ import Select from 'react-select';
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 
-const UserValidationSchema = Yup.object().shape({
-    sFieldOfInterest: Yup.array()
-        .required('This field is required'),
-    sContentCourse: Yup.string()
-        .required('This field is required'),
-    sOwnCourse: Yup.string()
-        .required('This field is required')
-})
+
 const Interest = () => {
     const REACT_APP = API_URL
     const router = useRouter()
     const [category, setCategory] = useState([])
 
     const [Interest, setInterest] = useState([])
+
     const [selfCourse, setselfCourse] = useState('')
     const [content, setContent] = useState('')
     const [regId, setregId] = useState('')
     const [isLoading, setisLoading] = useState(false)
 
-
+    const [selectedInterest, setSelecetdInterest] = useState('')
+    const [options, setOptions] = useState([]);
     const handleChangeInterest = (values) => {
         // console.log(values)
         const category1 = values.map((obj) => {
@@ -43,6 +38,15 @@ const Interest = () => {
         // console.log(category1)
         setInterest(category1)
     }
+    const UserValidationSchema = Yup.object().shape({
+        // sFieldOfInterest: Yup.array()
+        //     .required('This field is required')
+        //     .min(1, 'At least one interest must be selected'),
+        sContentCourse: Yup.string()
+            .required('This field is required'),
+        sOwnCourse: Yup.string()
+            .required('This field is required')
+    });
 
     const handleChangeSelfCourse = (e) => {
         setselfCourse(e.target.value)
@@ -59,9 +63,15 @@ const Interest = () => {
             }
         })
             .then(res => {
-                console.log(res.data)
+                console.log("Course Category" , res.data)
                 if (res.data.length !== 0) {
                     setCategory(res.data)
+
+                    const optionsData = res.data.map(cat => ({
+                        value: cat.nCCId,
+                        label: cat.sCategory,
+                    }));
+                    setOptions(optionsData);
                 }
             })
             .catch(err => {
@@ -74,10 +84,19 @@ const Interest = () => {
     const [verifySts, setverifySts] = useState()
     const [isInterestAlert, setisInterestAlert] = useState(0)
 
-    const options = category.map(cat => ({
-        value: cat.nCCId,
-        label: cat.sCategory
-    }));
+    // const options = category.map(cat => ({
+    //     value: cat.nCCId,
+    //     label: cat.sCategory
+    // }));
+
+    // const options = useMemo(
+    //     () =>
+    //         category.map(cat => ({
+    //             value: cat.nCCId,
+    //             label: cat.sCategory,
+    //         })),
+    //     [category]
+    // );
 
     const [selectedOptions, setSelectedOptions] = useState('');
 
@@ -142,15 +161,25 @@ const Interest = () => {
                 console.log("Interest", res.data)
                 setinterestcnt(res.data.length)
                 if(res.data.length !== 0){
-                    const daysString = res.data[0]['sFieldOfInterest'];
+                    const interestString = res.data[0]['sFieldOfInterest'];
 
-                    // const daysArray = daysString.split(",");
-                    console.log('daysArray', daysString.split(','))
-                    // const daysArray = daysString.map(option => {
+                    setSelecetdInterest(interestString)
+                    // const selectedArray = interestString.split(',').map(item => {
+                    //     const trimmedItem = item.trim(); // Trim each item
+                    //     console.log("interestString",interestString)
+                    //     console.log("trimmedItem",trimmedItem)
+                    //     console.log("options",options)
+                    //     return options.find(option => option.label === trimmedItem); // Find the matching option
+                    // }).filter(option => option !== undefined);
+                    // console.log("Selected Array" , selectedArray)
+                    // setSelectedOptions(selectedArray);
+                    const interestArray = interestString.split(",");
+                    console.log('interestArray', interestString.split(','))
+                    // const interestArray = interestString.map(option => {
                     //     return options.find(opt => opt.label === option);
                     // });
-                    console.log(daysArray)
-                    // setSelectedOptions(daysArray)
+                    // console.log(interestArray)
+                    // setSelectedOptions(interestArray)
                     setselfCourse(res.data[0]['sOwnCourse'])
                     setContent(res.data[0]['sContentCourse'])
                 }
@@ -184,6 +213,29 @@ const Interest = () => {
 
         }
     }, []);
+
+    useEffect(() => {
+        if (options.length > 0) {
+            const selectedArray = selectedInterest.split(',').map(item => {
+                const trimmedItem = item.trim(); // Trim each item
+                return options.find(option => option.label === trimmedItem); // Find matching option
+            }).filter(option => option !== undefined);
+
+            setSelectedOptions(selectedArray);
+        }
+    }, [options]);
+
+    // useEffect(() => {
+    //     // console.log("Hello World",selectedInterest);
+    //
+    //     // Convert string to array and map to the options format
+    //     const selectedArray = selectedInterest.split(',').map((item) =>
+    //         options.find((option) => option.value === item.trim())
+    //     );
+    //
+    //     // Update state with matched options
+    //     setSelectedOptions(selectedArray);
+    // }, [selectedInterest, options]);
 
   return (
 
@@ -269,17 +321,22 @@ const Interest = () => {
 
                     </div>
                     <Formik
-                        // validationSchema={UserValidationSchema}
+                        validationSchema={UserValidationSchema}
                         initialValues={{
                             nRegId: regId,
-                            // sFieldOfInterest: selectedOptions ? selectedOptions.map(option => option.label).join(',') : '',
-                            sFieldOfInterest: '',
-                            sOwnCourse: selfCourse ? selfCourse : '',
-                            sContentCourse: content ? content : ''
+                            sFieldOfInterest: selectedOptions
+                                ? selectedOptions
+                                    .filter(option => option && option.label) // Filter out undefined or null labels
+                                    .map(option => option.label)
+                                    .join(',')
+                                : '',
+                            // sFieldOfInterest: '',
+                            sOwnCourse: (selfCourse === 1 ? 'yes' : selfCourse === 0 ? 'no' : selfCourse === 'yes' ? 'yes' : selfCourse === 'no' ? 'no' : ''),
+                            sContentCourse: (content === 1 ? 'yes' : content === 0 ? 'no' : content === 'yes' ? 'yes' : content === 'no' ? 'no' : '')
                         }}
                         enableReinitialize={true}
                         onSubmit={async (values, {resetForm}) => {
-                            console.log(values)
+                            console.log("values",values)
                             if (verifySts === 2) {
                                 router.push('/become-a-tutor/time-availability')
                             } else {
@@ -339,34 +396,35 @@ const Interest = () => {
                                     <Form>
                                         <div className={'row'}>
 
-                                            {/*<div className={'col-lg-12 mb-5'}>*/}
-                                            {/*    <label>Field of interest</label>*/}
-                                            {/*    {verifySts === 2 ? <>*/}
-                                            {/*        <Select*/}
-                                            {/*            isMulti*/}
-                                            {/*            name="sFieldOfInterest"*/}
-                                            {/*            options={options}*/}
-                                            {/*            className="basic-multi-select"*/}
-                                            {/*            classNamePrefix="select"*/}
-                                            {/*            isDisabled={true}*/}
-                                            {/*            defaultValue={selectedOptions}*/}
-                                            {/*        />*/}
-                                            {/*    </> : <>*/}
-                                            {/*        <Select*/}
-                                            {/*            isMulti*/}
-                                            {/*            name="sFieldOfInterest"*/}
-                                            {/*            options={options}*/}
-                                            {/*            className="basic-multi-select"*/}
-                                            {/*            classNamePrefix="select"*/}
-                                            {/*            value={selectedOptions}*/}
-                                            {/*            onChange={handleChange}*/}
-                                            {/*        />*/}
-                                            {/*    </>}*/}
+                                            <div className={'col-lg-12 mb-5'}>
+                                                <label>Field of interest</label>
+                                                {verifySts === 2 ? <>
+                                                    <Select
+                                                        isMulti
+                                                        name="sFieldOfInterest"
+                                                        options={options}
+                                                        className="basic-multi-select"
+                                                        classNamePrefix="select"
+                                                        isDisabled={true}
+                                                        defaultValue={selectedOptions}
+                                                    />
+                                                </> : <>
+                                                    <Select
+                                                        isMulti
+                                                        name="sFieldOfInterest"
+                                                        options={options}
+                                                        className="basic-multi-select"
+                                                        classNamePrefix="select"
+                                                        value={selectedOptions}
+                                                        defaultValue={selectedOptions}
+                                                        onChange={handleChange}
+                                                    />
+                                                </>}
 
-                                            {/*    <ErrorMessage style={{ marginTop: '50px' }} name='sFieldOfInterest' component='div'*/}
-                                            {/*                  className='field-error text-danger ms-3'/>*/}
-                                            {/*    <span className="focus-border"></span>*/}
-                                            {/*</div>*/}
+                                                <ErrorMessage style={{ marginTop: '50px' }} name='sFieldOfInterest' component='div'
+                                                              className='field-error text-danger ms-3'/>
+                                                <span className="focus-border"></span>
+                                            </div>
 
                                             <div className="col-lg-6 m-t-30">
                                                 <label>
@@ -383,6 +441,7 @@ const Interest = () => {
                                                                    value={'yes'} id="yes" type="radio"
                                                                    name="sOwnCourse"/>
                                                         }
+
 
                                                         <label htmlFor="yes">
                                                             Yes
@@ -476,7 +535,7 @@ const Interest = () => {
                                                             className="rbt-btn btn-md btn-gradient w-100"
                                                         >
                                                             <span className="btn-text"><i
-                                                                className="feather-loader"></i>isLoading...</span>
+                                                                className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
                                                         </button>
                                                     </> : <>
                                                         <button type="submit"

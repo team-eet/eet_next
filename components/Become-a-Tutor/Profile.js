@@ -18,7 +18,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 const UserValidationSchema = Yup.object().shape({
   sProfilePhotoPath: Yup.string()
-      .required('This field is required')
+      .required('Profile Photo is required')
 })
 const Profile = () => {
     const REACT_APP = API_URL
@@ -407,7 +407,7 @@ const Profile = () => {
                                                                 className="rbt-btn btn-md btn-gradient w-100"
                                                             >
                                                     <span className="btn-text">
-                                                        <i className="feather-loader"></i>isLoading...
+                                                        <i className="fa fa-spinner fa-spin p-0"></i> Proceeding...
                                                     </span>
                                                             </button>
                                                         </> : <>
