@@ -18,10 +18,10 @@ const UserValidationSchema = Yup.object().shape({
         Yup.object().shape({
             sIs_fresher: Yup.string()
                 .required('This field is required'),
-            nTotal_exper: Yup.string()
-                .required('This field is required'),
-            nTotal_online_exper: Yup.string()
-                .required('This field is required'),
+            // nTotal_exper: Yup.string()
+            //     .required('This field is required'),
+            // nTotal_online_exper: Yup.string()
+            //     .required('This field is required'),
             sOrganization: Yup.string()
                 .required('Organization is required'),
             sPosition: Yup.string()
@@ -574,7 +574,8 @@ const Experience = () => {
                         </> : <>
 
                             <Formik
-                                validationSchema={UserValidationSchema}
+                                // validationSchema={UserValidationSchema}
+                                validationSchema={fields ? UserValidationSchema : undefined}
                                 initialValues={{
                                     nRegId: regId,
                                     sExperience: ExperienceList[0]
