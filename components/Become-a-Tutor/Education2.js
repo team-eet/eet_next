@@ -570,7 +570,7 @@ const Education = () => {
 
 
                                     <Formik
-                                        validationSchema={UserValidationSchema}
+                                        validationSchema={hideFields ? UserValidationSchema : undefined}
                                         initialValues={{
                                             nRegId: regId,
                                             sEducation: EducationList[0]
