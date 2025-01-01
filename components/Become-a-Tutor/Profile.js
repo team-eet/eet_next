@@ -15,6 +15,10 @@ import client3 from '../../public/images/client/img3.PNG'
 import "venobox/dist/venobox.min.css";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+
+const MySwal = withReactContent(Swal)
 
 const UserValidationSchema = Yup.object().shape({
   sProfilePhotoPath: Yup.string()
@@ -65,10 +69,20 @@ const Profile = () => {
             } else {
                 setProfileimg('');
                 setSImagePath('');
-                alert('Please select only image file types (jpeg/jpg/png)');
+                MySwal.fire({
+                    icon: "error",
+                    title: "Invalid File Type",
+                    text: "Please select only image file types (jpeg/jpg/png)",
+                    confirmButtonText: "Okay",
+                });
             }
         } else {
-            alert('Please upload a file less than 2MB');
+            MySwal.fire({
+                icon: "error",
+                title: "File Too Large",
+                text: "Please upload a file less than 2MB",
+                confirmButtonText: "Okay",
+            });
             setSImagePath('');
         }
     };
@@ -147,6 +161,7 @@ const Profile = () => {
         });
     };
     useEffect(() => {
+        console.log("verifysts",verifysts)
         if (sImagePath) {
             initializeVenobox();
         }
@@ -223,15 +238,25 @@ const Profile = () => {
                                             </Alert>
 
                                         </> : <>
-                                            {verifysts.sProfilePhoto_verify === null || verifysts.sProfilePhoto_verify === 0 ? <>
+                                            {verifysts.sProfilePhoto_verify === 3 ?
+                                                <>
+                                                    <Alert color='danger'>
+                                                        <h6 className='alert-heading m-0 text-center'>
+                                                            Profile photo verification has been disapproved by admin
+                                                        </h6>
+                                                    </Alert>
+                                                    {
+                                                        verifysts.sProfilePhoto_comment !== null && verifysts.sProfilePhoto_comment !== '' ?
+                                                            <Alert color='danger'><span className={'text-center'}
+                                                                                        style={{fontSize: '14px'}}><b>Reason :</b> {verifysts.sProfilePhoto_comment}</span>
+                                                            </Alert>
+                                                            : <></>
+                                                    }
+                                                </>
 
-                                            </> : <>
-                                                <Alert color='danger'>
-                                                    <h6 className='alert-heading m-0 text-center'>
-                                                        Profile photo verification has been disapproved by admin
-                                                    </h6>
-                                                </Alert>
-                                            </>}
+
+                                                : <></>
+                                            }
                                         </>}
                                     </>}
                                 </> : <></>}
@@ -331,13 +356,28 @@ const Profile = () => {
                                             <div className={'row mt-5 p-0'}>
                                                 <div className={'col-lg-6'}>
                                                     <FormGroup>
-                                                        <input type="file" id={'sProfilePhoto'} className={'p-0'} name='sProfilePhotoPath'
-                                                               onChange={onChangeImage} accept="image/*"/>
-                                                        <label htmlFor="sProfilePhoto"
-                                                               className="btn btn-primary">
-                                                            Choose File
-                                                        </label>
-                                                        <small className={'d-block'}>JPG or PNG format, maximum 2 MB</small>
+                                                        {verifysts ? (
+                                                            verifysts.sProfilePhoto_verify !== 2 ? (
+                                                                <div>
+                                                                    <input
+                                                                        type="file"
+                                                                        id="sProfilePhoto"
+                                                                        className="p-0"
+                                                                        name="sProfilePhotoPath"
+                                                                        onChange={onChangeImage}
+                                                                        accept="image/*"
+                                                                    />
+                                                                    <label htmlFor="sProfilePhoto" className="btn btn-primary">
+                                                                        Choose File
+                                                                    </label>
+                                                                    <small className="d-block">
+                                                                        JPG or PNG format, maximum 2 MB
+                                                                    </small>
+                                                                </div>
+                                                            ) : null
+                                                        ) : null}
+
+
                                                         {/*{file && <img src={file} alt="Selected" style={{ maxWidth: '100px', maxHeight: '100px' }} />}*/}
 
                                                         {/*{(this.state.batchimagefile) ? <img className='w-100 h-200' src={this.state.batchimagefile} /> : <img*/}

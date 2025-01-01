@@ -13,6 +13,9 @@ import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {Alert} from "reactstrap";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+const MySwal = withReactContent(Swal)
 
 
 const UserValidationSchema = Yup.object().shape({
@@ -29,7 +32,7 @@ const Certification = () => {
   const REACT_APP = API_URL
   const [country, setCountry] = useState([]);
   const [countryId, setcountryId] = useState('')
-  const [hideFields, sethideFields] = useState(true)
+  const [hideFields, sethideFields] = useState(false)
   const [isLoading, setisLoading] = useState(false)
   const defaultValue = new Date().getFullYear();
   const [regId, setregId] = useState('')
@@ -129,10 +132,20 @@ const Certification = () => {
 
         setCerti_Image(URL.createObjectURL(event.target.files[0]));
       } else {
-        alert('Please select only image file types (jpeg/jpg/png)');
+        MySwal.fire({
+          icon: "error",
+          title: "Invalid File Type",
+          text: "Please select only image file types (jpeg/jpg/png)",
+          confirmButtonText: "Okay",
+        });
       }
     } else {
-      alert('Please upload a file less than 2MB');
+      MySwal.fire({
+        icon: "error",
+        title: "File Too Large",
+        text: "Please upload a file less than 2MB",
+        confirmButtonText: "Okay",
+      });
     }
   };
 
@@ -173,7 +186,13 @@ const Certification = () => {
     updatedFields[index].sFrom_year = value;
 
     if (parseInt(value) < yearOfBirth) {
-      alert(`Year of study "From" should not be greater than the year of birth (${yearOfBirth}).`);
+      // alert(`Year of study "From" should not be greater than the year of birth (${yearOfBirth}).`);
+      MySwal.fire({
+        icon: "error", // Error icon
+        title: "Invalid Year",
+        text: `Year of study From should not be greater than the year of birth (${yearOfBirth}).`,
+        confirmButtonText: "Okay", // Button text
+      });
       return; // Stop further execution
     }
 
@@ -183,7 +202,13 @@ const Certification = () => {
         parseInt(updatedFields[index].sTo_year) < parseInt(value)
 
     ) {
-      alert("Year of study to should not be less than Year of study from.");
+      // alert("Year of study to should not be less than Year of study from.");
+      MySwal.fire({
+        icon: "error", // Error icon
+        title: "Invalid Year Range",
+        text: "Year of study To should not be less than Year of study From.",
+        confirmButtonText: "Okay", // Button text
+      });
       setcertificationFields('');
       updatedFields[index].sFrom_year = " ";
     }
@@ -203,7 +228,12 @@ const Certification = () => {
         parseInt(value) < parseInt(updatedFields[index].sFrom_year)
     ) {
       updatedFields[index].sTo_year = '';
-      alert("Year of study to should not be less than Year of study from.");
+      MySwal.fire({
+        icon: "error", // Error icon
+        title: "Invalid Year Range",
+        text: "Year of study To should not be less than Year of study From.",
+        confirmButtonText: "Okay", // Button text
+      });
     }
 
     setcertificationFields(updatedFields);
@@ -289,6 +319,7 @@ const Certification = () => {
   const [tutorcnt, setTutorcnt] = useState('')
   const [updateArray, setUpdatearray] = useState([])
   const [deletedArray, setdeletedArray] = useState([])
+  const [commentMessage, setCommentMessage] = useState([])
   const [verifySts, setverifySts] = useState()
   const [isCertificationAlert, setisCertificationAlert] = useState(0)
   const [nocertificate, setnocertificate] = useState(false)
@@ -350,6 +381,7 @@ const Certification = () => {
             console.log("GetTutorEducationVerify",res.data)
             if (res.data.length !== 0) {
               if (res.data[0].sCertification_verify !== null){
+                setCommentMessage(res.data[0])
                 setverifySts(res.data[0].sCertification_verify)
                 setisCertificationAlert(1)
               }else{
@@ -391,6 +423,12 @@ const Certification = () => {
               settutcerticnt(res.data[0].certification_data)
             }
 
+            if(res.data[0].certification_data === '1'){
+              sethideFields(true)
+            }else{
+              sethideFields(false)
+            }
+
             if(verifySts === 2 ) {
               setnocertificate(true)
             }
@@ -407,10 +445,15 @@ const Certification = () => {
                 return item.sCertification_comment
               })
               // console.log(certivalue)
-              if(certivalue[0] === 'No Certification') {
-                sethideFields(false)
+              // if(certivalue[0] === 'No Certification') {
+              //   sethideFields(false)
+              // }
+              if(res.data[0].certification_data === '0') {
+                setisCertified(true)
+              }else{
+                setisCertified(false)
               }
-              setisCertified(certivalue[0])
+              // setisCertified(certivalue[0])
               setcertificationFields(res.data)
             } else {
 
@@ -465,7 +508,7 @@ const Certification = () => {
                 </div>
 
                 {
-                  isCertified !== 'No Certification' ? <>
+                  isCertified !== '0' ? <>
                         <div className="form-group d-flex align-items-center mt-3">
                           <Skeleton circle height={20} width={20} className="me-2"/> {/* Checkbox icon */}
                           <Skeleton height={15} width={200}/> {/* Label text */}
@@ -677,7 +720,13 @@ const Certification = () => {
                           }
                         }
                         else {
-                          alert('No tutor added')
+                          // alert('No tutor added')
+                          MySwal.fire({
+                            icon: "error", // Error icon
+                            title: "Error", // Alert Title
+                            text: "No tutor added", // Alert Message
+                            confirmButtonText: "Okay", // Button text
+                          });
                         }
                       }
                     }}
@@ -715,6 +764,15 @@ const Certification = () => {
                                             Certification verification has been disapproved by admin
                                           </h6>
                                         </Alert>
+
+                                        {
+                                          commentMessage.sCertification_comment !== 'No Certification' && commentMessage.sCertification_comment !== '' ?
+
+                                              <Alert color='danger'>
+                                                                            <span className={'text-center'}
+                                                                                  style={{fontSize: '14px'}}><b>Reason :</b> {commentMessage.sCertification_comment}</span>
+                                              </Alert> : <></>
+                                        }
                                       </>}
                                     </>}
                                   </>}
@@ -722,35 +780,36 @@ const Certification = () => {
                               }
 
                               <p>Let us know about teaching certification</p>
-                              {isCertified === 'No Certification' ? <>
-                                {verifySts === 2 ? <>
-                                  <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
-                                         onChange={handleIsCertification}/>
-                                  <label htmlFor="Certifcation">
-                                    I have not pursued any professional teaching certification
-                                  </label>
-                                </> : <>
-                                  <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
-                                         onChange={handleIsCertification}/>
-                                  <label htmlFor="Certifcation">
-                                    I have not pursued any professional teaching certification
-                                  </label>
-                                </>}
-                              </> : <>
-                                {verifySts === 2 ? <>
-                                  <input id="Certifcation" type="checkbox" checked value={isCertified} name="isCertification"
-                                         onChange={handleIsCertification}/>
-                                  <label htmlFor="Certifcation">
-                                    I have not pursued any professional teaching certification
-                                  </label>
-                                </> : <>
-                                  <input id="Certifcation" type="checkbox" value={isCertified} name="isCertification"
-                                         onChange={handleIsCertification}/>
-                                  <label htmlFor="Certifcation">
-                                    I have not pursued any professional teaching certification
-                                  </label>
-                                </>}
-                              </>}
+                              {tutcerticnt === '0' ? (
+                                  <>
+                                    <input
+                                        id="Certification"
+                                        type="checkbox"
+                                        disabled={verifySts === 2 ? true : false} // Disable if verifySts is 2
+                                        checked={isCertified}
+                                        name="isCertification"
+                                        onChange={handleIsCertification}
+                                    />
+                                    <label htmlFor="Certification">
+                                      I have not pursued any professional teaching certification
+                                    </label>
+                                  </>
+                              ) : (
+                                  <>
+                                    <input
+                                        id="Certification"
+                                        type="checkbox"
+                                        disabled={verifySts === 2 ? true : false} // Disable if verifySts is 2
+                                        checked={isCertified}
+                                        name="isCertification"
+                                        onChange={handleIsCertification}
+                                    />
+                                    <label htmlFor="Certification">
+                                      I have not pursued any professional teaching certification
+                                    </label>
+                                  </>
+                              )}
+
 
 
                             </div>
@@ -758,7 +817,7 @@ const Certification = () => {
                               {/*{console.log(certificationFields)}*/}
                               {/*<form action="#" className="row row--15 mt-5">*/}
                               {hideFields ? <>
-                                {verifySts !== 2 ? <>
+                                {/*{verifySts !== 2 ? <>*/}
                                   {certificationFields.length >= 1 ? <>
 
                                     {values.sCertification.map((certification, index) => {
@@ -869,13 +928,18 @@ const Certification = () => {
                                                       JPG or PNG format; maximum size of 2MB</small>
 
                                                     <div>
-                                                      <label id='label'
-                                                             className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
-                                                        image
-                                                        <input type="file" id="file" name="file"
-                                                               onChange={(e) => handleChangeImage(e, index)}
-                                                               accept="image/*"/>
-                                                      </label>
+                                                      {
+                                                        verifySts !== 2 ? <>
+                                                          <label id='label'
+                                                                 className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
+                                                            image
+                                                            <input type="file" id="file" name="file"
+                                                                   onChange={(e) => handleChangeImage(e, index)}
+                                                                   accept="image/*"/>
+                                                          </label>
+                                                        </> : null
+                                                      }
+
                                                       <div>
                                                         {certification.sCerti_imagePath && (
                                                             <img className={'mt-3'} src={certification.sCerti_imagePath}
@@ -921,7 +985,7 @@ const Certification = () => {
                                       </div>
                                     </>}
                                   </> : ''}
-                                </> : <></>}
+                                {/*</> : <></>}*/}
 
                               </> : <>
                                 {/*<div key={certificationFields.nTCId}>*/}

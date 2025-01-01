@@ -16,10 +16,20 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 const MySwal = withReactContent(Swal)
 
+
 const UserValidationSchema = Yup.object().shape({
-  sDesc: Yup.string()
-      .required('Description is required')
-})
+    sDesc: Yup.string()
+        .required('Description is required')
+        .test(
+            'word-count',
+            'Description must be between 100 and 200 words',
+            (value) => {
+                if (!value) return false; // If value is null or undefined
+                const wordCount = value.trim().split(/\s+/).length;
+                return wordCount >= 100 && wordCount <= 200;
+            }
+        ),
+});
 
 
 const Description = () => {
@@ -28,26 +38,7 @@ const Description = () => {
   const [isLoading, setisLoading] = useState(false);
   const router = useRouter()
   const handleTextChange = (e) => {
-
-    if(countWords(e.target.value) >= 100 && countWords(e.target.value) <= 200){
-      // alert('no')
-      MySwal.fire({
-        title: 'Info',
-        text: 'Can not add less than 100 words and more than 200 words!',
-        icon: 'info',
-        customClass: {
-          confirmButton: 'btn btn-primary'
-        },
-        buttonsStyling: false
-      }).then(() => {
-        // window.location.reload()
-      })
-      // setText('');
-    } else {
       setText(e.target.value);
-    }
-
-
   };
 
   const countWords = (desc) => {
@@ -61,6 +52,7 @@ const Description = () => {
 
   };
   const [regId, setregId] = useState('')
+  const [commentMessage, setCommentMessage] = useState([])
   const [verifySts, setverifySts] = useState()
   const [isDescriptionAlert, setisDescriptionAlert] = useState(0)
   useEffect(() => {
@@ -77,6 +69,7 @@ const Description = () => {
           console.log("GetDescVerify",res.data[0].sDesc_verify)
           if (res.data.length !== 0) {
             if(res.data[0].sDesc_verify !== null){
+                setCommentMessage(res.data[0])
               setverifySts(res.data[0].sDesc_verify)
               setisDescriptionAlert(1)
             }else{
@@ -200,6 +193,15 @@ const Description = () => {
                             Description verification has been disapproved by admin
                           </h6>
                         </Alert>
+
+                          {
+                              commentMessage.sDesc_comment !== null && commentMessage.sDesc_comment !== '' ?
+
+                                  <Alert color='danger'>
+                                                                            <span className={'text-center'}
+                                                                                  style={{fontSize: '14px'}}><b>Reason :</b> {commentMessage.sDesc_comment}</span>
+                                  </Alert> : <></>
+                          }
                       </>}
 
                     </>}

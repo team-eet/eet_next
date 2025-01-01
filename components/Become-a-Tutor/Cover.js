@@ -15,15 +15,18 @@ import {API_URL, API_KEY} from "../../constants/constant";
 import "venobox/dist/venobox.min.css";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+const MySwal = withReactContent(Swal)
 
 
 const UserValidationSchema = Yup.object().shape({
     sCoverPhotoLeftPath: Yup.string()
-        .required('Cover Photo Left is required'),
+        .required('Image-1 is required'),
     sCoverPhotoCenterPath: Yup.string()
-        .required('Cover Photo Center is required'),
+        .required('Image-2 is required'),
     sCoverPhotoRightPath: Yup.string()
-        .required('Cover Photo Right is required')
+        .required('Image-3 is required')
 })
 const Cover = () => {
     const REACT_APP = API_URL
@@ -76,42 +79,64 @@ const Cover = () => {
             } else {
                 setcoverLeftimg('');
                 setSImagePathLeft('');
-                alert('Please select only image file types (jpeg/jpg/png)');
+                MySwal.fire({
+                    icon: "error",
+                    title: "Invalid File Type",
+                    text: "Please select only image file types (jpeg/jpg/png)",
+                    confirmButtonText: "Okay",
+                });
             }
         } else {
             setcoverLeftimg('');
             setSImagePathLeft('');
-            alert('Please upload a file less than 2MB');
+            MySwal.fire({
+                icon: "error",
+                title: "File Too Large",
+                text: "Please upload a file less than 2MB",
+                confirmButtonText: "Okay",
+            });
         }
     };
 
     const onChangeCenterImage = (event) => {
         const fileext = ['image/jpeg', 'image/jpg', 'image/png'];
         // console.log(event)
-        if (event.target.files[0].size < 2000000) {
-            if (fileext.includes(event.target.files[0].type)) {
-                // console.log(event.target.files[0])
-                getBase64(event.target.files[0])
-                    .then((result) => {
-                        // console.log(result)
-                        // const initialVaue = result
-                        // setsProfilePhotoPath(result)
-                        setSImagePathCenter(result);
-                    })
-                    .catch((err) => {
-                        console.error('Error converting image to base64:', err);
-                    });
+        if (event.target.files && event.target.files[0]) {
+            if (event.target.files[0].size < 2000000) {
+                if (fileext.includes(event.target.files[0].type)) {
+                    // console.log(event.target.files[0])
+                    getBase64(event.target.files[0])
+                        .then((result) => {
+                            // console.log(result)
+                            // const initialVaue = result
+                            // setsProfilePhotoPath(result)
+                            setSImagePathCenter(result);
+                        })
+                        .catch((err) => {
+                            console.error('Error converting image to base64:', err);
+                        });
 
-                setcoverCenterimg(URL.createObjectURL(event.target.files[0]));
+                    setcoverCenterimg(URL.createObjectURL(event.target.files[0]));
+                } else {
+                    setcoverCenterimg('');
+                    setSImagePathCenter('');
+                    MySwal.fire({
+                        icon: "error",
+                        title: "Invalid File Type",
+                        text: "Please select only image file types (jpeg/jpg/png)",
+                        confirmButtonText: "Okay",
+                    });
+                }
             } else {
                 setcoverCenterimg('');
                 setSImagePathCenter('');
-                alert('Please select only image file types (jpeg/jpg/png)');
+                MySwal.fire({
+                    icon: "error",
+                    title: "File Too Large",
+                    text: "Please upload a file less than 2MB",
+                    confirmButtonText: "Okay",
+                });
             }
-        } else {
-            setcoverCenterimg('');
-            setSImagePathCenter('');
-            alert('Please upload a file less than 2MB');
         }
     };
 
@@ -133,12 +158,22 @@ const Cover = () => {
             } else {
                 setSImagePathRight('')
                 setcoverRightimg('');
-                alert('Please select only image file types (jpeg/jpg/png)');
+                MySwal.fire({
+                    icon: "error",
+                    title: "Invalid File Type",
+                    text: "Please select only image file types (jpeg/jpg/png)",
+                    confirmButtonText: "Okay",
+                });
             }
         } else {
             setSImagePathRight('')
             setcoverRightimg('');
-            alert('Please upload a file less than 2MB');
+            MySwal.fire({
+                icon: "error",
+                title: "File Too Large",
+                text: "Please upload a file less than 2MB",
+                confirmButtonText: "Okay",
+            });
         }
     };
     const [regId, setregId] = useState('')
@@ -148,6 +183,7 @@ const Cover = () => {
         if (localStorage.getItem('userData')) {
             setregId(JSON.parse(localStorage.getItem('userData')).regid)
 
+            console.log("verifysts",verifysts)
 
         Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
             headers: {
@@ -320,25 +356,25 @@ const Cover = () => {
                                                             {/*</> : <></>}*/}
 
                                                             {
-                                                                verifysts.sCoverPhotoLeft_comment !== null && verifysts.sCoverPhotoLeft_comment !== "" ? <>
+                                                                verifysts.sCoverPhotoLeft_comment !== null && verifysts.sCoverPhotoLeft_comment !== "" && verifysts.sCoverPhotoLeft_verify === 3 ? <>
                                                                     <Alert color='danger'><span className={'text-center'}
-                                                                                                style={{fontSize: '14px'}}>Image-1 : {verifysts.sCoverPhotoLeft_comment}</span>
+                                                                                                style={{fontSize: '14px'}}><b>Image-1 :</b> {verifysts.sCoverPhotoLeft_comment}</span>
                                                                     </Alert>
                                                                 </> : <></>
 
                                                             }
                                                             {
-                                                                verifysts.sCoverPhotoCenter_comment !== null && verifysts.sCoverPhotoCenter_comment !== "" ? <>
+                                                                verifysts.sCoverPhotoCenter_comment !== null && verifysts.sCoverPhotoCenter_comment !== "" && verifysts.sCoverPhotoCenter_verify === 3 ? <>
                                                                     <Alert color='danger'><span className={'text-center'}
-                                                                                                style={{fontSize: '14px'}}>Image-2 : {verifysts.sCoverPhotoCenter_comment}</span>
+                                                                                                style={{fontSize: '14px'}}><b>Image-2 :</b> {verifysts.sCoverPhotoCenter_comment}</span>
                                                                     </Alert>
                                                                 </> : <></>
 
                                                             }
                                                             {
-                                                                verifysts.sCoverPhotoRight_comment !== null && verifysts.sCoverPhotoRight_comment !== "" ? <>
+                                                                verifysts.sCoverPhotoRight_comment !== null && verifysts.sCoverPhotoRight_comment !== "" && verifysts.sCoverPhotoRight_verify === 3 ? <>
                                                                     <Alert color='danger'><span className={'text-center'}
-                                                                                                style={{fontSize: '14px'}}>Image-3 : {verifysts.sCoverPhotoRight_comment}</span>
+                                                                                                style={{fontSize: '14px'}}><b>Image-3 :</b> {verifysts.sCoverPhotoRight_comment}</span>
                                                                     </Alert>
                                                                 </> : <></>
 
@@ -584,17 +620,25 @@ const Cover = () => {
                                                                     <div
                                                                         className={'col-6 col-sm-4 col-lg-4 mt-3 firstImage'}>
                                                                         <FormGroup>
-                                                                            <input type="file" id={'sFirstCover'}
-                                                                                   name="sCoverPhotoLeftPath"
-                                                                                   className={'p-0'}
-                                                                                   onChange={onChangeLeftImage}
-                                                                                   accept="image/*"/>
-                                                                            <label htmlFor="sFirstCover"
-                                                                                   className="d-block btn btn-primary">
-                                                                                Choose File
-                                                                            </label>
-                                                                            <small>JPG or PNG format, maximum 2
-                                                                                MB</small>
+                                                                            {
+                                                                                verifysts ?
+                                                                                    verifysts.sCoverPhotoLeft_verify !== 2 ? <>
+                                                                                        <input type="file"
+                                                                                               id={'sFirstCover'}
+                                                                                               name="sCoverPhotoLeftPath"
+                                                                                               className={'p-0'}
+                                                                                               onChange={onChangeLeftImage}
+                                                                                               accept="image/*"/>
+                                                                                        <label htmlFor="sFirstCover"
+                                                                                               className="d-block btn btn-primary">
+                                                                                            Choose File
+                                                                                        </label>
+                                                                                        <small>JPG or PNG format,
+                                                                                            maximum 2
+                                                                                            MB</small>
+                                                                                    </> : null : null
+                                                                            }
+
                                                                             {/*{sImagePathLeft ?*/}
                                                                             {/*    <img src={sImagePathLeft} height={200}*/}
                                                                             {/*         width={200}*/}
@@ -629,17 +673,25 @@ const Cover = () => {
                                                                     <div
                                                                         className={'col-6 col-sm-4 col-lg-4 mt-3 secoundImage'}>
                                                                         <FormGroup>
-                                                                            <input type="file" id={'sSecoundCover'}
-                                                                                   name={"sCoverPhotoCenterPath"}
-                                                                                   className={'p-0'}
-                                                                                   onChange={onChangeCenterImage}
-                                                                                   accept="image/*"/>
-                                                                            <label htmlFor="sSecoundCover"
-                                                                                   className="d-block btn btn-primary">
-                                                                                Choose File
-                                                                            </label>
-                                                                            <small>JPG or PNG format, maximum 2
-                                                                                MB</small>
+                                                                            {
+                                                                                verifysts ?
+                                                                                    verifysts.sCoverPhotoCenter_verify !== 2 ? <>
+                                                                                        <input type="file"
+                                                                                               id={'sSecoundCover'}
+                                                                                               name={"sCoverPhotoCenterPath"}
+                                                                                               className={'p-0'}
+                                                                                               onChange={onChangeCenterImage}
+                                                                                               accept="image/*"/>
+                                                                                        <label htmlFor="sSecoundCover"
+                                                                                               className="d-block btn btn-primary">
+                                                                                            Choose File
+                                                                                        </label>
+                                                                                        <small>JPG or PNG format,
+                                                                                            maximum 2
+                                                                                            MB</small>
+                                                                                    </> : null : null
+                                                                            }
+
                                                                             {/*{sImagePathCenter ?*/}
                                                                             {/*    <img src={sImagePathCenter} height={200}*/}
                                                                             {/*         width={200}*/}
@@ -675,17 +727,24 @@ const Cover = () => {
                                                                     <div
                                                                         className={'col-6 col-sm-4 col-lg-4 mt-3 thirdImage'}>
                                                                         <FormGroup>
-                                                                            <input type="file" id={'sThirdCover'}
-                                                                                   name={"sCoverPhotoRightPath"}
-                                                                                   className={'p-0'}
-                                                                                   onChange={onChangeRightImage}
-                                                                                   accept="image/*"/>
-                                                                            <label htmlFor="sThirdCover"
-                                                                                   className="d-block btn btn-primary">
-                                                                                Choose File
-                                                                            </label>
-                                                                            <small>JPG or PNG format, maximum 2
-                                                                                MB</small>
+                                                                            {
+                                                                                verifysts ?
+                                                                                    verifysts.sCoverPhotoRight_verify !== 2 ? <>
+                                                                                        <input type="file"
+                                                                                               id={'sThirdCover'}
+                                                                                               name={"sCoverPhotoRightPath"}
+                                                                                               className={'p-0'}
+                                                                                               onChange={onChangeRightImage}
+                                                                                               accept="image/*"/>
+                                                                                        <label htmlFor="sThirdCover"
+                                                                                               className="d-block btn btn-primary">
+                                                                                            Choose File
+                                                                                        </label>
+                                                                                        <small>JPG or PNG format,
+                                                                                            maximum 2
+                                                                                            MB</small>
+                                                                                    </> : null : null
+                                                                            }
                                                                             {/*{sImagePathRight ?*/}
                                                                             {/*    <img src={sImagePathRight} height={200}*/}
                                                                             {/*         width={200}*/}

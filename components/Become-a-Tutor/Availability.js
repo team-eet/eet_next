@@ -33,7 +33,7 @@ const Availability = () => {
   const router = useRouter()
   const [country, setCountry] = useState([]);
   const [countryId, setcountryId] = useState('101')
-  const [duration, setDuration] = useState('')
+  const [duration, setDuration] = useState('1 hours')
   const [timeSlot, setTimeSlot] = useState('')
   const [weekendBatch, setWeekendBatch] = useState('')
   const [teachingDays, setTeachingDays] = useState([])
@@ -104,6 +104,7 @@ const Availability = () => {
     }
   }
   const [regId, setregId] = useState('')
+    const [commentMessage, setCommentMessage] = useState([])
     const [verifySts, setverifySts] = useState()
     const [isAvailabililityAlert, setisAvailabililityAlert] = useState(0)
     const [tutorcnt, setTutorcnt] = useState('')
@@ -122,6 +123,7 @@ const Availability = () => {
               // console.log("Ava",res.data[0].sTimeAvail_verify)
               if (res.data.length !== 0) {
                   if (res.data[0].sTimeAvail_verify !== null){
+                      setCommentMessage(res.data[0])
                       setverifySts(res.data[0].sTimeAvail_verify)
                       setisAvailabililityAlert(1)
                   }else{
@@ -156,7 +158,7 @@ const Availability = () => {
           }
       })
           .then(res => {
-              console.log(res.data)
+              console.log("Time",res.data)
               settutoravailcnt(res.data.length)
               if(res.data.length !== 0 ){
                   setcountryId(res.data[0]['nCountryId'])
@@ -318,6 +320,15 @@ const Availability = () => {
                                                     Interests verification has been disapproved by admin
                                                 </h6>
                                             </Alert>
+
+                                            {
+                                                commentMessage.sTimeAvail_comment !== null && commentMessage.sTimeAvail_comment !== '' && commentMessage.sTimeAvail_comment !== 0 ?
+
+                                                    <Alert color='danger'>
+                                                                            <span className={'text-center'}
+                                                                                  style={{fontSize: '14px'}}><b>Reason :</b> {commentMessage.sTimeAvail_comment}</span>
+                                                    </Alert> : <></>
+                                            }
                                         </>}
                                     </>}
                                 </>}
@@ -329,14 +340,14 @@ const Availability = () => {
                             initialValues={{
                                 nRegId: regId,
                                 nCountryId: countryId ? countryId : '',
-                                sTime_slot: timeSlot ? timeSlot : '',
+                                sTime_slot: timeSlot === 'morning' ? 'morning' : timeSlot === 'afternoon' ? 'afternoon' : timeSlot === 'evening' ? 'evening' : timeSlot === 'lateEvening' ? 'lateEvening' : timeSlot === 1 ? 'morning' : timeSlot === 2 ? 'afternoon' : timeSlot === 3 ? 'evening' : timeSlot === 4 ? 'lateEvening' : '',
                                 sPreferable_days: teachingDays ? [teachingDays].toString() : '',
-                                sWeekend_batches: weekendBatch ? weekendBatch : '',
+                                sWeekend_batches: weekendBatch === 'yes' ? 'yes' : weekendBatch === 'no' ? 'no' : weekendBatch === 1 ? 'yes' : weekendBatch === 0 ? 'no' : '',
                                 sMax_hours: duration ? `${duration}` : ''
                             }}
                             enableReinitialize={true}
                             onSubmit={async (values, {resetForm}) => {
-                                // console.log(values)
+                                console.log("Form Value",values,"timeSlot",timeSlot,"sMax_hours",duration)
                                 //   console.log([teachingDays].toString())
                                 if (verifySts === 2) {
 

@@ -529,7 +529,6 @@ const Basics = () => {
 
 
 
-
   }, []);
   return (
     <>
@@ -708,9 +707,13 @@ const Basics = () => {
                                                       Basic information verification has been disapproved by admin
                                                   </h6>
                                               </Alert>
-                                              <Alert color='danger'>
-                                                  <h6 className='alert-heading m-0 text-center'>Reason : {verifysts.sBasic_comment}</h6>
-                                              </Alert>
+                                              {
+                                                  verifysts.sBasic_comment !== null && verifysts.sBasic_comment !== '' ?
+                                                      <Alert color='danger'>
+                                                          <span className={'text-center'} style={{fontSize: '14px'}}><b>Reason :</b> {verifysts.sBasic_comment}</span>
+                                                      </Alert> : <></>
+                                              }
+
                                           </>}
                                       </>}
                                   </>}

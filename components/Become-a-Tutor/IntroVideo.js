@@ -11,6 +11,9 @@ import {Alert, FormGroup} from "reactstrap";
 import {API_URL, API_KEY} from "../../constants/constant";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+const MySwal = withReactContent(Swal)
 
 
 // const UserValidationSchema = Yup.object().shape({
@@ -80,7 +83,7 @@ const IntroVideo = () => {
   const handleChange = (event) => {
       setvideoUrl('')
     const fileext = ['video/mp4']
-    if (event.target.files[0].size < 10485760) {
+    if (event.target.files && event.target.files[0] && event.target.files[0].size < 10485760) {
       if (fileext.includes(event.target.files[0].type)) {
         getBase64(event.target.files[0])
             .then(result => {
@@ -92,13 +95,24 @@ const IntroVideo = () => {
             })
         setIntroVideo(URL.createObjectURL(event.target.files[0]))
       } else {
-        alert("Only select video file type")
+          MySwal.fire({
+              icon: "error", // Error icon
+              title: "Invalid File Type", // Alert Title
+              text: "Only select video file type.", // Alert Message
+              confirmButtonText: "Okay", // Button text
+          });
       }
     } else {
-      alert("Please upload file less than 10MB")
+        MySwal.fire({
+            icon: "error", // Error icon
+            title: "File Size Exceeded", // Alert Title
+            text: "Please upload file less than 10MB.", // Alert Message
+            confirmButtonText: "Okay", // Button text
+        });
     }
   };
   const [regId, setregId] = useState('')
+  const [commentMessage, setCommentMessage] = useState([])
   const [verifySts, setverifySts] = useState()
   const [isIntroVideoAlert, setisIntroVideoAlert] = useState(0)
 
@@ -116,6 +130,7 @@ const IntroVideo = () => {
             console.log("Intro Video" , res.data[0].sIntroVideo_verify)
           if (res.data.length !== 0) {
               if(res.data[0].sIntroVideo_verify !== null){
+                  setCommentMessage(res.data[0])
                   setverifySts(res.data[0].sIntroVideo_verify)
                   setisIntroVideoAlert(1)
               }else {
@@ -244,14 +259,26 @@ const IntroVideo = () => {
                                                   Introduction video verification has been disapproved by admin
                                               </h6>
                                           </Alert>
+
+                                          {
+                                              commentMessage.sIntroVideo_comment !== null && commentMessage.sIntroVideo_comment !== '' ?
+
+                                                  <Alert color='danger'>
+                                                                            <span className={'text-center'}
+                                                                                  style={{fontSize: '14px'}}><b>Reason :</b> {commentMessage.sIntroVideo_comment}</span>
+                                                  </Alert> : <></>
+                                          }
                                       </>}
                                   </>}
                               </>}
                           </> : <></>}
 
                           {/*<h3>Your profile photo is your first impression</h3>*/}
-                          <p>Add a landscape video of maximum 10 mb</p>
-                      </div>
+                              {
+                                  verifySts !== 2 ? <p>Add a landscape video of maximum 10 mb</p> : null
+                              }
+
+                          </div>
 
                       <Formik
                           validationSchema={UserValidationSchema}
@@ -311,21 +338,27 @@ const IntroVideo = () => {
                                       <Form>
                                           <div className={'row mt-5 p-0'}>
                                               <div className={'col-lg-6'}>
-                                                  <div>
-                                                      <label id='label'
-                                                             className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
-                                                          video
-                                                          <input type="file" id="videofile" name="sIntroVideoPath"
-                                                                 onChange={handleChange}
-                                                                 accept="video/* "/>
-                                                      </label>
-                                                      {/*<ErrorMessage name='sIntroVideoPath' component='div'*/}
-                                                      {/*              className='field-error text-danger'/>*/}
-                                                      {/*<span className="focus-border"></span>*/}
-                                                  </div>
-                                                  <ErrorMessage name='sIntroVideoUrl' component='div'
-                                                                className='field-error text-danger'/>
-                                                  <span className="focus-border"></span>
+                                                  {
+                                                      verifySts !== 2 ? <>
+                                                          <div>
+                                                              <label id='label'
+                                                                     className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
+                                                                  video
+                                                                  <input type="file" id="videofile"
+                                                                         name="sIntroVideoPath"
+                                                                         onChange={handleChange}
+                                                                         accept="video/* "/>
+                                                              </label>
+                                                              {/*<ErrorMessage name='sIntroVideoPath' component='div'*/}
+                                                              {/*              className='field-error text-danger'/>*/}
+                                                              {/*<span className="focus-border"></span>*/}
+                                                          </div>
+                                                          <ErrorMessage name='sIntroVideoUrl' component='div'
+                                                                        className='field-error text-danger'/>
+                                                          <span className="focus-border"></span>
+                                                      </> : null
+                                                  }
+
                                                   <div className={'mt-3'}>
                                                       {video ? <ReactPlayer
                                                           // playing={this.state.videoplay}
@@ -335,16 +368,28 @@ const IntroVideo = () => {
                                                           url={video}></ReactPlayer> : ''}
                                                   </div>
 
-                                                  <p className={'mt-5 m-0'}>Or</p>
-                                                  <p className={'m-0 mb-3'}>Paste a link of video</p>
-                                                  <div className="form-group">
-                                                      <input required={verifySts === 2} onChange={handleChangeURL}
-                                                             value={videoUrl} className={`form-control ${errors.sIntroVideoUrl && touched.sIntroVideoUrl && 'is-invalid'}`} name="sIntroVideoUrl" type="text"
-                                                             placeholder="Video Url"/>
-                                                      {/*<ErrorMessage name='sIntroVideoUrl' component='div'*/}
-                                                      {/*              className='field-error text-danger'/>*/}
-                                                      {/*<span className="focus-border"></span>*/}
-                                                  </div>
+                                                  {
+                                                      verifySts !== 2 ? <>
+                                                          <p className={'mt-5 m-0'}>Or</p>
+                                                          <p className={'m-0 mb-3'}>Paste a link of video</p>
+                                                      </> : null
+                                                  }
+                                                  {
+                                                      verifySts === 2 ? null : <>
+                                                          <div className="form-group">
+                                                              <input required={verifySts === 2}
+                                                                     onChange={handleChangeURL}
+                                                                     value={videoUrl}
+                                                                     className={`form-control ${errors.sIntroVideoUrl && touched.sIntroVideoUrl && 'is-invalid'}`}
+                                                                     name="sIntroVideoUrl" type="text"
+                                                                     placeholder="Video Url"/>
+                                                              {/*<ErrorMessage name='sIntroVideoUrl' component='div'*/}
+                                                              {/*              className='field-error text-danger'/>*/}
+                                                              {/*<span className="focus-border"></span>*/}
+                                                          </div>
+                                                      </>
+                                                  }
+
                                                   <ErrorMessage name='sIntroVideoUrl' component='div'
                                                                 className='field-error text-danger'/>
                                                   <span className="focus-border"></span>

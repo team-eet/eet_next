@@ -54,6 +54,7 @@ const InstructorDashboardSidebar = ({ url }) => {
             if(res.data.length !== 0) {
               console.log(res.data[0])
               let res_data = res.data[0];
+              console.log("res_data",res_data)
               for (let key in res_data) {
                 if (res_data[key] === null) {
                   res_data[key] = 0;

@@ -13,6 +13,9 @@ import {Alert} from "reactstrap";
 import * as Yup from "yup";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+const MySwal = withReactContent(Swal)
 
 
 const UserValidationSchema = Yup.object().shape({
@@ -34,7 +37,7 @@ const Education = () => {
     const REACT_APP = API_URL
     const [country, setCountry] = useState([]);
     const [countryId, setcountryId] = useState('101')
-    const [hideFields, sethideFields] = useState(true)
+    const [hideFields, sethideFields] = useState(false)
     const [isLoading, setisLoading] = useState(false)
     const defaultValue = new Date().getFullYear();
     const [regId, setregId] = useState('')
@@ -174,10 +177,20 @@ const Education = () => {
 
                 // setsEdu_Image(URL.createObjectURL(event.target.files[0]));
             } else {
-                alert('Please select only image file types (jpeg/jpg/png)');
+                MySwal.fire({
+                    icon: "error",
+                    title: "Invalid File Type",
+                    text: "Please select only image file types (jpeg/jpg/png)",
+                    confirmButtonText: "Okay",
+                });
             }
         } else {
-            alert('Please upload a file less than 2MB');
+            MySwal.fire({
+                icon: "error",
+                title: "File Too Large",
+                text: "Please upload a file less than 2MB",
+                confirmButtonText: "Okay",
+            });
         }
     };
 
@@ -189,7 +202,13 @@ const Education = () => {
         updatedFields[index].sFrom_year = value;
 
         if (parseInt(value) < yearOfBirth) {
-            alert(`Year of study "From" should not be greater than the year of birth (${yearOfBirth}).`);
+            // alert(`Year of study "From" should not be greater than the year of birth (${yearOfBirth}).`);
+            MySwal.fire({
+                icon: "error", // Error icon
+                title: "Invalid Year",
+                text: `Year of study From should not be greater than the year of birth (${yearOfBirth}).`,
+                confirmButtonText: "Okay", // Button text
+            });
             return; // Stop further execution
         }
 
@@ -199,7 +218,13 @@ const Education = () => {
             parseInt(updatedFields[index].sTo_year) < parseInt(value)
 
         ) {
-            alert("Year of study to should not be less than Year of study from.");
+            // alert("Year of study to should not be less than Year of study from.");
+            MySwal.fire({
+                icon: "error", // Error icon
+                title: "Invalid Year Range",
+                text: "Year of study To should not be less than Year of study From.",
+                confirmButtonText: "Okay", // Button text
+            });
             seteducationFields('');
             updatedFields[index].sFrom_year = "";
         }
@@ -219,7 +244,13 @@ const Education = () => {
             parseInt(value) < parseInt(updatedFields[index].sFrom_year)
         ) {
             updatedFields[index].sTo_year = '';
-            alert("Year of study to should not be less than Year of study from.");
+            // alert("Year of study to should not be less than Year of study from.");
+            MySwal.fire({
+                icon: "error", // Error icon
+                title: "Invalid Year Range", // Alert Title
+                text: "Year of study To should not be less than Year of study From.", // Message
+                confirmButtonText: "Okay", // Button text
+            });
         }
 
         seteducationFields(updatedFields);
@@ -292,7 +323,7 @@ const Education = () => {
             </option>
         );
     }
-    const [isEducated, setEducated] = useState('')
+    const [isEducated, setEducated] = useState(true)
     const handleIsCertification= (e) => {
         // console.log(e.target.checked)
         setEducated(e.target.checked)
@@ -309,6 +340,7 @@ const Education = () => {
     const [updateArray, setUpdatearray] = useState([])
     const [deletedArray, setdeletedArray] = useState([])
     const [verifySts, setverifySts] = useState()
+    const [commentMessage, setCommentMessage] = useState([])
     const [isEducationAlert, setisEducationAlert] = useState(0)
     const [verifyeduSts, setverifyeduSts] = useState()
     const [noeducation, setnoeducation] = useState(false)
@@ -388,6 +420,7 @@ const Education = () => {
                         console.log("sEducation_verify ", res.data[0].sEducation_verify)
                         if(res.data[0].sEducation_verify !== null){
                             // setverifySts(res.data[0].sCertification_verify)
+                            setCommentMessage(res.data[0])
                             setverifySts(res.data[0].sEducation_verify)
                             setverifyeduSts(res.data[0].sEducation_verify)
                             setisEducationAlert(1)
@@ -425,9 +458,16 @@ const Education = () => {
                 }
             })
                 .then(res => {
-                    console.log('res.data', res.data)
+                    console.log('res.data New', res.data)
+
                     if(res.data.length !== 0){
                         settuteducnt(res.data[0].education_data)
+                    }
+
+                    if(res.data[0].education_data === '1'){
+                        sethideFields(true)
+                    }else{
+                        sethideFields(false)
                     }
                     if (verifyeduSts === 2) {
                         setnoeducation(true)
@@ -447,10 +487,16 @@ const Education = () => {
                             return item.sEducation_comment
                         })
                         // console.log(eduvalue)
-                        if(eduvalue[0] === 'No Education') {
-                            sethideFields(false)
+                        if(res.data[0].education_data === '0') {
+                            // sethideFields(false)
+                            setEducated(true)
+                        }else{
+                            setEducated(false)
                         }
-                        setEducated(eduvalue[0])
+                        // if(eduvalue[0] === 'No Education') {
+                        //     sethideFields(false)
+                        // }
+                        // setEducated(eduvalue[0])
                         seteducationFields(res.data)
 
                     } else {
@@ -505,7 +551,7 @@ const Education = () => {
                                 <Skeleton height={15} width="80%" className="mt-2"/> {/* Paragraph text */}
                             </div>
                             {
-                                isEducated !== 'No Education' ? <>
+                                isEducated !== '0' ? <>
                                         <div className="form-group d-flex align-items-center mt-3">
                                             <Skeleton circle height={20} width={20} className="me-2"/> {/* Checkbox icon */}
                                             <Skeleton height={15} width={200}/> {/* Label text */}
@@ -712,7 +758,12 @@ const Education = () => {
                                     }
                                 }
                                 else {
-                                    alert('Tutor not found')
+                                    MySwal.fire({
+                                        icon: "error", // Error icon
+                                        title: "Error", // Alert Title
+                                        text: "Tutor not found", // Alert Message
+                                        confirmButtonText: "Okay", // Button text
+                                    });
                                 }
                             }
 
@@ -750,6 +801,15 @@ const Education = () => {
                                                                         Education verification has been disapproved by admin
                                                                     </h6>
                                                                 </Alert>
+
+                                                                {
+                                                                    commentMessage.sEducation_comment !== 'No Education' && commentMessage.sEducation_comment !== '' ?
+
+                                                                        <Alert color='danger'>
+                                                                            <span className={'text-center'}
+                                                                                  style={{fontSize: '14px'}}><b>Reason :</b> {commentMessage.sEducation_comment}</span>
+                                                                        </Alert> : <></>
+                                                                }
                                                             </>}
                                                         </>}
                                                     </>}
@@ -757,35 +817,39 @@ const Education = () => {
 
                                             <small className={'text-warning'}>Note : Add the Highest Qualification only</small>
                                             <p>Let us know about Education</p>
-                                            {isEducated === 'No Education' ? <>
-                                                {verifyeduSts === 2 ? <>
-                                                    <input id="Education" type="checkbox" checked value={isEducated}
-                                                           name="Education" onChange={handleIsCertification} />
+                                            {/*<h1>{isEducated}</h1>*/}
+                                            {tuteducnt === '0' ? (
+                                                <>
+                                                    <input
+                                                        id="Education"
+                                                        type="checkbox"
+                                                        // Disable checkbox only if verifyeduSts is exactly 2
+                                                        disabled={verifyeduSts === 2 ? true : false}
+                                                        checked={isEducated}
+                                                        name="Education"
+                                                        onChange={handleIsCertification}
+                                                    />
                                                     <label htmlFor="Education">
                                                         I have not pursued any professional degree
                                                     </label>
-                                                </> : <>
-                                                    <input id="Education" type="checkbox" checked value={isEducated}
-                                                           name="Education" onChange={handleIsCertification}/>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <input
+                                                        id="Education"
+                                                        type="checkbox"
+                                                        // Disable checkbox only if verifyeduSts is exactly 2
+                                                        disabled={verifyeduSts === 2 ? true : false}
+                                                        checked={isEducated}
+                                                        name="Education"
+                                                        onChange={handleIsCertification}
+                                                    />
                                                     <label htmlFor="Education">
                                                         I have not pursued any professional degree
                                                     </label>
-                                                </>}
-                                            </> : <>
-                                                {verifyeduSts === 2 ? <>
-                                                    <input id="Education" type="checkbox" checked value={isEducated}
-                                                           name="Education" onChange={handleIsCertification} />
-                                                    <label htmlFor="Education">
-                                                        I have not pursued any professional degree
-                                                    </label>
-                                                </> : <>
-                                                    <input id="Education" type="checkbox" value={isEducated}
-                                                           name="Education" onChange={handleIsCertification}/>
-                                                    <label htmlFor="Education">
-                                                        I have not pursued any professional degree
-                                                    </label>
-                                                </>}
-                                            </>}
+                                                </>
+                                            )}
+
 
 
 
@@ -795,11 +859,11 @@ const Education = () => {
                                         {/*{console.log(certificationFields)}*/}
                                             {/*<form action="#" className="row row--15 mt-5">*/}
                                             {hideFields ? <>
-                                                {verifyeduSts !== 2 ? <>
+                                                {/*{verifyeduSts !== 2 ? <>*/}
                                                     {educationFields.length >= 1 ? <>
 
                                                         {values.sEducation.map((education, index) => {
-                                                            // console.log(certification)
+                                                            console.log(errors.sEducation)
                                                             return (
                                                                 <>
                                                                     <div key={education.nTCId}>
@@ -944,14 +1008,20 @@ const Education = () => {
                                                                                         JPG or PNG format; maximum size of
                                                                                         2MB</small>
                                                                                     <div>
-                                                                                        <label id='label'
-                                                                                               className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
-                                                                                            image
-                                                                                            <input type="file" id="file"
-                                                                                                   name="file"
-                                                                                                   onChange={(e) => handleChangeImage(e, index)}
-                                                                                                   accept="image/*"/>
-                                                                                        </label>
+                                                                                        {
+                                                                                            verifyeduSts !== 2 ? <>
+                                                                                                <label id='label'
+                                                                                                       className='rbt-btn btn-md btn-gradient hover-icon-reverse'>Upload
+                                                                                                    image
+                                                                                                    <input type="file"
+                                                                                                           id="file"
+                                                                                                           name="file"
+                                                                                                           onChange={(e) => handleChangeImage(e, index)}
+                                                                                                           accept="image/*"/>
+                                                                                                </label>
+                                                                                            </> : null
+                                                                                        }
+
                                                                                         <div>
                                                                                             {education.sEdu_imagePath && (
                                                                                                 <img className={'mt-3'}
@@ -996,7 +1066,7 @@ const Education = () => {
                                                         {/*    </div>*/}
                                                         {/*</>}*/}
                                                     </> : ''}
-                                                </> : <></>}
+                                                {/*</> : <></>}*/}
 
                                             </> : <>
                                                 {/*<div key={certificationFields.nTCId}>*/}

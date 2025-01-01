@@ -81,6 +81,7 @@ const Interest = () => {
 
     }
     const [tutorcnt, setTutorcnt] = useState('')
+    const [commentMessage, setCommentMessage] = useState([])
     const [verifySts, setverifySts] = useState()
     const [isInterestAlert, setisInterestAlert] = useState(0)
 
@@ -122,6 +123,7 @@ const Interest = () => {
                 // console.log("Interest",res.data[0].sInterests_verify)
                 if (res.data.length !== 0) {
                     if (res.data[0].sInterests_verify !== null){
+                        setCommentMessage(res.data[0])
                         setverifySts(res.data[0].sInterests_verify)
                         setisInterestAlert(1)
                     }else{
@@ -187,7 +189,7 @@ const Interest = () => {
 
             })
             .catch(err => {
-                alert(err)
+                // alert(err)
                 { ErrorDefaultAlert(err) }
 
             })
@@ -313,6 +315,15 @@ const Interest = () => {
                                                     Interests verification has been disapproved by admin
                                                 </h6>
                                             </Alert>
+
+                                            {
+                                                commentMessage.sInterests_comment !== null && commentMessage.sInterests_comment !== '' ?
+
+                                                    <Alert color='danger'>
+                                                                            <span className={'text-center'}
+                                                                                  style={{fontSize: '14px'}}><b>Reason :</b> {commentMessage.sInterests_comment}</span>
+                                                    </Alert> : <></>
+                                            }
                                         </>}
                                     </>}
                                 </>}
@@ -398,28 +409,18 @@ const Interest = () => {
 
                                             <div className={'col-lg-12 mb-5'}>
                                                 <label>Field of interest</label>
-                                                {verifySts === 2 ? <>
-                                                    <Select
-                                                        isMulti
-                                                        name="sFieldOfInterest"
-                                                        options={options}
-                                                        className="basic-multi-select"
-                                                        classNamePrefix="select"
-                                                        isDisabled={true}
-                                                        defaultValue={selectedOptions}
-                                                    />
-                                                </> : <>
-                                                    <Select
-                                                        isMulti
-                                                        name="sFieldOfInterest"
-                                                        options={options}
-                                                        className="basic-multi-select"
-                                                        classNamePrefix="select"
-                                                        value={selectedOptions}
-                                                        defaultValue={selectedOptions}
-                                                        onChange={handleChange}
-                                                    />
-                                                </>}
+                                                <Select
+                                                    isMulti
+                                                    name="sFieldOfInterest"
+                                                    options={options}
+                                                    className="basic-multi-select"
+                                                    classNamePrefix="select"
+                                                    value={selectedOptions}
+                                                    onChange={handleChange}
+                                                    isDisabled={verifySts === 2} // Disable if verifySts is 2
+                                                    defaultValue={selectedOptions} // If you want to use a default value for initial load
+                                                />
+
 
                                                 <ErrorMessage style={{ marginTop: '50px' }} name='sFieldOfInterest' component='div'
                                                               className='field-error text-danger ms-3'/>

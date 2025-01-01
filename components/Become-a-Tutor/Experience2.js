@@ -11,6 +11,9 @@ import {Alert} from "reactstrap";
 import * as Yup from "yup";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+const MySwal = withReactContent(Swal)
 
 const UserValidationSchema = Yup.object().shape({
 
@@ -43,7 +46,7 @@ const Experience = () => {
     // const [thisYear, setthisYear] = useState(defaultValue);
     const minOffset = 0;
     const maxOffset = 53;
-    const [Isfresher, setIsFresher] = useState('')
+    const [Isfresher, setIsFresher] = useState('Fresher')
     const [fields, showFields] = useState(false)
     const [isLoading, setisLoading] = useState(false)
 
@@ -128,7 +131,13 @@ const Experience = () => {
 
         // Ensure online experience does not exceed total experience
         if (onlineExp > parseFloat(updatedFields[index].nTotal_exper)) {
-            alert('online exp cannot be grater than total exp')
+            // alert('online exp cannot be grater than total exp')
+            Swal.fire({
+                icon: "error", // Error icon
+                title: "Invalid Value", // Alert Title
+                text: "Online experience cannot be greater than total experience.", // Alert Message
+                confirmButtonText: "Okay", // Button text
+            });
             updatedFields[index].nTotal_online_exper = '';
             // onlineExp = updatedFields[index].nTotal_online_exper; // Cap online experience to the total experience
         } else {
@@ -223,10 +232,21 @@ const Experience = () => {
 
                 setCerti_Image(URL.createObjectURL(event.target.files[0]));
             } else {
-                alert('Please select only image file types (jpeg/jpg/png)');
+                // alert('Please select only image file types (jpeg/jpg/png)');
+                MySwal.fire({
+                    icon: "error",
+                    title: "Invalid File Type",
+                    text: "Please select only image file types (jpeg/jpg/png)",
+                    confirmButtonText: "Okay",
+                });
             }
         } else {
-            alert('Please upload a file less than 2MB');
+            MySwal.fire({
+                icon: "error",
+                title: "File Too Large",
+                text: "Please upload a file less than 2MB",
+                confirmButtonText: "Okay",
+            });
         }
     };
 
@@ -240,7 +260,12 @@ const Experience = () => {
         updatedFields[index].sFrom_years = value;
 
         if (parseInt(value) < yearOfBirth) {
-            alert(`Year of work "From" should not be greater than the year of birth (${yearOfBirth}).`);
+            MySwal.fire({
+                icon: "error", // Error icon
+                title: "Invalid Year",
+                text: `Year of study From should not be greater than the year of birth (${yearOfBirth}).`,
+                confirmButtonText: "Okay", // Button text
+            });
             return; // Stop further execution
         }
 
@@ -250,7 +275,12 @@ const Experience = () => {
             parseInt(updatedFields[index].sTo_years) < parseInt(value)
 
         ) {
-            alert("Year of work to should not be less than Year of work from.");
+            MySwal.fire({
+                icon: "error", // Error icon
+                title: "Invalid Year Range",
+                text: "Year of study To should not be less than Year of study From.",
+                confirmButtonText: "Okay", // Button text
+            });
             setExpFields('');
             updatedFields[index].sFrom_years = " ";
         }
@@ -270,7 +300,12 @@ const Experience = () => {
             parseInt(value) < parseInt(updatedFields[index].sFrom_years)
         ) {
             updatedFields[index].sTo_years = '';
-            alert("Year of work to should not be less than Year of work from.");
+            MySwal.fire({
+                icon: "error", // Error icon
+                title: "Invalid Year Range", // Alert Title
+                text: "Year of study To should not be less than Year of study From.", // Message
+                confirmButtonText: "Okay", // Button text
+            });
         }
 
         setExpFields(updatedFields);
@@ -371,6 +406,7 @@ const Experience = () => {
     const [tutorcnt, setTutorcnt] = useState('')
     const [updateArray, setUpdatearray] = useState([])
     const [deletedArray, setdeletedArray] = useState([])
+    const [commentMessage, setCommentMessage] = useState([])
     const [verifySts, setverifySts] = useState()
     const [isExperienceAlert, setisExperienceAlert] = useState(0)
     const [nocertificate, setnocertificate] = useState(false)
@@ -391,6 +427,7 @@ const Experience = () => {
                     // console.log("GetTutorVerify",res.data[0].sTeachExper_verify)
                     if (res.data.length !== 0) {
                         if(res.data[0].sTeachExper_verify !== null){
+                            setCommentMessage(res.data[0])
                             setverifySts(res.data[0].sTeachExper_verify)
                             setisExperienceAlert(1)
                         }else{
@@ -428,18 +465,27 @@ const Experience = () => {
                 .then(res => {
                     console.log(res.data)
                     if(res.data.length !== 0){
+                        console.log("Hello",res.data[0])
                         settutexpcnt(res.data[0].experience_data)
                         if(res.data[0]['sTeachExper_comment'] === 'Fresher'){
                             showFields(false)
-                            setIsFresher(res.data[0]['sTeachExper_comment'])
+
+                            // setIsFresher(res.data[0]['sTeachExper_comment'])
                         } else {
-                            setIsFresher('Experience')
+                            // setIsFresher('Experience')
                             showFields(true)
+
                         }
                         const array = res.data.map((item, index) => {
                             return item.nTTEId
                         })
-
+                        if (res.data[0].experience_data === '0'){
+                            setIsFresher('Fresher')
+                            showFields(false)
+                        }else{
+                            setIsFresher('Experience')
+                            showFields(true)
+                        }
                         setUpdatearray(array)
                     }
 
@@ -753,7 +799,12 @@ const Experience = () => {
                                     }
 
                                 else {
-                                    alert('No Tutor added')
+                                   MySwal.fire({
+                                       icon: "error", // Error icon
+                                       title: "Error", // Alert Title
+                                       text: "No Tutor added", // Alert Message
+                                       confirmButtonText: "Okay", // Button text
+                                   });
                                 }
                             }
 
@@ -790,6 +841,15 @@ const Experience = () => {
                                                                         Teaching experience verification has been disapproved by admin
                                                                     </h6>
                                                                 </Alert>
+
+                                                                {
+                                                                    commentMessage.sTeachExper_comment !== null && commentMessage.sTeachExper_comment !== '' ?
+
+                                                                        <Alert color='danger'>
+                                                                            <span className={'text-center'}
+                                                                                  style={{fontSize: '14px'}}><b>Reason :</b> {commentMessage.sTeachExper_comment}</span>
+                                                                        </Alert> : <></>
+                                                                }
                                                             </>}
                                                         </>}
                                                     </>}
@@ -876,60 +936,40 @@ const Experience = () => {
                                             <div className="col-lg-6 mt-4">
                                                 <div className="form-group d-flex">
                                                     <div>
-                                                        {Isfresher === 'Fresher' ? <>
-                                                            <input
-                                                                disabled={verifySts === 2}
-                                                                value={'Fresher'}
-                                                                id="yes"
-                                                                type="radio"
-                                                                checked
-                                                                onChange={handleChange}
-                                                                name="sIs_fresher"/>
-                                                        </> : <>
-                                                            <input
-                                                                disabled={verifySts === 2}
-                                                                value={'Fresher'}
-                                                                id="yes"
-                                                                type="radio"
-                                                                onChange={handleChange}
-                                                                name="sIs_fresher"/>
-                                                        </>}
-
-                                                        <label htmlFor="yes">
-                                                            Fresher
-                                                        </label>
+                                                        {/* Fresher Radio Button */}
+                                                        <input
+                                                            disabled={verifySts === 2}  // Disable if verifySts is 2
+                                                            value="Fresher"
+                                                            id="yes"
+                                                            type="radio"
+                                                            checked={Isfresher === 'Fresher'}  // Check if 'Fresher' is selected
+                                                            onChange={handleChange}
+                                                            name="sIs_fresher"
+                                                        />
+                                                        <label htmlFor="yes">Fresher</label>
                                                     </div>
-                                                    <div className={"ms-3"}>
-                                                        {Isfresher === 'Experience' ? <>
-                                                            <input
-                                                                disabled={verifySts === 2}
-                                                                value={'Experience'}
-                                                                id="no"
-                                                                type="radio"
-                                                                checked
-                                                                onChange={handleChange}
-                                                                name="sIs_fresher"/>
-                                                        </> : <>
-                                                            <input
-                                                                disabled={verifySts === 2}
-                                                                value={'Experience'}
-                                                                id="no"
-                                                                type="radio"
-                                                                onChange={handleChange}
-                                                                name="sIs_fresher"/>
-                                                        </>}
 
-                                                        <label htmlFor="no">
-                                                            Experience
-                                                        </label>
+                                                    <div className="ms-3">
+                                                        {/* Experience Radio Button */}
+                                                        <input
+                                                            disabled={verifySts === 2}  // Disable if verifySts is 2
+                                                            value="Experience"
+                                                            id="no"
+                                                            type="radio"
+                                                            checked={Isfresher === 'Experience'}  // Check if 'Experience' is selected
+                                                            onChange={handleChange}
+                                                            name="sIs_fresher"
+                                                        />
+                                                        <label htmlFor="no">Experience</label>
                                                     </div>
+
                                                     <ErrorMessage name='sWeekend_batches' component='div'
                                                                   className='field-error text-danger ms-3 mt-3'/>
                                                     <span className="focus-border"></span>
                                                 </div>
                                             </div>
                                             {fields ? <>
-                                                {verifySts !== 2 ? <>
+                                                {/*{verifySts !== 2 ? <>*/}
                                                     {expFields.length >= 1 ? <>
                                                         {values.sExperience.map((experience, index) => {
                                                             console.log("Length" , expFields.length)
@@ -957,6 +997,11 @@ const Experience = () => {
                                                                                                 type="text"
                                                                                                 placeholder="Total Experience"
                                                                                                 name="nTotal_exper"
+                                                                                                onKeyPress={(event) => {
+                                                                                                    if (!/[0-9]/.test(event.key)) {
+                                                                                                        event.preventDefault();
+                                                                                                    }
+                                                                                                }}
                                                                                                 maxLength={3}
                                                                                             />
                                                                                             {
@@ -1163,7 +1208,7 @@ const Experience = () => {
                                                             </div>
                                                         </>}
                                                     </> : ''}
-                                                </> : <></>}
+                                                {/*</> : <></>}*/}
 
                                             </> : <>
                                                 {/*    <div key={expFields.nTTEId}>*/}
