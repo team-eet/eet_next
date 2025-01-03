@@ -106,7 +106,7 @@ const Certification = () => {
     const file = event.target.files[0];
     const updatedFields = [...certificationFields];
 
-    const fileext = ['image/jpeg', 'image/jpg', 'image/png'];
+    const fileext = ['image/jpeg', 'image/jpg', 'image/png','application/pdf'];
 
     if (event.target.files[0].size < 2000000) {
       if (fileext.includes(event.target.files[0].type)) {
@@ -737,13 +737,13 @@ const Certification = () => {
                           <Form>
                             {/*{console.log(educationFields.length)}*/}
                             <div className="section-title mb-3">
-                              <h4 className="rbt-title-style-3">Certification</h4>
+                              <h4 className="rbt-title-style-3">Teaching Certification</h4>
                               {
                                 isCertificationAlert === 1 ? <>
                                   {verifySts === 2 ? <>
                                     <Alert color='success'>
                                       <h6 className='alert-heading m-0 text-center'>
-                                        Certification verification has been approved by admin
+                                        Teaching Certification verification has been approved by admin
                                       </h6>
                                     </Alert>
 
@@ -751,7 +751,7 @@ const Certification = () => {
                                     {verifySts === 1 ? <>
                                       <Alert color='warning'>
                                         <h6 className='alert-heading m-0 text-center'>
-                                          Certification verification is pending state
+                                          Teaching Certification verification is pending state
                                         </h6>
                                       </Alert>
 
@@ -761,7 +761,7 @@ const Certification = () => {
                                       </> : <>
                                         <Alert color='danger'>
                                           <h6 className='alert-heading m-0 text-center'>
-                                            Certification verification has been disapproved by admin
+                                            Teaching Certification verification has been disapproved by admin
                                           </h6>
                                         </Alert>
 
@@ -779,7 +779,7 @@ const Certification = () => {
                                 </>:<></>
                               }
 
-                              <p>Let us know about teaching certification</p>
+                              <p className={'mb--10'}>Let us know about your teaching certification</p>
                               {tutcerticnt === '0' ? (
                                   <>
                                     <input
@@ -791,7 +791,7 @@ const Certification = () => {
                                         onChange={handleIsCertification}
                                     />
                                     <label htmlFor="Certification">
-                                      I have not pursued any professional teaching certification
+                                      I have not pursued any professional teaching certificate
                                     </label>
                                   </>
                               ) : (
@@ -805,7 +805,7 @@ const Certification = () => {
                                         onChange={handleIsCertification}
                                     />
                                     <label htmlFor="Certification">
-                                      I have not pursued any professional teaching certification
+                                      I have not pursued any professional teaching certificate
                                     </label>
                                   </>
                               )}
@@ -827,8 +827,14 @@ const Certification = () => {
                                       console.log("Message:", errors.sCertification?.[index]?.sCerti_title);
                                       return (
                                           <>
+                                            {
+                                              index === 0 ?
+                                                  <small className={'text-warning'}>Note : Add from recent to old
+                                                    teaching certificates</small> : null
+                                            }
+
                                             <div key={certification.nTCId}>
-                                              <div className={`row`}>
+                                            <div className={`row mt--10`}>
 
                                                 {
                                                   index === 0 ? <></> : <>
@@ -838,7 +844,7 @@ const Certification = () => {
                                                 }
                                                 <div className="col-lg-6">
                                                   <label>
-                                                    Certification Title
+                                                    Teaching Certification Title
                                                   </label>
                                                   <div className="form-group">
                                                     <input
@@ -847,14 +853,15 @@ const Certification = () => {
                                                         value={certification.sCerti_title}
                                                         className={`form-control ${errors.sCertification?.[index]?.sCerti_title && errors.sCertification?.[index]?.sCerti_title && 'is-invalid'}`}
                                                         type="text"
-                                                        placeholder="Certification Title"/>
+                                                        placeholder="Teaching Certification Title"/>
 
                                                     {
                                                       index === 0 ? <div className={'field-error text-danger'}>
-                                                        {errors.sCertification?.[index]?.sCerti_title}
-                                                      </div> : <ErrorMessage name={`sCertification.${index}.sCerti_title`}
-                                                                             component='div'
-                                                                             className='field-error text-danger'/>
+                                                            {errors.sCertification?.[index]?.sCerti_title}
+                                                          </div> :
+                                                          <ErrorMessage name={`sCertification.${index}.sCerti_title`}
+                                                                        component='div'
+                                                                        className='field-error text-danger'/>
                                                     }
 
 
@@ -935,7 +942,7 @@ const Certification = () => {
                                                             image
                                                             <input type="file" id="file" name="file"
                                                                    onChange={(e) => handleChangeImage(e, index)}
-                                                                   accept="image/*"/>
+                                                                   accept="image/*,.pdf"/>
                                                           </label>
                                                         </> : null
                                                       }
@@ -980,7 +987,7 @@ const Certification = () => {
                                             className="rbt-btn-link left-icon border-0 bg-white"
                                             onClick={handleAddCertification}
                                         >
-                                          <i className="feather-plus"></i>Add Certification
+                                          <i className="feather-plus"></i>Add Teaching Certification
                                         </button>
                                       </div>
                                     </>}

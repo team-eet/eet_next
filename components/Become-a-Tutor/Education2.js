@@ -815,8 +815,7 @@ const Education = () => {
                                                     </>}
                                                 </> : <></>}
 
-                                            <small className={'text-warning'}>Note : Add the Highest Qualification only</small>
-                                            <p>Let us know about Education</p>
+                                            <p className={'mb--10'}>Let us know about your Education</p>
                                             {/*<h1>{isEducated}</h1>*/}
                                             {tuteducnt === '0' ? (
                                                 <>
@@ -866,8 +865,10 @@ const Education = () => {
                                                             console.log(errors.sEducation)
                                                             return (
                                                                 <>
+                                                                    <small className={'text-warning'}>Note : Add the
+                                                                        Highest Educational Qualification only</small>
                                                                     <div key={education.nTCId}>
-                                                                        <div className={'row'}>
+                                                                        <div className={'row mt--10'}>
                                                                             <div className="col-lg-6">
                                                                                 <input type={'hidden'}
                                                                                        value={education.nTEId}/>
@@ -885,13 +886,14 @@ const Education = () => {
                                                                                             return (
                                                                                                 <>
                                                                                                     <option key={index}
-                                                                                                            value={item.nCountryId ?  item.nCountryId : '101'}>{item.sCountryname}</option>
+                                                                                                            value={item.nCountryId ? item.nCountryId : '101'}>{item.sCountryname}</option>
                                                                                                 </>
                                                                                             )
                                                                                         })}
                                                                                     </select>
-                                                                                    <ErrorMessage name='nCountryId' component='div'
-                                                                                                  className='field-error text-danger' />
+                                                                                    <ErrorMessage name='nCountryId'
+                                                                                                  component='div'
+                                                                                                  className='field-error text-danger'/>
                                                                                 </div>
                                                                             </div>
                                                                             <div className="col-lg-6">
@@ -908,13 +910,16 @@ const Education = () => {
                                                                                         name={"sUniversity"}
                                                                                         placeholder="university"/>
                                                                                     {
-                                                                                        index === 0 ? <div className={'field-error text-danger'}>
+                                                                                        index === 0 ? <div
+                                                                                            className={'field-error text-danger'}>
                                                                                             {errors.sEducation?.[index]?.sUniversity}
-                                                                                        </div> : <ErrorMessage name={`sEducation.${index}.sUniversity`}
-                                                                                                               component='div'
-                                                                                                               className='field-error text-danger'/>
+                                                                                        </div> : <ErrorMessage
+                                                                                            name={`sEducation.${index}.sUniversity`}
+                                                                                            component='div'
+                                                                                            className='field-error text-danger'/>
                                                                                     }
-                                                                                    <span className="focus-border"></span>
+                                                                                    <span
+                                                                                        className="focus-border"></span>
                                                                                 </div>
                                                                             </div>
                                                                             <div className={'col-lg-6 mt-3'}>
@@ -930,11 +935,13 @@ const Education = () => {
                                                                                     onChange={(e) => handleChangeDegree(e, index)}
                                                                                 />
                                                                                 {
-                                                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                                                    index === 0 ? <div
+                                                                                        className={'field-error text-danger'}>
                                                                                         {errors.sEducation?.[index]?.sDegree}
-                                                                                    </div> : <ErrorMessage name={`sEducation.${index}.sDegree`}
-                                                                                                           component='div'
-                                                                                                           className='field-error text-danger'/>
+                                                                                    </div> : <ErrorMessage
+                                                                                        name={`sEducation.${index}.sDegree`}
+                                                                                        component='div'
+                                                                                        className='field-error text-danger'/>
                                                                                 }
                                                                                 <span className="focus-border"></span>
                                                                             </div>
@@ -951,11 +958,13 @@ const Education = () => {
                                                                                     onChange={(e) => handleChangeSpecialization(e, index)}
                                                                                 />
                                                                                 {
-                                                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                                                    index === 0 ? <div
+                                                                                        className={'field-error text-danger'}>
                                                                                         {errors.sEducation?.[index]?.sSpecialization}
-                                                                                    </div> : <ErrorMessage name={`sEducation.${index}.sSpecialization`}
-                                                                                                           component='div'
-                                                                                                           className='field-error text-danger'/>
+                                                                                    </div> : <ErrorMessage
+                                                                                        name={`sEducation.${index}.sSpecialization`}
+                                                                                        component='div'
+                                                                                        className='field-error text-danger'/>
                                                                                 }
                                                                                 <span className="focus-border"></span>
                                                                             </div>
@@ -972,11 +981,13 @@ const Education = () => {
                                                                                     {options}
                                                                                 </select>
                                                                                 {
-                                                                                    index === 0 ? <div className={'field-error text-danger'}>
+                                                                                    index === 0 ? <div
+                                                                                        className={'field-error text-danger'}>
                                                                                         {errors.sEducation?.[index]?.sFrom_year}
-                                                                                    </div> : <ErrorMessage name={`sEducation.${index}.sFrom_year`}
-                                                                                                           component='div'
-                                                                                                           className='field-error text-danger'/>
+                                                                                    </div> : <ErrorMessage
+                                                                                        name={`sEducation.${index}.sFrom_year`}
+                                                                                        component='div'
+                                                                                        className='field-error text-danger'/>
                                                                                 }
                                                                                 <span className="focus-border"></span>
                                                                             </div>
@@ -986,11 +997,13 @@ const Education = () => {
                                                                                         value={education.sTo_year}
                                                                                         name={"sTo_year"}
                                                                                         onChange={(e) => handleYearToChange(e, index)}>
-                                                                                    <option value="Present">Present</option>
+                                                                                    <option value="Present">Present
+                                                                                    </option>
                                                                                     {options}
                                                                                 </select>
-                                                                                <ErrorMessage name='sTo_year' component='div'
-                                                                                              className='field-error text-danger' />
+                                                                                <ErrorMessage name='sTo_year'
+                                                                                              component='div'
+                                                                                              className='field-error text-danger'/>
                                                                                 <span className="focus-border"></span>
                                                                             </div>
                                                                             <div className={'col-lg-12 mt-5 mb-3'}>
@@ -998,14 +1011,18 @@ const Education = () => {
                                                                                      style={{background: "#f4f4f8"}}>
                                                                                     <h5>Get a qualification verified
                                                                                         badge</h5>
-                                                                                    <small>Upload your diploma to boost your
-                                                                                        credibility! Our team will review it
+                                                                                    <small>Upload your diploma to boost
+                                                                                        your
+                                                                                        credibility! Our team will
+                                                                                        review it
                                                                                         and add
                                                                                         the badge to
-                                                                                        your profile. Once reviewed, your
+                                                                                        your profile. Once reviewed,
+                                                                                        your
                                                                                         files will
                                                                                         be deleted.
-                                                                                        JPG or PNG format; maximum size of
+                                                                                        JPG or PNG format; maximum size
+                                                                                        of
                                                                                         2MB</small>
                                                                                     <div>
                                                                                         {
@@ -1035,7 +1052,8 @@ const Education = () => {
                                                                                 </div>
                                                                             </div>
                                                                             {verifySts === 2 ? <></> : <>
-                                                                                <div className="col-lg-12 text-end mt-2">
+                                                                                <div
+                                                                                    className="col-lg-12 text-end mt-2">
                                                                                     {educationFields.length > 1 ? <>
                                                                                         <button type={'button'}
                                                                                                 className="btn btn-danger"

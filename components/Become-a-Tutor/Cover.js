@@ -323,14 +323,14 @@ const Cover = () => {
                             : <>
 
                                 <div className="section-title">
-                                    <h4 className="rbt-title-style-3">Cover Photo</h4>
+                                    <h4 className="rbt-title-style-3">Cover Photos</h4>
                                     {
                                         isCoverAlert === 1 ? <>
                                                 {verifysts.sCoverPhotoLeft_verify === 2 && verifysts.sCoverPhotoCenter_verify === 2
                                                 && verifysts.sCoverPhotoRight_verify === 2 ? <>
                                                     <Alert color='success'>
                                                         <h6 className='alert-heading m-0 text-center'>
-                                                            Cover photo verification has been approved by admin
+                                                            Cover photos verification has been approved by admin
                                                         </h6>
                                                     </Alert>
                                                 </> : <>
@@ -338,7 +338,7 @@ const Cover = () => {
                                                     && verifysts.sCoverPhotoRight_verify === 1 ? <>
                                                         <Alert color='warning'>
                                                             <h6 className='alert-heading m-0 text-center'>
-                                                                Cover photo verification is in pending state
+                                                                Cover photos verification is in pending state
                                                             </h6>
                                                         </Alert>
                                                     </> : <>
@@ -346,7 +346,7 @@ const Cover = () => {
                                                         || verifysts.sCoverPhotoRight_verify === 3 ? <>
                                                             <Alert color='danger'>
                                                                 <h6 className='alert-heading m-0 text-center'>
-                                                                    Cover photo verification has been disapproved by admin
+                                                                    Cover photos verification has been disapproved by admin
                                                                 </h6>
                                                             </Alert>
                                                             {/*{verifysts.sCoverPhotoLeft_comment !== "" || verifysts.sCoverPhotoRight_comment !== ""*/}
@@ -388,14 +388,14 @@ const Cover = () => {
 
                                     {/*<h3>Your profile photo is your first impression</h3>*/}
                                     <p>
-                                        This image will be used on the cover page of courses and batches to display on our
+                                        These images will be used on the cover page of courses and batches to display on our
                                         main
-                                        website and you will have to upload 3 different images as left profile, center
-                                        profile
-                                        and right profile
+                                        website and you will have to upload 3 different images as left profile (image-1), center
+                                        profile (image-2)
+                                        and right profile (image-3)
                                     </p>
 
-                                    <h6>Guidelines for capturing an exceptional photograph</h6>
+                                    <h6>Guidelines for capturing exceptional photographs</h6>
                                 </div>
                                 <div className={'row'}>
                                     <Formik
@@ -535,7 +535,7 @@ const Cover = () => {
                                                                 <ul className="rbt-list-style-1">
                                                                     <li>
                                                                         <i className="feather-check"></i>
-                                                                        Your photo must be half length
+                                                                        Your photos must be half length
                                                                     </li>
                                                                     <li>
                                                                         <i className="feather-check"></i>

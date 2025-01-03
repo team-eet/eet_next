@@ -290,13 +290,13 @@ const Interest = () => {
                     : <>
 
                         <div className="section-title">
-                            <h4 className="rbt-title-style-3">Interests</h4>
+                            <h4 className="rbt-title-style-3">Teaching Interest</h4>
                             {
                                 isInterestAlert === 1 ? <>
                                     {verifySts === 2 ? <>
                                         <Alert color='success'>
                                             <h6 className='alert-heading m-0 text-center'>
-                                                Interests verification has been approved by admin
+                                                Teaching Interest verification has been approved by admin
                                             </h6>
                                         </Alert>
 
@@ -304,7 +304,7 @@ const Interest = () => {
                                         {verifySts === 1 ? <>
                                             <Alert color='warning'>
                                                 <h6 className='alert-heading m-0 text-center'>
-                                                    Interests verification is in pending state
+                                                    Teaching Interest verification is in pending state
                                             </h6>
                                         </Alert>
 
@@ -312,7 +312,7 @@ const Interest = () => {
                                         {verifySts === 0 || verifySts === null ? <></> : <>
                                             <Alert color='danger'>
                                                 <h6 className='alert-heading m-0 text-center'>
-                                                    Interests verification has been disapproved by admin
+                                                    Teaching Interests verification has been disapproved by admin
                                                 </h6>
                                             </Alert>
 

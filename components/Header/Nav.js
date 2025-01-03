@@ -14,6 +14,7 @@ const  Nav = () => {
   const router = useRouter();
   const [showDashboard, setshowDashboard] = useState(false)
   const [verifySts, setverifySts] = useState(0)
+  const [isApiCall, setApiCall] = useState(0)
   const isActive = (href) => router.pathname === href;
 
   const toggleMenuItem = (item) => {
@@ -41,6 +42,7 @@ const  Nav = () => {
             // console.log("Hello")
             console.log(res.data)
             if (res.data.length !== 0) {
+              setApiCall(1)
               setverifySts(res.data[0]['bVerifyStatus'])
             }
 
@@ -89,13 +91,13 @@ const  Nav = () => {
         <li className="">
           {/*{console.log(verifySts)}*/}
           {verifySts === 2 ? <>
-            <a
-                className={`${activeMenuItem === "tutor" ? "open" : ""}`}
-                href={`https://eet-frontend.azurewebsites.net/access/${token}`}
-                target={'_blank'}
-            >
-              Tutor
-            </a>
+            {/*<a*/}
+            {/*    className={`${activeMenuItem === "tutor" ? "open" : ""}`}*/}
+            {/*    href={`https://eet-frontend.azurewebsites.net/access/${token}`}*/}
+            {/*    target={'_blank'}*/}
+            {/*>*/}
+            {/*  Tutor*/}
+            {/*</a>*/}
           </> : <>
             <Link
                 className={`${activeMenuItem === "tutor" ? "open" : ""}`}

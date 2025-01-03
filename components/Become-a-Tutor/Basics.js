@@ -607,7 +607,7 @@ const Basics = () => {
                 </> : <>
 
                     <div className="section-title">
-                        <h4 className="rbt-title-style-3">Basics</h4>
+                        <h4 className="rbt-title-style-3">Personal Info</h4>
                     </div>
                     <Formik
                         validationSchema={UserValidationSchema}
@@ -690,21 +690,21 @@ const Basics = () => {
                                   {verifysts.sBasic_verify === 2 ? <>
                                       <Alert color='success'>
                                           <h6 className='alert-heading m-0 text-center'>
-                                              Basic information verification has been approved by admin
+                                              Personal Info information verification has been approved by admin
                                           </h6>
                                       </Alert>
                                   </> : <>
                                       {verifysts.sBasic_verify === 1 ? <>
                                           <Alert color='warning'>
                                               <h6 className='alert-heading m-0 text-center'>
-                                                  Basic information verification is pending state
+                                                  Personal Info information verification is pending state
                                               </h6>
                                           </Alert>
                                       </> : <>
                                           {verifysts.sBasic_verify === 0 || verifysts.sBasic_verify === null ? <></> : <>
                                               <Alert color='danger'>
                                                   <h6 className='alert-heading m-0 text-center'>
-                                                      Basic information verification has been disapproved by admin
+                                                      Personal Info information verification has been disapproved by admin
                                                   </h6>
                                               </Alert>
                                               {

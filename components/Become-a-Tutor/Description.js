@@ -166,7 +166,7 @@ const Description = () => {
             </> : <>
 
               <div className="section-title">
-                <h4 className="rbt-title-style-3">Description</h4>
+                <h4 className="rbt-title-style-3">Self Description</h4>
               </div>
               {
                 isDescriptionAlert === 1 ?
@@ -174,7 +174,7 @@ const Description = () => {
                       {verifySts === 2 ? <>
                         <Alert color='success'>
                           <h6 className='alert-heading m-0 text-center'>
-                            Description verification has been approved by admin
+                            Self Description verification has been approved by admin
                       </h6>
                     </Alert>
 
@@ -182,7 +182,7 @@ const Description = () => {
                     {verifySts === 1 ? <>
                       <Alert color='warning'>
                         <h6 className='alert-heading m-0 text-center'>
-                          Description verification is in pending state
+                          Self Description verification is in pending state
                         </h6>
                       </Alert>
 
@@ -190,7 +190,7 @@ const Description = () => {
                       {verifySts === 0 || verifySts === null ? <></> : <>
                         <Alert color='danger'>
                           <h6 className='alert-heading m-0 text-center'>
-                            Description verification has been disapproved by admin
+                            Self Description verification has been disapproved by admin
                           </h6>
                         </Alert>
 
@@ -297,7 +297,7 @@ const Description = () => {
                       <Form>
                         <div className={'row'}>
                           <div className={'col-lg-6'}>
-                            <label htmlFor="aboutCourse">Description</label>
+                            <label htmlFor="aboutCourse">Self Description</label>
                             <textarea className={`form-control ${errors.sDesc && touched.sDesc && 'is-invalid'}`} readOnly={verifySts === 2} name={"sDesc"} value={text}
                                       onChange={handleTextChange} id="aboutCourse" rows="10" style={{fontSize: '16px'}}></textarea>
                             <div className={`d-flex align-items-center ${errors.sDesc && touched.sDesc ? 'justify-content-between' : 'justify-content-end'}`}>

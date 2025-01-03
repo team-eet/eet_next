@@ -960,7 +960,7 @@ const Experience = () => {
                                                             onChange={handleChange}
                                                             name="sIs_fresher"
                                                         />
-                                                        <label htmlFor="no">Experience</label>
+                                                        <label htmlFor="no">Experienced</label>
                                                     </div>
 
                                                     <ErrorMessage name='sWeekend_batches' component='div'
@@ -986,7 +986,7 @@ const Experience = () => {
                                                                                             style={{fontSize: '15px'}}>
                                                                                             How many years of total
                                                                                             experience
-                                                                                            in <br/> english teaching?
+                                                                                            in <br/> English language teaching?
                                                                                         </label>
                                                                                         <div className="form-group">
                                                                                             <input
@@ -1016,10 +1016,10 @@ const Experience = () => {
                                                                                     <div className="col-lg-6">
                                                                                         <label
                                                                                             style={{fontSize: '16px'}}>
-                                                                                            Out of total how many years
+                                                                                            Out of total, how many years
                                                                                             of
                                                                                             online
-                                                                                            english <br/> teaching
+                                                                                            English language <br/> teaching
                                                                                             experience?
                                                                                         </label>
                                                                                         <div className="form-group">
@@ -1053,7 +1053,7 @@ const Experience = () => {
                                                                                         <label
                                                                                             style={{fontSize: '16px'}}>
                                                                                             <b>
-                                                                                                Add Most Recent Experience
+                                                                                                Add Most Recent English Teaching Experience
                                                                                             </b>
                                                                                         </label>
                                                                                     </div>
@@ -1203,7 +1203,7 @@ const Experience = () => {
                                                                     className="rbt-btn-link left-icon border-0 bg-white"
                                                                     onClick={handleAddExperience}
                                                                 >
-                                                                    <i className="feather-plus"></i>Add Experience
+                                                                    <i className="feather-plus"></i>Add English Teaching Experience
                                                                 </button>
                                                             </div>
                                                         </>}

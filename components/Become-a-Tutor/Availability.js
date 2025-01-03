@@ -485,7 +485,7 @@ const Availability = () => {
                                                     <ErrorMessage name='sMax_hours' component='div'
                                                                   className='field-error text-danger'/>
                                                 </div>
-                                                <div className="col-lg-6">
+                                                <div className="col-lg-6 mt-4">
                                                     <label>
                                                         Most preferable time slot
                                                     </label>

@@ -236,12 +236,12 @@ const IntroVideo = () => {
                       : <>
 
                           <div className="section-title">
-                              <h4 className="rbt-title-style-3">Introduction video</h4>
+                              <h4 className="rbt-title-style-3">Self Introduction video</h4>
                               {isIntroVideoAlert === 1 ? <>
                                   {verifySts === 2 ? <>
                                       <Alert color='success'>
                                           <h6 className='alert-heading m-0 text-center'>
-                                              Introduction video verification has been approved by admin
+                                              Self Introduction video verification has been approved by admin
                                           </h6>
                                       </Alert>
 
@@ -249,14 +249,14 @@ const IntroVideo = () => {
                                   {verifySts === 1 ? <>
                                       <Alert color='warning'>
                                           <h6 className='alert-heading m-0 text-center'>
-                                              Introduction video verification is in pending state
+                                              Self Introduction video verification is in pending state
                                           </h6>
                                       </Alert>
                                   </> : <>
                                       {verifySts === 0 || verifySts === null ? <></> : <>
                                           <Alert color='danger'>
                                               <h6 className='alert-heading m-0 text-center'>
-                                                  Introduction video verification has been disapproved by admin
+                                                  Self Introduction video verification has been disapproved by admin
                                               </h6>
                                           </Alert>
 
@@ -275,7 +275,7 @@ const IntroVideo = () => {
 
                           {/*<h3>Your profile photo is your first impression</h3>*/}
                               {
-                                  verifySts !== 2 ? <p>Add a landscape video of maximum 10 mb</p> : null
+                                  verifySts !== 2 ? <p>Add a video of maximum 10 mb</p> : null
                               }
 
                           </div>
@@ -370,8 +370,8 @@ const IntroVideo = () => {
 
                                                   {
                                                       verifySts !== 2 ? <>
-                                                          <p className={'mt-5 m-0'}>Or</p>
-                                                          <p className={'m-0 mb-3'}>Paste a link of video</p>
+                                                          <p className={'mt-5 m-0 mb-3'}>Or</p>
+                                                          <p className={'m-0 mb-3'}>Add Video URL</p>
                                                       </> : null
                                                   }
                                                   {
