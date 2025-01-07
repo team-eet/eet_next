@@ -51,6 +51,7 @@ const SingleCourse = () => {
           if (res.data) {
             // console.log(res.data)
             if (res.data.length !== 0) {
+                console.log("Course Detils New", res.data)
                   setcourseData(res.data)
                     setisLoading(false)
                 // console.log(EncryptData(res.data[0]['nCTId']))

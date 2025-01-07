@@ -5,7 +5,7 @@ const Requirements = ({ checkMatchCourses }) => {
     // // console.log(a[0].prerequisitename)
   return (
     <>
-      <div className="col-lg-6">
+      <div className="col-lg-12">
         <div className="section-title">
           <h4 className="rbt-title-style-3 mb--20 text-start">Prerequisites</h4>
         </div>

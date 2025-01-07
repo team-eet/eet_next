@@ -884,6 +884,7 @@ const MainDemo = () => {
                         {getbatchData && getbatchData.map((data, index) => {
                           const startHour = parseInt(data.sBatchStartTime[0])
                           const endHour = parseInt(data.sBatchEndTime[0])
+                          console.log("startHour",data.sBatchStartTime,"endHour",data.sBatchEndTime)
 
                           // Calculate the difference in hours
                           const hoursDifference = endHour - startHour

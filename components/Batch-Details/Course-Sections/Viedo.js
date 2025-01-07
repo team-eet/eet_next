@@ -23,12 +23,15 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getCntVideo, setCntVideo] = useState('')
   const [getCntPdf, setCntPdf] = useState('')
   const [getCntImg, setCntImg] = useState('')
+  const [getNumberCount, setNumberCount] = useState({});
 
+console.log("VideoData",checkMatchCourses)
    const getFeatureCount = (crsid) => {
     // console.log(checkMatchCourses.nCId)
      const url = window.location.href
      const parts = url.split("/");
      const courseId = parts[parts.length - 1];
+     const course_mainId = parts[parts.length - 2];
   //     //activity
        Axios.get(`${API_URL}/api/package/Show_activity_count/${EncryptData(parseInt(courseId))}`, {
         headers: {
@@ -51,16 +54,19 @@ const Viedo = ({ checkMatchCourses }) => {
           })
   //
   //     //video
-      Axios.get(`${API_URL}/api/package/Show_video_count/${EncryptData(parseInt(courseId))}`, {
+      Axios.get(`${API_URL}/api/coursemain/GetBatchDocumentCount/${course_mainId}`, {
         headers: {
            ApiKey: `${API_KEY}`
         }
       })
           .then(res => {
             if (res.data) {
+              console.log("Count Data",res.data,'courseId',course_mainId)
               if (res.data.length !== 0) {
-                // console.log('CntVideo', res.data)
-                setCntVideo(res.data[0].cntf)
+                console.log('CntVideo', res.data)
+                // setCntVideo(res.data[0].cntf)
+                setNumberCount(res.data[0]);
+
                 // this.setState({
                 //   CntVideo: res.data[0].cntf
                 // })
@@ -119,7 +125,7 @@ const Viedo = ({ checkMatchCourses }) => {
     getFeatureCount();
     // console.log(EncryptData('0'))
   }, [])
-  // console.log(checkMatchCourses)
+  console.log("getNumberCount",getNumberCount)
   const [getsectionItems, setsectionItems] = useState([])
   const { cartToggle, setCart } = useAppContext();
   const [toggle, setToggle] = useState(false);
@@ -135,6 +141,19 @@ const Viedo = ({ checkMatchCourses }) => {
     dispatch(addToCartAction(id, amount, product));
     setCart(!cartToggle);
   };
+
+    // Difference Day Left
+    const nowDate = new Date();
+    let dBatchStartDate = new Date(checkMatchCourses.dBatchStartDate);
+    dBatchStartDate.setDate(dBatchStartDate.getDate() - 1);
+
+    const timeDifference = dBatchStartDate - nowDate;
+
+    const daysLeft = Math.max(0, Math.ceil(timeDifference / (1000 * 60 * 60 * 24)));
+
+    console.log(`Time left: ${daysLeft} day(s)`);
+
+    //  Close
 
   useEffect(() => {
     dispatch({ type: "COUNT_CART_TOTALS" });
@@ -161,6 +180,7 @@ const Viedo = ({ checkMatchCourses }) => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+
   }, []);
 
   return (
@@ -187,12 +207,22 @@ const Viedo = ({ checkMatchCourses }) => {
       <div className="content-item-content">
         <div className="rbt-price-wrapper d-flex flex-wrap align-items-center justify-content-between">
           <div className="rbt-price">
-            <span className="current-price">₹{checkMatchCourses.dAmount}</span>
-            <span className="off-price">₹{checkMatchCourses.nCourseAmount}</span>
+            {
+              checkMatchCourses.dAmount === 0 ? (
+                  <span className="current-price">Free</span>
+              ) : <span className="current-price">₹{checkMatchCourses.dAmount}</span>
+            }
+
+            {
+              checkMatchCourses.nCourseAmount ? (
+                  <span className="off-price">₹{checkMatchCourses.nCourseAmount}</span>
+              ) : null
+            }
+
           </div>
           <div className="discount-time">
             <span className="rbt-badge color-danger bg-color-danger-opacity">
-              <i className="feather-clock"></i> {checkMatchCourses.days} days
+              <i className="feather-clock"></i> {daysLeft} days
               left!
             </span>
           </div>
@@ -224,40 +254,37 @@ const Viedo = ({ checkMatchCourses }) => {
             </span>
           </Link>
         </div>
-        <span className="subtitle">
-          <i className="feather-rotate-ccw"></i> 30-Day Money-Back Guarantee
-        </span>
         <div
           className={`rbt-widget-details has-show-more ${
             toggle ? "active" : ""
           }`}
         >
-          <ul className="has-show-more-inner-content rbt-course-details-list-wrapper">
-
-            <li>
-              <span>Videos</span>
-              <span className="rbt-feature-value rbt-badge-5">
-                    {getCntVideo}
-                  </span>
-            </li>
-            <li>
-              <span>PDF</span>
-              <span className="rbt-feature-value rbt-badge-5">
-                    {getCntPdf}
-                  </span>
-            </li>
-            <li>
-              <span>Image</span>
-              <span className="rbt-feature-value rbt-badge-5">
-                    {getCntImg}
-                  </span>
-            </li>
-            <li>
+          <ul className="has-show-more-inner-content rbt-course-details-list-wrapper mt--10">
+            <li className={'d-flex align-items-center'}>
               <span>Acitivity</span>
               <span className="rbt-feature-value rbt-badge-5">
-                    {getCntActivity}
+                    {getNumberCount.activity_count}
                   </span>
             </li>
+            <li className={'d-flex align-items-center'}>
+              <span>Acitivity Questions</span>
+              <span className="rbt-feature-value rbt-badge-5">
+                    {getNumberCount.activity_question_count}
+                  </span>
+            </li>
+            <li className={'d-flex align-items-center'}>
+              <span>Practice</span>
+              <span className="rbt-feature-value rbt-badge-5">
+                    {getNumberCount.practice_count}
+                  </span>
+            </li>
+            <li className={'d-flex align-items-center'}>
+              <span>Practice Questions</span>
+              <span className="rbt-feature-value rbt-badge-5">
+                   {getNumberCount.practice_question_count}
+                  </span>
+            </li>
+
           </ul>
           <div
               className={`rbt-show-more-btn ${toggle ? "active" : ""}`}
@@ -269,26 +296,30 @@ const Viedo = ({ checkMatchCourses }) => {
 
         <div className="social-share-wrapper mt--30 text-center">
           <div className="rbt-post-share d-flex align-items-center justify-content-center">
-            <ul className="social-icon social-default transparent-with-border justify-content-center">
+            <ul className="social-icon social-default transparent-with-border justify-content-around w-100">
               <li>
-                <Link href="https://www.facebook.com/">
-                  <i className="feather-facebook"></i>
+                <Link href="javascript:void(0);">
+                  {getNumberCount.video_count}
                 </Link>
+                <span className="rbt-feature-value rbt-badge-5">
+                     VIDEOs
+                  </span>
               </li>
-              <li>
-                <Link href="https://www.twitter.com">
-                  <i className="feather-twitter"></i>
+                <li>
+                <Link href="javascript:void(0);">
+                    {getNumberCount.pdf_count}
                 </Link>
+                <span className="rbt-feature-value rbt-badge-5">
+                     PDFs
+                  </span>
               </li>
-              <li>
-                <Link href="https://www.instagram.com/">
-                  <i className="feather-instagram"></i>
+                <li>
+                <Link href="javascript:void(0);">
+                    {getNumberCount.ppt_count}
                 </Link>
-              </li>
-              <li>
-                <Link href="https://www.linkdin.com/">
-                  <i className="feather-linkedin"></i>
-                </Link>
+                <span className="rbt-feature-value rbt-badge-5">
+                     PPTs
+                  </span>
               </li>
             </ul>
           </div>
@@ -296,10 +327,7 @@ const Viedo = ({ checkMatchCourses }) => {
           <div className="contact-with-us text-center">
             <p>For details about the course</p>
             <p className="rbt-badge-2 mt--10 justify-content-center w-100">
-              <i className="feather-phone mr--5"></i> Call Us:{" "}
-              <Link href="#">
-                <strong>+444 555 666 777</strong>
-              </Link>
+              <i className="feather-help-circle mr--5"></i> Inquiry Now
             </p>
           </div>
         </div>

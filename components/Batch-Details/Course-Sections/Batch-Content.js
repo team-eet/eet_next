@@ -2,12 +2,12 @@ import Link from "next/link";
 import React, {useEffect, useLayoutEffect, useState} from "react";
 import { API_URL, API_KEY } from "../../../constants/constant";
 import {useRouter} from "next/router";
-import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
+import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import { useParams} from "react-router-dom";
 
-const Content = () => {
+const BatchContent = () => {
   const REACT_APP = API_URL
   const router = useRouter();
   const postId = parseInt(router.query.courseId);
@@ -18,22 +18,16 @@ const Content = () => {
   const getcourseContent = () => {
     const url = window.location.href
     const parts = url.split("/");
-    console.log("parts",parts)
-    const courseId = parts[parts.length - 2]; // Gets the last part of the URL
-    const batchId = parts[parts.length - 1]; // Gets the last part of the URL
-    console.log("courseId",courseId)
-    console.log("batchId",batchId)
-    console.log("zeroid",EncryptData(0))
-
-    Axios.get(`${API_URL}/api/section/GetBatchCourseSummaryAll/${courseId}/${EncryptData(0)}/${batchId}`, {
+    const courseId = parts[parts.length - 1]; // Gets the last part of the URL
+    // console.log(courseId)
+    Axios.get(`${API_URL}/api/section/GetBatchCoursesSummaryAll/${EncryptData(parseInt(courseId))}/${EncryptData(0)}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
     })
         .then(res => {
-          //alert(res.data.length)
           if (res.data.length !== 0) {
-            //console.log("batch Page ",res.data);
+            console.log("batch Page ",res.data);
             setsectionItems(res.data)
           }
         })
@@ -62,7 +56,7 @@ const Content = () => {
                 >
                   <button
                     className={`accordion-button ${
-                        innerIndex === 0 ? "collapsed" : ""
+                      !item.collapsed ? "collapsed" : ""
                     }`}
                     type="button"
                     data-bs-toggle="collapse"
@@ -77,7 +71,7 @@ const Content = () => {
                 <div
                   id={`collapseTwo${innerIndex + 1}`}
                   className={`accordion-collapse collapse ${
-                      innerIndex===0 ? "show" : ""
+                    item.isShow ? "show" : ""
                   }`}
                   aria-labelledby={`headingTwo${innerIndex}`}
                   data-bs-parent="#accordionExampleb2"
@@ -89,20 +83,23 @@ const Content = () => {
                           <Link href="/lesson">
                             <div className="course-content-left">
 
-                              {/*<i className="feather-play-circle"></i>*/}
-                              <span className="text">{`Day - ${subIndex + 1}`} {list.sLessionTitle}</span>
+                                <i className="feather-play-circle"></i>
+
+                              <span className="text">{list.sLessionTitle}</span>
                             </div>
                             {/*{list.status ? (*/}
-                            <div className="course-content-right">
-                              <span className="min-lable">{list.act_cnt} Activities</span>
-                              <span className="rbt-badge variation-03 bg-primary-opacity">
+                              <div className="course-content-right">
+                                <span className="min-lable">{list.act_cnt} Activities</span>
+                                <span className="rbt-badge variation-03 bg-primary-opacity">
                                   <i className="feather-eye"></i> Preview
                                 </span>
-                              <span className="course-lock">
+                              </div>
+                            {/*) : (*/}
+                              <div className="course-content-right">
+                                <span className="course-lock">
                                   <i className="feather-lock"></i>
                                 </span>
-                            </div>
-
+                              </div>
                             {/*)}*/}
                           </Link>
                         </li>
@@ -119,4 +116,4 @@ const Content = () => {
   );
 };
 
-export default Content;
+export default BatchContent;

@@ -5,10 +5,13 @@ import Axios from "axios";
 import {API_URL, API_KEY} from "../../constants/constant";
 import { ErrorDefaultAlert } from "@/components/Services/SweetAlert";
 import { DecryptData } from "@/components/Services/encrypt-decrypt";
+import {useRouter} from "next/router";
+import withAuth from '@/components/Utils/withAuth';
 
 const Dashboard = () => {
   const REACT_APP = API_URL
   const [crscnt, setcrscnt] = useState('')
+  const [isLogin, setIsLogin] = useState(0)
   const getPurchasedCourse = () => {
     // console.log(DecryptData('mUnt9JQjA_W_MMMfEAje0Q=='))
     // bhavika@123
@@ -33,9 +36,19 @@ const Dashboard = () => {
           })
     }
   }
+  const router = useRouter()
 
   useEffect(() => {
-    getPurchasedCourse()
+    // const userData = localStorage.getItem('userData');
+    // if (!userData) {
+    //   // If not logged in, redirect to login page
+    //   router.push('/login');
+    // } else {
+    //   setIsLogin(1)
+    //   // If logged in, fetch the purchased course data
+    //   getPurchasedCourse();
+    // }
+    getPurchasedCourse();
   }, []);
 
   return (
@@ -121,4 +134,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default withAuth(Dashboard);
