@@ -7,7 +7,7 @@ const CourseMenu = () => {
   const sections = [
     { id: "overview", label: "Overview" },
     { id: "coursecontent", label: "Course Content" },
-    { id: "details", label: "Details" },
+    { id: "details", label: "Prerequisites" },
     { id: "intructor", label: "Intructor" },
     { id: "review", label: "Review" },
   ];

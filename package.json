@@ -38,6 +38,7 @@
     "rc-slider": "^10.5.0",
     "react": "^18",
     "react-circular-progressbar": "^2.1.0",
+    "react-corner-ribbon": "^0.0.5",
     "react-datepicker": "^7.3.0",
     "react-dom": "^18",
     "react-feather": "^2.0.10",

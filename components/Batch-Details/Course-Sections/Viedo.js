@@ -190,7 +190,7 @@ console.log("VideoData",checkMatchCourses)
           hideOnScroll ? "d-none" : ""
         }`}
         data-vbtype="video"
-        href={`${checkMatchCourses.sVideoURL !== "" ? checkMatchCourses.sVideoURL : ""}`}
+        href={`${checkMatchCourses.sVideoPath !== "" ? checkMatchCourses.sVideoPath : ""}`}
       >
         <div className="video-content">
           <Image className={"position-relative"} src={checkMatchCourses.sImagePath} height={255} width={355}></Image>

@@ -5,6 +5,7 @@ import Overview from "./Course-Sections/Overview";
 import Requirements from "./Course-Sections/Requirements";
 import Review from "./Course-Sections/Review";
 import Viedo from "./Course-Sections/Viedo";
+import CornerRibbon from "react-corner-ribbon";
 
 
 const CourseDetailsOne = ({ checkMatchCourses }) => {
@@ -85,7 +86,17 @@ const CourseDetailsOne = ({ checkMatchCourses }) => {
       </div>
 
       <div className="col-lg-4">
-        <div className="course-sidebar sticky-top rbt-shadow-box course-sidebar-top rbt-gradient-border">
+        <div className="course-sidebar sticky-top rbt-shadow-box course-sidebar-top rbt-gradient-border position-relative">
+          <CornerRibbon
+              position="top-center"
+              fontColor="#f0f0f0"
+              backgroundColor="#637FEA"
+              containerStyle={{}}
+              style={{'border-bottom-right-radius':'6px'}}
+              className=""
+          >
+            {checkMatchCourses.sLevel}
+          </CornerRibbon>
           <div className="inner">
             <Viedo checkMatchCourses={checkMatchCourses && checkMatchCourses} />
           </div>

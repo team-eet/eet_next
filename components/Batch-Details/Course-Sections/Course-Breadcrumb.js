@@ -8,7 +8,66 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
     if (!value) return value
     return new Intl.DateTimeFormat('en-US', formatting).format(new Date(value))
   }
-  // console.log('getMatchCourse', getMatchCourse)
+  // Function to calculate time difference
+  // const sBatchStartTime = getMatchCourse.sBatchStartTime;
+  // const sBatchEndTime = getMatchCourse.sBatchEndTime;
+  // const sBatchStartTime = "12:30pm";
+  // const sBatchEndTime = "13:45pm";
+
+// Function to calculate time difference
+  console.log("Time",getMatchCourse.sBatchStartTime,getMatchCourse.sBatchEndTime,getMatchCourse.nBatchDurationDays)
+//   const TimeDurationCalculator = () => {
+    const sBatchStartTime = "09:30am";
+    const sBatchEndTime = "10:45am";
+    const nBatchDurationDays = 10;
+//     const sBatchStartTime = getMatchCourse.sBatchStartTime;
+//     const sBatchEndTime = getMatchCourse.sBatchEndTime;
+//     const nBatchDurationDays = getMatchCourse.nBatchDurationDays;
+
+  const getTimeDifference = (startTime, endTime) => {
+      // Match hours and minutes
+      const [startHour, startMinute] = startTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+      const [endHour, endMinute] = endTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+
+      // Determine AM/PM
+      const startPeriod = startTime.includes("pm") ? 12 : 0;
+      const endPeriod = endTime.includes("pm") ? 12 : 0;
+
+      // Convert to Date objects
+      const startDate = new Date(0, 0, 0, (startHour % 12) + startPeriod, startMinute);
+      const endDate = new Date(0, 0, 0, (endHour % 12) + endPeriod, endMinute);
+
+      // Calculate difference in minutes
+      const differenceInMs = endDate - startDate;
+      const differenceInMinutes = differenceInMs / (1000 * 60);
+
+      const hours = Math.floor(differenceInMinutes / 60);
+      const minutes = differenceInMinutes % 60;
+
+      return { hours, minutes };
+    };
+
+    const calculateTotalDuration = (startTime, endTime, days) => {
+      const { hours, minutes } = getTimeDifference(startTime, endTime);
+
+      // Multiply hours and minutes by the number of days
+      const totalHours = hours * days;
+      const totalMinutes = minutes * days;
+
+      // Adjust total hours by converting minutes to hours
+      const adjustedHours = totalHours + Math.floor(totalMinutes / 60);
+      const adjustedMinutes = totalMinutes % 60;
+
+      return { adjustedHours, adjustedMinutes };
+    };
+
+
+    const totalDuration = calculateTotalDuration(sBatchStartTime, sBatchEndTime, nBatchDurationDays);
+    // console.log("totalDuration",totalDuration)
+  // };
+console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjustedMinutes} minutes`);
+
+  console.log('getMatchCourse', getMatchCourse)
   return (
     <>
       <div className="col-lg-8">
@@ -23,10 +82,18 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
               </div>
             </li>
             <li className="rbt-breadcrumb-item active">
-              {getMatchCourse.sCategory}
+              {/*{getMatchCourse.sCategory}*/}
+              Batches
             </li>
           </ul>
-          <h2 className="title">{getMatchCourse.sCourseTitle}</h2>
+          <div className="d-block d-md-flex">
+            <div className="rbt-category mb--10 mb_md--0 order-1 order-md-2">
+              <Link href="#">{getMatchCourse.sCategory}</Link>
+            </div>
+            <h4 className="rbt-card-title order-2 order-md-1 mr--10">{getMatchCourse.sCourseTitle}</h4>
+          </div>
+
+
           <p className="description">{getMatchCourse.sShortDesc}</p>
 
           <div className="d-flex align-items-center mb--20 flex-wrap rbt-course-details-feature">
@@ -71,46 +138,136 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
               </Link>
             </div>
 
-            <div className="feature-sin total-student">
-              <span> {getMatchCourse.enroll_cnt} students</span>
-            </div>
           </div>
 
           <div className="rbt-author-meta mb--20">
             <div className="rbt-avater">
               {/*<Link href={`/profile/${getMatchCourse.id}`}>*/}
               <Link href={``}>
-                {getMatchCourse.tutor_image && (
-                    <Image className={"position-relative"} src={getMatchCourse.tutor_image}  width={40} height={40}></Image>
-                  // <Image
-                  //   width={40}
-                  //   height={40}
-                  //   src={getMatchCourse.userImg}
-                  //   alt={getMatchCourse.userName}
-                  // />
+                {getMatchCourse.sProfilePhotoPath && (
+                    <Image className={"position-relative"} src={getMatchCourse.sProfilePhotoPath} width={40}
+                           height={40}></Image>
+                    // <Image
+                    //   width={40}
+                    //   height={40}
+                    //   src={getMatchCourse.userImg}
+                    //   alt={getMatchCourse.userName}
+                    // />
                 )}
               </Link>
             </div>
             <div className="rbt-author-info">
-              By{" "}
+              Batch By{" "}
               <Link href={`/profile/${getMatchCourse.id}`}>
                 {getMatchCourse.sFName} {getMatchCourse.sLName}
               </Link>{" "}
-              In <Link href="#">{getMatchCourse.sCategory}</Link>
             </div>
           </div>
 
-          <ul className="rbt-meta">
+          <ul className="rbt-meta d-flex flex-column">
             <li>
-              <i className="feather-calendar"></i>Last updated{" "}
-              {formatDate(getMatchCourse.dUpdatedDate)}
+              <b><i className="feather-watch"></i>Batch Duration{": "}</b>
+              {getMatchCourse.nBatchDurationDays} Days ({totalDuration.adjustedHours} Hours {totalDuration.adjustedMinutes} Minutes)
             </li>
             <li>
-              <i className="feather-globe"></i>
-              Top rated
+              <b><i className="feather-calendar"></i>Batch Date{": "}</b>
+                <span
+                    className={'mr-2'}>{new Date(getMatchCourse.dBatchStartDate).getDate()} {new Date(getMatchCourse.dBatchStartDate).toLocaleString('default', {month: 'short'})} - {new Date(getMatchCourse.dBatchEndDate).getDate()} {new Date(getMatchCourse.dBatchEndDate).toLocaleString('default', {month: 'short'})}</span>
             </li>
             <li>
-              <i className="feather-award"></i>Verified
+              <b><i className="feather-clock"></i>Batch Time{": "}</b>
+              <span className={'ms-2'}>{getMatchCourse.sBatchStartTime} to {getMatchCourse.sBatchEndTime}</span>
+            </li>
+            <li>
+              <div className='d-flex mt-1 mb-5 mt-2'>
+                {getMatchCourse.sDays && getMatchCourse.sDays !== 'undefined' ? (
+                    JSON.parse(getMatchCourse.sDays).find(obj => obj === 'Monday') ? (
+                        <div className='circle-fill-badge'><span>M</span></div>
+                    ) : (
+                        <div className='circle-badge'><span>M</span></div>
+                    )
+                ) : (
+                    <div className='circle-badge'><span>M</span></div> // or handle the fallback case
+                )}
+
+
+                {
+                  getMatchCourse.sDays && getMatchCourse.sDays !== 'undefined' ? (
+                      JSON.parse(getMatchCourse.sDays).find(obj => obj === 'Tuesday') ? (
+                          <div className='circle-fill-badge'><span>T</span></div>
+                      ) : (
+                          <div className='circle-badge'><span>T</span></div>
+                      )
+                  ) : (
+                      <div className='circle-badge'><span>T</span></div> // Fallback case when sDays is invalid
+                  )
+                }
+
+                {
+                  getMatchCourse.sDays && getMatchCourse.sDays !== 'undefined' ? (
+                      JSON.parse(getMatchCourse.sDays).find(obj => obj === 'Wednesday') ? (
+                          <div className='circle-fill-badge'><span>W</span></div>
+                      ) : (
+                          <div className='circle-badge'><span>W</span></div>
+                      )
+                  ) : (
+                      <div className='circle-badge'><span>W</span></div> // Fallback case when sDays is invalid
+                  )
+                }
+
+
+                {
+                  getMatchCourse.sDays && getMatchCourse.sDays !== 'undefined' ? (
+                      JSON.parse(getMatchCourse.sDays).find(obj => obj === 'Thursday') ? (
+                          <div className='circle-fill-badge'><span>T</span></div>
+                      ) : (
+                          <div className='circle-badge'><span>T</span></div>
+                      )
+                  ) : (
+                      <div className='circle-badge'><span>T</span></div> // Fallback case when sDays is invalid
+                  )
+                }
+
+
+                {
+                  getMatchCourse.sDays && getMatchCourse.sDays !== 'undefined' ? (
+                      JSON.parse(getMatchCourse.sDays).find(obj => obj === 'Friday') ? (
+                          <div className='circle-fill-badge'><span>F</span></div>
+                      ) : (
+                          <div className='circle-badge'><span>F</span></div>
+                      )
+                  ) : (
+                      <div className='circle-badge'><span>F</span></div> // Fallback case when sDays is invalid
+                  )
+                }
+
+                {
+                  getMatchCourse.sDays && getMatchCourse.sDays !== 'undefined' ? (
+                      JSON.parse(getMatchCourse.sDays).find(obj => obj === 'Saturday') ? (
+                          <div className='circle-fill-badge'><span>S</span></div>
+                      ) : (
+                          <div className='circle-badge'><span>S</span></div>
+                      )
+                  ) : (
+                      <div className='circle-badge'><span>S</span></div> // Fallback case when sDays is invalid
+                  )
+                }
+
+
+                {
+                  getMatchCourse.sDays && getMatchCourse.sDays !== 'undefined' ? (
+                      JSON.parse(getMatchCourse.sDays).find(obj => obj === 'Sunday') ? (
+                          <div className='circle-fill-badge'><span>S</span></div>
+                      ) : (
+                          <div className='circle-badge'><span>S</span></div>
+                      )
+                  ) : (
+                      <div className='circle-badge'><span>S</span></div> // Fallback case when sDays is invalid
+                  )
+                }
+
+
+              </div>
             </li>
           </ul>
         </div>
