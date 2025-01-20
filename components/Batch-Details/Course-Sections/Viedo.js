@@ -14,7 +14,6 @@ import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 
 const Viedo = ({ checkMatchCourses }) => {
-  // console.log(checkMatchCourses)
   const REACT_APP = API_URL
   const router = useRouter();
   const postId = parseInt(router.query.courseId);
@@ -233,7 +232,7 @@ console.log("VideoData",checkMatchCourses)
             className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
             href="#"
             onClick={() =>
-              addToCartFun(checkMatchCourses.id, amount, checkMatchCourses)
+              addToCartFun(checkMatchCourses.id, checkMatchCourses.dAmount, checkMatchCourses)
             }
           >
             <span className="btn-text">Add to Cart</span>

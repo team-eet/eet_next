@@ -275,11 +275,11 @@ const MainDemo = () => {
                 <div className="col-lg-6 col-xl-7">
                   <div className="section-title ms-3">
                     <h2 className="title">What you will learn</h2>
-                    <p className="b1 mt--15">Unlock Key Insights and Master New Skills with Our Comprehensive Guide</p>
+                    <p className="b1 mt--15">Sharpen your English Proficiency by Learning through our Exclusive Batches and Courses.</p>
                   </div>
 
 
-                  <div className="row g-5">
+                  <div className="row g-5 mt--5">
 
                     <div className="col-lg-6">
                       <div className="section-title subtitle ms-3 mt-3 mb-3">
@@ -331,10 +331,10 @@ const MainDemo = () => {
                 <div className="col-lg-12">
                   <div className="section-title text-center">
                   <span className="subtitle bg-secondary-opacity">
-                    Top Popular Course
+                    Top Popular Courses
                   </span>
                     <h2 className="title">
-                      EET Course student <br/> can join with us.
+                      Our Exclusive Courses for <br/> English Language Aspirants...
                     </h2>
                   </div>
                 </div>
@@ -686,10 +686,10 @@ const MainDemo = () => {
                   <div className="col-lg-12">
                     <div className="section-title text-center">
                   <span className="subtitle bg-secondary-opacity">
-                    Top Popular Batch
+                    Top Popular Batches
                   </span>
                       <h2 className="title">
-                        EET Batch student <br/> can join with us.
+                        Our Exclusive Batches for <br/> English Language Aspirants...
                       </h2>
                     </div>
                   </div>

@@ -202,6 +202,9 @@ const CartPage = () => {
       // this.setState({ handleGST : e.target.checked })
   }
   let checkoutAmount = 0
+  let originalPrice = 0
+  let discountPrice = 0
+  let specialPrice = 0
   useEffect(() => {
     dispatch({ type: "COUNT_CART_TOTALS" });
     localStorage.setItem("hiStudy", JSON.stringify(cart));
@@ -269,11 +272,15 @@ const CartPage = () => {
                     </thead>
                     <tbody>
                     {courseitem.map((item, index) => {
+                      console.log("Course Item List",item)
                       const userPay = (parseInt(item.pay_price) - (parseInt(item.pay_price) * parseInt(item.discount) / 100))
                       // console.log(userPay, pay_amnt)
                       const pay_amnt = parseInt(item.pay_price) - parseInt(item.user_pay)
                       // console.log(pay_amnt)
                       checkoutAmount += userPay
+                      originalPrice += parseInt(item.og_price)
+                      discountPrice += parseInt(item.pay_price)
+                      specialPrice += (parseInt(item.pay_price) * parseInt(item.discount) / 100)
                       return <CartItems cartitem={courseitem} index={index} checkoutAmount={checkoutAmount} key={index}
                                         product={item}/>;
                     })}
@@ -319,7 +326,7 @@ const CartPage = () => {
                         </div>
                       </Form>
                     </div>
-                    <Row>
+                    <Row className={'d-none'}>
                       <Col lg={10} md={10} sm={10} className="align-self-center">
                         <p> Do you claim GST?</p>
                       </Col>
@@ -340,16 +347,24 @@ const CartPage = () => {
                       </> : <></>}
 
                     </Row>
-
-                    {handleGST ? <>
-                      <p>
-                        Sub Total <span>₹{((checkoutAmount * 100) / (100 + 18)).toFixed(2)}</span>
-                      </p>
-                    </> : <>
-                      <p>
-                        Sub Total <span>₹ {checkoutAmount}</span>
-                      </p>
-                    </>}
+                    <p>
+                      Original Price <span> <del>₹ {originalPrice} </del> <span className={'ml--10'}> ₹ {discountPrice}</span></span>
+                    </p>
+                    {/*<p>*/}
+                    {/*  Discounted Price <span>₹ {discountPrice}</span>*/}
+                    {/*</p>*/}
+                    <p>
+                      Discounted Price <span> (-) ₹ {specialPrice}</span>
+                    </p>
+                    {/*{handleGST ? <>*/}
+                    {/*  <p>*/}
+                    {/*    Sub Total <span>₹{((checkoutAmount * 100) / (100 + 18)).toFixed(2)}</span>*/}
+                    {/*  </p>*/}
+                    {/*</> : <>*/}
+                    {/*  <p>*/}
+                    {/*    Sub Total <span>₹ {checkoutAmount}</span>*/}
+                    {/*  </p>*/}
+                    {/*</>}*/}
                     {showTax ? <>
 
                       <Row>
@@ -366,7 +381,7 @@ const CartPage = () => {
                       </Row>
                     </> : <></>}
                     <h2>
-                      Grand Total{" "}
+                      Payable Price{" "}
                       <span>₹ {checkoutAmount}</span>
                     </h2>
                     <div className="mt-5">
@@ -375,7 +390,7 @@ const CartPage = () => {
                             onClick={handlePayment}
                             className="rbt-btn btn-gradient rbt-switch-btn rbt-switch-y w-100 text-center"
                         >
-                          <span data-text="Checkout">Checkout</span>
+                          <span data-text="Pay Now">Pay Now</span>
                         </div>
                       </div>
                     </div>

@@ -242,27 +242,28 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
       {product.cname}
   </td>
         <td className={"pro-price"}>
-            <span className={'text-decoration-line-through'}>₹{product.og_price}</span>
+            <span className={'text-primary'} style={{fontSize:"large"}}>₹{product.pay_price}</span>
+            <span className={'text-decoration-line-through'} style={{fontSize:'13px'}}>₹{product.og_price}</span>
         </td>
         <td className="pro-price">
-        <span className={'text-primary'}>₹{product.pay_price}</span>
-        {product.sDiscountType === "amount" ? <>
-          {product.discount !== 0 ? <>
-              <span className={'font-13 text-success m-0'}>
+            <span className={'text-primary'} style={{fontSize: "large"}}>₹{(parseInt(product.pay_price) - (parseInt(product.pay_price) * parseInt(product.discount) / 100))} {product.discount !== 0 && <i className='fa fa-tag' title={product.promocode}></i>}</span>
+            {product.sDiscountType === "amount" ? <>
+                {product.discount !== 0 ? <>
+              <span className={'font-13 text-success m-0'} style={{fontSize:'13px'}}>
                   ₹ {product.discount} discount applied
               </span>
-          </> : <></>}
-        </> : <>
-          {product.discount !== 0 ? <>
-              <span className={'font-13 text-success m-0'}>
+                </> : <></>}
+            </> : <>
+                {product.discount !== 0 ? <>
+              <span className={'font-13 text-success m-0'} style={{fontSize:'13px'}}>
                   {product.discount}% discount applied
               </span>
-          </> : <></>}
-      </>}
-      {/*{(item.pkgname) ? <div><span className='text-primary'>Selected Package : </span><span*/}
-      {/*    className='text-success font-weight-bolder font-16'>{item.pkgname}</span>*/}
-      {/*</div> : ''}*/}
-  </td>
+                </> : <></>}
+            </>}
+            {/*{(item.pkgname) ? <div><span className='text-primary'>Selected Package : </span><span*/}
+            {/*    className='text-success font-weight-bolder font-16'>{item.pkgname}</span>*/}
+            {/*</div> : ''}*/}
+        </td>
         {/*<td className="pro-subtotal">*/}
         {/*    <span>₹{checkoutAmount}</span>*/}
         {/*</td>*/}

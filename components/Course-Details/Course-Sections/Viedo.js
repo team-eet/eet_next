@@ -23,8 +23,8 @@ const Viedo = ({ checkMatchCourses }) => {
   const REACT_APP = API_URL
   // console.log(checkMatchCourses)
   const router = useRouter();
-  const postId = parseInt(router.query.courseId);
-
+  const courseId = router.query.courseId;
+  console.log("Ankit postId", courseId);
   const [getCntActivity, setCntActivity] = useState('')
   const [getCntVideo, setCntVideo] = useState('')
   const [getCntPdf, setCntPdf] = useState('')
@@ -35,9 +35,9 @@ const Viedo = ({ checkMatchCourses }) => {
 
   const getFeatureCount = (crsid) => {
     // console.log(checkMatchCourses.nCId)
-     const url = window.location.href
-     const parts = url.split("/");
-     const courseId = parts[parts.length - 1];
+    //  const url = window.location.href
+    //  const parts = url.split("/");
+    //  const courseId = parts[parts.length - 1];
   //     //activity
        Axios.get(`${API_URL}/api/package/Show_activity_count/${courseId}`, {
         headers: {
@@ -130,21 +130,17 @@ const Viedo = ({ checkMatchCourses }) => {
   let cart_arr = []
   let genCart_arr = []
 
-
-
   const handlePayment = useCallback(() => {
 
   }, [Razorpay]);
   const addToCartFun = (id, amount, product) => {
-    // alert(amount)
-    console.log(product, amount)
     // alert('hellooooooooo')
     if(localStorage.getItem('userData')) {
       // const order = createOrder(params);
 
 
     dispatch(addToCartAction(id, amount, product));
-    setCart(!cartToggle);
+
 
     let cartitemcnt = 0
     if (localStorage.getItem('cart')) {
@@ -172,8 +168,9 @@ const Viedo = ({ checkMatchCourses }) => {
                 const url = window.location.href
                 const parts = url.split("/");
                 const courseId = parts[parts.length - 1];
+                //alert(courseId)
                 setcid(courseId)
-                setisCartItem((true))
+                setisCartItem(true)
 
                 const getamt = (checkMatchCourses.bIsAccosiateCourse === 'yes') ? parseInt(checkMatchCourses.dAmount) : parseInt(checkMatchCourses.pkg_price)
 
@@ -221,8 +218,6 @@ const Viedo = ({ checkMatchCourses }) => {
                                     // localStorage.setItem('cart', insert_arr)
                                     localStorage.setItem('cart', JSON.stringify(insert_arr))
                                     if (retData.success === "1") {
-                                      //console.log('done')
-
                                       if (!localStorage.getItem('cart')) {
                                         const str_arr = JSON.stringify([insert_arr])
                                         console.log(str_arr)
@@ -236,12 +231,13 @@ const Viedo = ({ checkMatchCourses }) => {
                                             genCart_arr.push(gitem[i])
                                           }
                                         }
-
                                         genCart_arr.push(insert_arr)
 
                                         const str_arr = JSON.stringify(genCart_arr)
                                         localStorage.setItem('cart', str_arr)
                                       }
+
+                                      setCart(!cartToggle);
 
                                     } else if (retData.success === "0") {
                                       { ErrorAlert(retData) }
@@ -302,21 +298,12 @@ const Viedo = ({ checkMatchCourses }) => {
 
   // =====> For video PopUp
   useEffect(() => {
-    // import("venobox/dist/venobox.min.js").then((venobox) => {
-    //   new venobox.default({
-    //     selector: ".popup-video",
-    //   });
-    //
-    //
-    // });
-
-    const url = window.location.href
-    const parts = url.split("/");
-    const courseId = parts[parts.length - 1];
+    // const url = window.location.href
+    // const parts = url.split("/");
+    // const courseId = parts[parts.length - 1];
     if(localStorage.getItem('userData')){
       const udata = JSON.parse(localStorage.getItem('userData'))
-    //
-    Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
+      Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
@@ -324,6 +311,7 @@ const Viedo = ({ checkMatchCourses }) => {
         .then(res => {
           // console.log(res.data)
           if(res.data.length !== 0){
+            console.log("Ankit Get Cart Video.js",res.data)
             for (let i = 0; i < res.data.length; i++) {
               if (!isCartItem) {
                 if (EncryptData(res.data[i].cid) === courseId) {
@@ -331,6 +319,7 @@ const Viedo = ({ checkMatchCourses }) => {
                   setisCartItem(true)
                 }
               } else {
+                console.log("Ankit Cart Data Blank")
                 break
               }
             }
@@ -346,9 +335,7 @@ const Viedo = ({ checkMatchCourses }) => {
 
       setHideOnScroll(isHide);
     };
-
     window.addEventListener("scroll", handleScroll);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -405,12 +392,12 @@ const Viedo = ({ checkMatchCourses }) => {
             <span className="current-price">₹{checkMatchCourses.dAmount}</span>
             <span className="off-price">₹{checkMatchCourses.nCourseAmount}</span>
           </div>
-          <div className="discount-time">
-            <span className="rbt-badge color-danger bg-color-danger-opacity">
-              <i className="feather-clock"></i> {checkMatchCourses.days} days
-              left!
-            </span>
-          </div>
+          {/*<div className="discount-time">*/}
+          {/*  <span className="rbt-badge color-danger bg-color-danger-opacity">*/}
+          {/*    <i className="feather-clock"></i> {checkMatchCourses.days} days*/}
+          {/*    left!*/}
+          {/*  </span>*/}
+          {/*</div>*/}
         </div>
 
         <div className="add-to-card-button mt--15">
@@ -458,21 +445,8 @@ const Viedo = ({ checkMatchCourses }) => {
 
         </div>
 
-        <div className="buy-now-btn mt--15">
-        <button
-              className="rbt-btn btn-border icon-hover w-100 d-block text-center"
-          >
-            <span className="btn-text">Buy Now</span>
-            <span className="btn-icon">
-              <i className="feather-arrow-right"></i>
-            </span>
-          </button>
-        </div>
-        <span className="subtitle">
-          <i className="feather-rotate-ccw"></i> 30-Day Money-Back Guarantee
-        </span>
         <div
-          className={`rbt-widget-details has-show-more ${
+          className={`rbt-widget-details has-show-more mt--15${
             toggle ? "active" : ""
           }`}
         >

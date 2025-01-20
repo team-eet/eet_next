@@ -50,14 +50,14 @@ const MainDemoBanner = () => {
               <div className="content">
                 <div className="inner">
                   <div className="rbt-new-badge rbt-new-badge-one">
-                    <span className="rbt-new-badge-icon">🏆</span> The Leader in Online Learning
+                    <span className="rbt-new-badge-icon">🏆</span> We provide varieties of English Language Learning Courses and Batches
                   </div>
 
                   <h1 className="title">
-                    Mastering English <br/> Language
+                    Learn English <br/> Language
                   </h1>
                   <p className="description">
-                    Comprehensive guide to achieving proficiency and fluency in the English language.
+                    English Language Proficiency can be attained by attending our Courses and Batches.
                   </p>
 
                   {isLoading ? <>
@@ -67,11 +67,14 @@ const MainDemoBanner = () => {
                     </div>
 
                   </> : <>
+
                     <div className="slider-btn">
-                      <Link
-                          className="rbt-btn btn-gradient hover-icon-reverse mt-3 ms-3"
-                          href="/register"
-                      >
+                      {
+                        !localStorage.getItem('userData') ?
+                            <Link
+                                className="rbt-btn btn-gradient hover-icon-reverse mt-3 ms-3"
+                                href="/register"
+                            >
                     <span className="icon-reverse-wrapper">
                       <span className="btn-text">Free Trial</span>
                       <span className="btn-icon">
@@ -81,10 +84,11 @@ const MainDemoBanner = () => {
                         <i className="feather-arrow-right"></i>
                       </span>
                     </span>
-                      </Link>
+                            </Link> : null
+                      }
                       {verifySts === 2 ? <>
                         <Link className="rbt-btn btn-gradient hover-icon-reverse mt-3 ms-3"
-                              href="https://eet-frontend.azurewebsites.net/tutorbatch/dashboard"
+                              target='_blank' href="https://eet-frontend.azurewebsites.net/tutorbatch/dashboard"
                         >
                           <span className="icon-reverse-wrapper">
                             <span className="btn-text">Tutor</span>

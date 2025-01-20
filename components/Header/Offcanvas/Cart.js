@@ -94,13 +94,19 @@ const Cart = () => {
       })
           .then(res => {
             if (res.data) {
-              // console.log(res.data)
               if (res.data.length !== 0) {
                 const newcartlist = res.data.filter((v, i, a) => a.findIndex(t => ((t.cid === v.cid) && (t.pkgId === v.pkgId))) === i)
                 // console.log(newcartlist)
                 setcourseitem(newcartlist)
                 localStorage.removeItem('cart')
                 localStorage.setItem('cart', JSON.stringify(newcartlist))
+                setisLoading(false)
+              }
+              else {
+
+                localStorage.removeItem('cart')
+                localStorage.removeItem('hiStudy')
+                setisLoading(false)
               }
             }
           })
@@ -114,9 +120,9 @@ const Cart = () => {
     if (path === "/cart") {
       setCart(true);
     }
-  }, [cart, path]);
+  }, [cart,path,cartToggle]);
   let checkoutAmount = 0
-
+console.log("courseitem",courseitem)
   return (
     <>
       <div className={`${!cartToggle ? "cart-sidenav-menu-active" : ""}`}>
@@ -142,7 +148,6 @@ const Cart = () => {
               </div>
             </div>
             <nav className="side-nav w-100">
-
                 {courseitem.length !== 0  ? <>
                   <div className="rbt-minicart-wrapper">
                     {courseitem &&
@@ -231,21 +236,10 @@ const Cart = () => {
               <div className="rbt-minicart-bottom mt--20">
                 <div className="view-cart-btn">
                   <Link
-                      className="rbt-btn btn-border icon-hover w-100 text-center"
+                      className="rbt-btn btn-gradient icon-hover w-100 text-center"
                       href="/cart"
                   >
                     <span className="btn-text">View Cart</span>
-                    <span className="btn-icon">
-                      <i className="feather-arrow-right"></i>
-                    </span>
-                  </Link>
-                </div>
-                <div className="checkout-btn mt--20">
-                  <Link
-                      className="rbt-btn btn-gradient icon-hover w-100 text-center"
-                      href="/checkout"
-                  >
-                    <span className="btn-text">Checkout</span>
                     <span className="btn-icon">
                       <i className="feather-arrow-right"></i>
                     </span>
