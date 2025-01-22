@@ -122,7 +122,7 @@ const Cart = () => {
     }
   }, [cart,path,cartToggle]);
   let checkoutAmount = 0
-console.log("courseitem",courseitem)
+// console.log("courseitem",courseitem)
   return (
     <>
       <div className={`${!cartToggle ? "cart-sidenav-menu-active" : ""}`}>

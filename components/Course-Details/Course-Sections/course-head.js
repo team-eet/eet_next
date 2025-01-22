@@ -14,7 +14,6 @@ const CourseHead = ({ checkMatch, getFname, getLname, getstdcnt, CourseTag, Tag 
   const router = useRouter();
   const path = router.pathname;
 
-
   return (
     <>
       {path === "/course-details-2/[courseId]" ? (

@@ -5,6 +5,8 @@ import CourseBreadcrumb from "./Course-Breadcrumb";
 import bgImage from "../../../public/images/bg/bg-image-10.jpg";
 import { useRouter } from "next/router";
 import CourseBreadcrumbTwo from "./CourseBreadcrumb-Two";
+import Skeleton, {SkeletonTheme} from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const CourseHead = ({ checkMatch }) => {
   const router = useRouter();

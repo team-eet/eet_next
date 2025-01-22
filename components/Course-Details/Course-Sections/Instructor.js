@@ -17,7 +17,7 @@ const Instructor = ({ checkMatchCourses }) => {
               {/*<Link href={`/profile/${teacher.id}`}>*/}
               <Link href={``}>
                 {checkMatchCourses.tutor_image !== "" ?
-                    <img src={checkMatchCourses.tutor_image} className={'shadow position-relative'} width={250} height={250}></img> :
+                    <img src={checkMatchCourses.tutor_image} className={'shadow rounded-circle position-relative cusBatchesImage'} width={150} height={150}></img> :
                     // <Image
                     //     src={img}
                     //     width={250}
@@ -27,8 +27,8 @@ const Instructor = ({ checkMatchCourses }) => {
                     // />}
                     <img
                         src={img}
-                        width={250}
-                        height={250}
+                        width={150}
+                        height={150}
                         className={'position-relative'}
                         alt="Author Images"
                     />}

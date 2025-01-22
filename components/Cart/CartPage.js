@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import dynamic from "next/dynamic";
 import CartItems from "./CartItems";
@@ -11,8 +11,12 @@ import { ErrorDefaultAlert } from "@/components/Services/SweetAlert";
 import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import { useRouter } from "next/router";
 import useRazorpay from "react-razorpay";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 import {NextResponse} from "next/server";
+import emptyCart from "@/public/images/emptyCart.PNG";
+import Image from "next/image";
 
 // const razorpay = new Razorpay({
 //   key_id: "rzp_test_8zjBFXhPLdvQqc",
@@ -29,6 +33,7 @@ const CartPage = () => {
 
   const REACT_APP = API_URL
   const [courseitem, setcourseitem] = useState([])
+  const [isApiCall, setApiCall] = useState(0)
   const [handleGST, sethandleGST] = useState('')
   const [showTax, setshowTax] = useState(false)
   const [Razorpay] = useRazorpay();
@@ -234,6 +239,7 @@ const CartPage = () => {
                 localStorage.setItem('cart', JSON.stringify(newcartlist))
 
               }
+              setApiCall(1)
             }
           })
           .catch(err => {
@@ -251,67 +257,162 @@ const CartPage = () => {
       <div className="cart_area">
         <div className="container">
 
-          {courseitem.length !== 0 ? <>
-            <div className="row">
-              <div className="col-lg-8">
-                {courseitem.length > 1 ? <b>{courseitem.length} items in cart</b> : <b>{courseitem.length} item in cart</b>}
-                <b> </b>
-                <hr></hr>
-                {/*<Form>*/}
-                <div className="cart-table table-responsive mb--60">
-                  <table className="table">
-                    <thead>
-                    {/*<tr>*/}
-                    {/*  <th className="pro-thumbnail">Image</th>*/}
-                    {/*  <th className="pro-title">Product</th>*/}
-                    {/*  <th className="pro-price">Price</th>*/}
-                    {/*  /!*<th className="pro-quantity">Quantity</th>*!/*/}
-                    {/*  /!*<th className="pro-subtotal">Total</th>*!/*/}
-                    {/*  <th className="pro-remove">Remove</th>*/}
-                    {/*</tr>*/}
-                    </thead>
-                    <tbody>
-                    {courseitem.map((item, index) => {
-                      console.log("Course Item List",item)
-                      const userPay = (parseInt(item.pay_price) - (parseInt(item.pay_price) * parseInt(item.discount) / 100))
-                      // console.log(userPay, pay_amnt)
-                      const pay_amnt = parseInt(item.pay_price) - parseInt(item.user_pay)
-                      // console.log(pay_amnt)
-                      checkoutAmount += userPay
-                      originalPrice += parseInt(item.og_price)
-                      discountPrice += parseInt(item.pay_price)
-                      specialPrice += (parseInt(item.pay_price) * parseInt(item.discount) / 100)
-                      return <CartItems cartitem={courseitem} index={index} checkoutAmount={checkoutAmount} key={index}
-                                        product={item}/>;
-                    })}
+          {
+            isApiCall === 0 ? <>
 
-                    </tbody>
-                  </table>
-                </div>
-                {/*</Form>*/}
-
-                {/*<div className="row g-5">*/}
-
-                {/*</div>*/}
-              </div>
-
-              <div className="col-lg-4">
-                <div className="cart-summary">
-                  <div className="cart-summary-wrap">
-                    <div className="section-title text-start">
-                      <h4 className="title mb--30">Cart Summary</h4>
-                    </div>
-                    <div className="">
-                      <div className="section-title text-start">
-                        <h6 className="">Discount Coupon Code</h6>
+                  <div className="row">
+                    <div className="col-lg-8">
+                      <b><Skeleton width={150}/></b><b> </b>
+                      <hr/>
+                      <div className="cart-table table-responsive mb--60">
+                        <table className="table">
+                          <thead></thead>
+                          <tbody>
+                          <tr>
+                            <td className="pro-thumbnail">
+                              <Skeleton width={140} height={111}/>
+                            </td>
+                            <td>
+                              <Skeleton width={100} height={20}/>
+                            </td>
+                            <td>
+                              <Skeleton width={80} height={20}/>
+                            </td>
+                            <td>
+                              <Skeleton width={80} height={20}/>
+                            </td>
+                            <td>
+                              <div className={"d-flex align-items-center"}>
+                                <Skeleton className={'mr--10'} width={40} height={40}/>
+                                <Skeleton width={40} height={40}/>
+                              </div>
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
                       </div>
-                      <Form>
-                        <div className="row">
-                          <div className="col-md-6 col-12 mb--25">
-                            <input type="text" placeholder="Coupon Code"/>
+                    </div>
+
+                    <div className="col-lg-4">
+                      <div className="cart-summary">
+                        <div className="cart-summary-wrap">
+                          <div className="section-title text-start">
+                            <Skeleton width={150} height={25}/>
                           </div>
-                          <div className="col-md-6 col-12 mb--25">
-                            <button className="rbt-btn btn-gradient hover-icon-reverse btn-sm">
+
+                          <div>
+                            <div className="section-title text-start mt--20">
+                              <Skeleton width={200} height={20}/>
+                            </div>
+                            <form>
+                              <div className="row mt--10">
+                                <div className="col-md-6 col-12 mb--25">
+                                  <Skeleton width="100%" height={40}/>
+                                </div>
+                                <div className="col-md-6 col-12 mb--25">
+                                  <Skeleton width="100%" height={40}/>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+
+                          <div className="row">
+                            <div className="align-self-center col-sm-10 col-md-10 col-lg-10">
+                              <Skeleton width={150} height={20}/>
+                            </div>
+                            <div className="col-sm-2 col-md-2 col-lg-2">
+                              <Skeleton width={40} height={20}/>
+                            </div>
+                            <div className="align-self-center col-sm-10 col-md-10 col-lg-10">
+                              <Skeleton width={120} height={20}/>
+                            </div>
+                            <div className="col-sm-2 col-md-2 col-lg-2">
+                              <Skeleton width={30} height={20}/>
+                            </div>
+                          </div>
+
+                          <h2>
+                            <div className="d-flex justify-content-between">
+                              <Skeleton width={100} height={25}/>
+                              <Skeleton width={30} height={25}/>
+                            </div>
+
+                          </h2>
+
+                          <div className="mt-5">
+                            <div className="single-button">
+                              <Skeleton width="100%" height={45}/>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </> :
+                <>
+                  {courseitem.length !== 0 ? <>
+                    <div className="row">
+                      <div className="col-lg-8">
+                        {courseitem.length > 1 ? <b>{courseitem.length} items in cart</b> :
+                            <b>{courseitem.length} item in cart</b>}
+                        <b> </b>
+                        <hr></hr>
+                        {/*<Form>*/}
+                        <div className="cart-table table-responsive mb--60">
+                          <table className="table">
+                            <thead>
+                            {/*<tr>*/}
+                            {/*  <th className="pro-thumbnail">Image</th>*/}
+                            {/*  <th className="pro-title">Product</th>*/}
+                            {/*  <th className="pro-price">Price</th>*/}
+                            {/*  /!*<th className="pro-quantity">Quantity</th>*!/*/}
+                            {/*  /!*<th className="pro-subtotal">Total</th>*!/*/}
+                            {/*  <th className="pro-remove">Remove</th>*/}
+                            {/*</tr>*/}
+                            </thead>
+                            <tbody>
+                            {courseitem.map((item, index) => {
+                              console.log("Course Item List", item)
+                              const userPay = (parseInt(item.pay_price) - (parseInt(item.pay_price) * parseInt(item.discount) / 100))
+                              // console.log(userPay, pay_amnt)
+                              const pay_amnt = parseInt(item.pay_price) - parseInt(item.user_pay)
+                              // console.log(pay_amnt)
+                              checkoutAmount += userPay
+                              originalPrice += parseInt(item.og_price)
+                              discountPrice += parseInt(item.pay_price)
+                              specialPrice += (parseInt(item.pay_price) * parseInt(item.discount) / 100)
+                              return <CartItems cartitem={courseitem} index={index} checkoutAmount={checkoutAmount}
+                                                key={index}
+                                                product={item}/>;
+                            })}
+
+                            </tbody>
+                          </table>
+                        </div>
+                        {/*</Form>*/}
+
+                        {/*<div className="row g-5">*/}
+
+                        {/*</div>*/}
+                      </div>
+
+                      <div className="col-lg-4">
+                        <div className="cart-summary">
+                          <div className="cart-summary-wrap">
+                            <div className="section-title text-start">
+                            <h4 className="title mb--30">Cart Summary</h4>
+                            </div>
+                            <div className="">
+                              <div className="section-title text-start">
+                                <h6 className="">Discount Coupon Code</h6>
+                              </div>
+                              <Form>
+                                <div className="row">
+                                  <div className="col-md-6 col-12 mb--25">
+                                    <input type="text" placeholder="Coupon Code"/>
+                                  </div>
+                                  <div className="col-md-6 col-12 mb--25">
+                                    <button className="rbt-btn btn-gradient hover-icon-reverse btn-sm">
                             <span className="icon-reverse-wrapper">
                               <span className="btn-text" style={{fontSize: '14px'}}>Apply Code</span>
                               <span className="btn-icon">
@@ -321,88 +422,102 @@ const CartPage = () => {
                                 <i className="feather-arrow-right"></i>
                               </span>
                             </span>
-                            </button>
-                          </div>
-                        </div>
-                      </Form>
-                    </div>
-                    <Row className={'d-none'}>
-                      <Col lg={10} md={10} sm={10} className="align-self-center">
-                        <p> Do you claim GST?</p>
-                      </Col>
-                      <Col lg={2} md={2} sm={2}>
-                        <input
-                            id={`cat-list`}
-                            type="checkbox"
-                            className={'mt-4'}
-                            value={handleGST}
-                            onChange={handleChangeGST}
-                            name={`cat-list`}
-                            style={{opacity: '1', position: 'relative', height: '15px'}}/>
-                      </Col>
-                      {showTax ? <>
-                        <Col>
-                          <input type="text" placeholder="Enter GST Number"/>
-                        </Col>
-                      </> : <></>}
+                                    </button>
+                                  </div>
+                                </div>
+                              </Form>
+                            </div>
+                            <Row className={'d-none'}>
+                              <Col lg={10} md={10} sm={10} className="align-self-center">
+                                <p> Do you claim GST?</p>
+                              </Col>
+                              <Col lg={2} md={2} sm={2}>
+                                <input
+                                    id={`cat-list`}
+                                    type="checkbox"
+                                    className={'mt-4'}
+                                    value={handleGST}
+                                    onChange={handleChangeGST}
+                                    name={`cat-list`}
+                                    style={{opacity: '1', position: 'relative', height: '15px'}}/>
+                              </Col>
+                              {showTax ? <>
+                                <Col>
+                                  <input type="text" placeholder="Enter GST Number"/>
+                                </Col>
+                              </> : <></>}
 
-                    </Row>
-                    <p>
-                      Original Price <span> <del>₹ {originalPrice} </del> <span className={'ml--10'}> ₹ {discountPrice}</span></span>
-                    </p>
-                    {/*<p>*/}
-                    {/*  Discounted Price <span>₹ {discountPrice}</span>*/}
-                    {/*</p>*/}
-                    <p>
-                      Discounted Price <span> (-) ₹ {specialPrice}</span>
-                    </p>
-                    {/*{handleGST ? <>*/}
-                    {/*  <p>*/}
-                    {/*    Sub Total <span>₹{((checkoutAmount * 100) / (100 + 18)).toFixed(2)}</span>*/}
-                    {/*  </p>*/}
-                    {/*</> : <>*/}
-                    {/*  <p>*/}
-                    {/*    Sub Total <span>₹ {checkoutAmount}</span>*/}
-                    {/*  </p>*/}
-                    {/*</>}*/}
-                    {showTax ? <>
+                            </Row>
+                            <p>
+                              Original Price <span> <del>₹ {originalPrice} </del> <span className={'ml--10'}> ₹ {discountPrice}</span></span>
+                            </p>
+                            {/*<p>*/}
+                            {/*  Discounted Price <span>₹ {discountPrice}</span>*/}
+                            {/*</p>*/}
+                            <p>
+                              Discounted Price <span> (-) ₹ {specialPrice}</span>
+                            </p>
+                            {/*{handleGST ? <>*/}
+                            {/*  <p>*/}
+                            {/*    Sub Total <span>₹{((checkoutAmount * 100) / (100 + 18)).toFixed(2)}</span>*/}
+                            {/*  </p>*/}
+                            {/*</> : <>*/}
+                            {/*  <p>*/}
+                            {/*    Sub Total <span>₹ {checkoutAmount}</span>*/}
+                            {/*  </p>*/}
+                            {/*</>}*/}
+                            {showTax ? <>
 
-                      <Row>
-                        <Col lg={9} className="align-self-center">
-                          <div
-                              className='detail-title font-weight-bolder lh-16 font-15'>Tax:
-                          </div>
-                        </Col>
-                        <Col lg={3} className="text-end">
+                              <Row>
+                                <Col lg={9} className="align-self-center">
+                                  <div
+                                      className='detail-title font-weight-bolder lh-16 font-15'>Tax:
+                                  </div>
+                                </Col>
+                                <Col lg={3} className="text-end">
                           <span className={'font-15'}>
                             ₹ {parseFloat((checkoutAmount) - ((checkoutAmount * 100) / (100 + 18))).toFixed(2)}
                           </span>
-                        </Col>
-                      </Row>
-                    </> : <></>}
-                    <h2>
-                      Payable Price{" "}
-                      <span>₹ {checkoutAmount}</span>
-                    </h2>
-                    <div className="mt-5">
-                      <div className="single-button">
-                        <div
-                            onClick={handlePayment}
-                            className="rbt-btn btn-gradient rbt-switch-btn rbt-switch-y w-100 text-center"
-                        >
-                          <span data-text="Pay Now">Pay Now</span>
+                                </Col>
+                              </Row>
+                            </> : <></>}
+                            <h2>
+                              Payable Price{" "}
+                              <span>₹ {checkoutAmount}</span>
+                            </h2>
+                            <div className="mt-5">
+                              <div className="single-button">
+                                <div
+                                    onClick={handlePayment}
+                                    className="rbt-btn btn-gradient rbt-switch-btn rbt-switch-y w-100 text-center"
+                                >
+                                  <span data-text="Pay Now">Pay Now</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </> : <>
+                    <div className="emptyImage w-25 m-auto">
+                      <Image
+                          src={emptyCart}
+                          width={372}
+                          height={396}
+                          alt="Cart Empty"
+                          className={'w-100'}
+                      />
+                      {/*<img src="assets/images/client/avatar-02.png"*!/*/}
+                      {/*/!*             alt="Sophia Jaymes"/>*!/*/}
+                    </div>
+                    <h5 className={'text-center'}>Cart is empty!</h5>
+                  </>}
+                </>
+          }
 
-
-                </div>
-              </div>
-            </div>
-          </> : <>
-            <h4 className={'text-center'}>Cart is empty!</h4>
-          </>}
 
         </div>
       </div>

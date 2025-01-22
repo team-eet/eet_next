@@ -26,9 +26,9 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
               }
           })
               .then(res => {
-                  console.log(res.data)
+                  console.log("Delete Cart",res.data)
                   const retData = JSON.parse(res.data)
-
+                  console.log("Status",retData)
                   if (retData.success === "1") {
                       Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
                           headers: {
@@ -36,6 +36,8 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
                           }
                       })
                           .then(res => {
+                              alert("Cart")
+                              console.log("Cart Remove Data",res.data)
                               if (res.data) {
                                   console.log(res.data)
                                   if (res.data.length !== 0) {

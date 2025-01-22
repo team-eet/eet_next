@@ -30,6 +30,7 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getCntPdf, setCntPdf] = useState('')
   const [getCntImg, setCntImg] = useState('')
   const [isCartItem, setisCartItem] = useState(false)
+  const [isCartId, setisCartId] = useState('')
   const [cid, setcid] = useState('')
 
 
@@ -112,8 +113,53 @@ const Viedo = ({ checkMatchCourses }) => {
   //
   }
 
+  const getCartItem = () => {
+    if(localStorage.getItem('userData')){
+      const udata = JSON.parse(localStorage.getItem('userData'))
+      Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
+        headers: {
+          ApiKey: `${API_KEY}`
+        }
+      })
+          .then(res => {
+            console.log("Ankit Cart Data isCartItem")
+            if(res.data.length !== 0){
+              console.log("Ankit Get Cart Video.js",res.data)
+              for (let i = 0; i < res.data.length; i++) {
+                if (!isCartItem) {
+                  if (EncryptData(res.data[i].cid) === courseId) {
+                    setisCartItem(true)
+                  }
+                  setisCartId(res.data[0].nCartId)
+
+                } else {
+                  console.log("Ankit Cart Data Blank")
+                  break
+                }
+              }
+            }
+          })
+          .catch(err => {
+            { ErrorDefaultAlert(err) }
+          })
+    }
+    const handleScroll = () => {
+      const currentScrollPos = window.pageYOffset;
+      const isHide = currentScrollPos > 200;
+
+      setHideOnScroll(isHide);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }
+
   useEffect(() => {
     getFeatureCount();
+    dispatch({ type: "COUNT_CART_TOTALS" });
+    localStorage.setItem("hiStudy", JSON.stringify(cart));
+    getCartItem();
     // console.log(EncryptData('0'))
   }, [])
   // console.log(checkMatchCourses)
@@ -188,66 +234,131 @@ const Viedo = ({ checkMatchCourses }) => {
                           if (res.data.length !== 0) {
                             console.log(res.data)
                             const resData = JSON.parse(res.data)
+                            // console.log("promoCode",resData)
+                            if(isCartId === ''){
+                              const insert_arr = {
+                                nRegId: udata['regid'],
+                                cid: courseId,
+                                cname: checkMatchCourses.sCourseTitle,
+                                fname: checkMatchCourses.sFName,
+                                lname: checkMatchCourses.sLName,
+                                camt: (checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0,
+                                cnewamt: (checkMatchCourses.dAmount) ? checkMatchCourses.dAmount : 0,
+                                pkgprice: checkMatchCourses.pkg_price,
+                                isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
+                                cimg: checkMatchCourses.sImagePath,
+                                pkgId: EncryptData(0),
+                                pkgname: '',
+                                PCId: resData.pcid,
+                                promocode: resData.promocode,
+                                Discount: resData.discAmt
+                              }
 
-                            const insert_arr = {
-                              nRegId: udata['regid'],
-                              cid: courseId,
-                              cname: checkMatchCourses.sCourseTitle,
-                              fname: checkMatchCourses.sFName,
-                              lname: checkMatchCourses.sLName,
-                              camt: (checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0,
-                              cnewamt: (checkMatchCourses.dAmount) ? checkMatchCourses.dAmount : 0,
-                              pkgprice: checkMatchCourses.pkg_price,
-                              isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
-                              cimg: checkMatchCourses.sImagePath,
-                              pkgId: EncryptData(0),
-                              pkgname: '',
-                              PCId: resData.pcid,
-                              promocode: resData.promocode,
-                              Discount: resData.discAmt
-                            }
+                              console.log("insert_arr",insert_arr)
+                              if (insert_arr) {
+                                Axios.post(`${API_URL}/api/cart/InsertCart`, insert_arr, {
+                                  headers: {
+                                    ApiKey: `${API_KEY}`
+                                  }
+                                }).then(res => {
+                                  const retData = JSON.parse(res.data)
+                                  // localStorage.setItem('cart', insert_arr)
+                                  localStorage.setItem('cart', JSON.stringify(insert_arr))
+                                  if (retData.success === "1") {
+                                    if (!localStorage.getItem('cart')) {
+                                      const str_arr = JSON.stringify([insert_arr])
+                                      console.log(str_arr)
+                                      localStorage.setItem('cart', str_arr)
 
-                            console.log(insert_arr)
-                            if (insert_arr) {
-                                  Axios.post(`${API_URL}/api/cart/InsertCart`, insert_arr, {
-                                    headers: {
-                                      ApiKey: `${API_KEY}`
-                                    }
-                                  }).then(res => {
-                                    const retData = JSON.parse(res.data)
-                                    // localStorage.setItem('cart', insert_arr)
-                                    localStorage.setItem('cart', JSON.stringify(insert_arr))
-                                    if (retData.success === "1") {
-                                      if (!localStorage.getItem('cart')) {
-                                        const str_arr = JSON.stringify([insert_arr])
-                                        console.log(str_arr)
-                                        localStorage.setItem('cart', str_arr)
-
-                                      } else {
-                                        const gitem = JSON.parse(localStorage.getItem('cart'))
-                                        genCart_arr = []
-                                        if (gitem.length !== 0) {
-                                          for (let i = 0; i < gitem.length; i++) {
-                                            genCart_arr.push(gitem[i])
-                                          }
+                                    } else {
+                                      const gitem = JSON.parse(localStorage.getItem('cart'))
+                                      genCart_arr = []
+                                      if (gitem.length !== 0) {
+                                        for (let i = 0; i < gitem.length; i++) {
+                                          genCart_arr.push(gitem[i])
                                         }
-                                        genCart_arr.push(insert_arr)
-
-                                        const str_arr = JSON.stringify(genCart_arr)
-                                        localStorage.setItem('cart', str_arr)
                                       }
+                                      genCart_arr.push(insert_arr)
 
-                                      setCart(!cartToggle);
-
-                                    } else if (retData.success === "0") {
-                                      { ErrorAlert(retData) }
+                                      const str_arr = JSON.stringify(genCart_arr)
+                                      localStorage.setItem('cart', str_arr)
                                     }
-                                  })
-                                  .catch(err => {
-                                    console.log('err', err)
-                                    { ErrorDefaultAlert(JSON.stringify(err.response)) }
-                                  })
+
+                                    setCart(!cartToggle);
+
+                                  } else if (retData.success === "0") {
+                                    { ErrorAlert(retData) }
+                                  }
+                                })
+                                    .catch(err => {
+                                      console.log('err', err)
+                                      { ErrorDefaultAlert(JSON.stringify(err.response)) }
+                                    })
+                              }
+                            }else{
+                              const update_arr = {
+                                nCartId : parseInt(isCartId),
+                                nRegId: udata['regid'],
+                                cid: courseId,
+                                cname: checkMatchCourses.sCourseTitle,
+                                fname: checkMatchCourses.sFName,
+                                lname: checkMatchCourses.sLName,
+                                camt: (checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0,
+                                cnewamt: (checkMatchCourses.dAmount) ? checkMatchCourses.dAmount : 0,
+                                pkgprice: checkMatchCourses.pkg_price,
+                                isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
+                                cimg: checkMatchCourses.sImagePath,
+                                pkgId: EncryptData(0),
+                                pkgname: '',
+                                PCId: resData.pcid,
+                                promocode: resData.promocode,
+                                Discount: resData.discAmt
+                              }
+
+                              console.log("update_arr",update_arr)
+                              if (update_arr) {
+                                Axios.post(`${API_URL}/api/cart/InsertCart`, update_arr, {
+                                  headers: {
+                                    ApiKey: `${API_KEY}`
+                                  }
+                                }).then(res => {
+                                  const retData = JSON.parse(res.data)
+                                  // localStorage.setItem('cart', insert_arr)
+                                  if (retData.success === "1") {
+                                    delete update_arr['nCartId'];
+                                    localStorage.setItem('cart', JSON.stringify(update_arr))
+                                    if (!localStorage.getItem('cart')) {
+                                      const str_arr = JSON.stringify([update_arr])
+                                      console.log(str_arr)
+                                      localStorage.setItem('cart', str_arr)
+
+                                    } else {
+                                      const gitem = JSON.parse(localStorage.getItem('cart'))
+                                      genCart_arr = []
+                                      if (gitem.length !== 0) {
+                                        for (let i = 0; i < gitem.length; i++) {
+                                          genCart_arr.push(gitem[i])
+                                        }
+                                      }
+                                      genCart_arr.push(update_arr)
+
+                                      const str_arr = JSON.stringify(genCart_arr)
+                                      localStorage.setItem('cart', str_arr)
+                                    }
+
+                                    setCart(!cartToggle);
+
+                                  } else if (retData.success === "0") {
+                                    { ErrorAlert(retData) }
+                                  }
+                                })
+                                    .catch(err => {
+                                      console.log('err', err)
+                                      { ErrorDefaultAlert(JSON.stringify(err.response)) }
+                                    })
+                              }
                             }
+
 
                           }
                         }
@@ -291,56 +402,9 @@ const Viedo = ({ checkMatchCourses }) => {
     }
   };
 
-  useEffect(() => {
-    dispatch({ type: "COUNT_CART_TOTALS" });
-    localStorage.setItem("hiStudy", JSON.stringify(cart));
-  }, []);
-
-  // =====> For video PopUp
-  useEffect(() => {
-    // const url = window.location.href
-    // const parts = url.split("/");
-    // const courseId = parts[parts.length - 1];
-    if(localStorage.getItem('userData')){
-      const udata = JSON.parse(localStorage.getItem('userData'))
-      Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
-      headers: {
-        ApiKey: `${API_KEY}`
-      }
-    })
-        .then(res => {
-          // console.log(res.data)
-          if(res.data.length !== 0){
-            console.log("Ankit Get Cart Video.js",res.data)
-            for (let i = 0; i < res.data.length; i++) {
-              if (!isCartItem) {
-                if (EncryptData(res.data[i].cid) === courseId) {
-                  // console.log('cid matched')
-                  setisCartItem(true)
-                }
-              } else {
-                console.log("Ankit Cart Data Blank")
-                break
-              }
-            }
-          }
-        })
-        .catch(err => {
-          { ErrorDefaultAlert(err) }
-        })
-    }
-    const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset;
-      const isHide = currentScrollPos > 200;
-
-      setHideOnScroll(isHide);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-
-  }, []);
+  // const updateCart = (id) => {
+  //   alert(id)
+  // }
 
   const formatDate = (dateTimeString) => {
     const date = new Date(dateTimeString); // Create a Date object from the dateTimeString
@@ -429,14 +493,29 @@ const Viedo = ({ checkMatchCourses }) => {
             </span>
               </button>
             </> : <>
-              <Link href={'/cart'}
+              {
+                isCartId !== '' ? <button
                     className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
-              >
-                <span className="btn-text">Go to Cart</span>
-                <span className="btn-icon">
-              <i className="feather-arrow-right"></i>
-            </span>
-              </Link>
+                    onClick={() => addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)}
+                >
+                  <span className="btn-text">Go to Cart</span>
+                  <span className="btn-icon">
+    <i className="feather-arrow-right"></i>
+  </span>
+                </button> :
+                    <Link href={'/cart'}
+                          className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
+                    >
+                      <span className="btn-text">Go to Cart</span>
+                      <span className="btn-icon">
+                <i className="feather-arrow-right"></i>
+              </span>
+                    </Link>
+              }
+
+
+
+
             </>}
 
           </>}
@@ -446,9 +525,9 @@ const Viedo = ({ checkMatchCourses }) => {
         </div>
 
         <div
-          className={`rbt-widget-details has-show-more mt--15${
-            toggle ? "active" : ""
-          }`}
+            className={`rbt-widget-details has-show-more mt--15${
+                toggle ? "active" : ""
+            }`}
         >
           <ul className="has-show-more-inner-content rbt-course-details-list-wrapper">
 

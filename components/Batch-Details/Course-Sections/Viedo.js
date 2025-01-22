@@ -12,6 +12,7 @@ import {useRouter} from "next/router";
 import Axios from "axios";
 import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
+import Skeleton from "react-loading-skeleton";
 
 const Viedo = ({ checkMatchCourses }) => {
   const REACT_APP = API_URL
@@ -23,6 +24,7 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getCntPdf, setCntPdf] = useState('')
   const [getCntImg, setCntImg] = useState('')
   const [getNumberCount, setNumberCount] = useState({});
+  const [isApiCall, setAPiCall] = useState({});
 
 console.log("VideoData",checkMatchCourses)
    const getFeatureCount = (crsid) => {
@@ -45,8 +47,11 @@ console.log("VideoData",checkMatchCourses)
                 // this.setState({
                 //   CntActivity: res.data[0].cntAct
                 // })
+
               }
+              setAPiCall(prevState => ({ ...prevState, acttivity: 1 }));
             }
+
           })
           .catch(err => {
             { ErrorDefaultAlert(err) }
@@ -70,6 +75,8 @@ console.log("VideoData",checkMatchCourses)
                 //   CntVideo: res.data[0].cntf
                 // })
               }
+              setAPiCall(prevState => ({ ...prevState, pdfcount: 1 }));
+
             }
           })
           .catch(err => {
@@ -261,27 +268,51 @@ console.log("VideoData",checkMatchCourses)
           <ul className="has-show-more-inner-content rbt-course-details-list-wrapper mt--10">
             <li className={'d-flex align-items-center'}>
               <span>Acitivity</span>
-              <span className="rbt-feature-value rbt-badge-5">
+              {
+                isApiCall.acttivity === 1 ? <>
+                  <span className="rbt-feature-value rbt-badge-5">
                     {getNumberCount.activity_count}
                   </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
             </li>
             <li className={'d-flex align-items-center'}>
               <span>Acitivity Questions</span>
-              <span className="rbt-feature-value rbt-badge-5">
+              {
+                isApiCall.acttivity === 1 ? <>
+                <span className="rbt-feature-value rbt-badge-5">
                     {getNumberCount.activity_question_count}
                   </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
             </li>
             <li className={'d-flex align-items-center'}>
               <span>Practice</span>
-              <span className="rbt-feature-value rbt-badge-5">
+              {
+                isApiCall.acttivity === 1 ? <>
+                <span className="rbt-feature-value rbt-badge-5">
                     {getNumberCount.practice_count}
                   </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
             </li>
             <li className={'d-flex align-items-center'}>
               <span>Practice Questions</span>
-              <span className="rbt-feature-value rbt-badge-5">
+              {
+                isApiCall.acttivity === 1 ? <>
+                <span className="rbt-feature-value rbt-badge-5">
                    {getNumberCount.practice_question_count}
                   </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
             </li>
 
           </ul>
@@ -297,32 +328,66 @@ console.log("VideoData",checkMatchCourses)
           <div className="rbt-post-share d-flex align-items-center justify-content-center">
             <ul className="social-icon social-default transparent-with-border justify-content-around w-100">
               <li>
-                <Link href="javascript:void(0);">
-                  {getNumberCount.video_count}
-                </Link>
-                <span className="rbt-feature-value rbt-badge-5">
+                {
+                  isApiCall.pdfcount === 1 ? <>
+                    <Link href="javascript:void(0);">
+                      {getNumberCount.video_count}
+                    </Link>
+                    <span className="rbt-feature-value rbt-badge-5">
                      VIDEOs
                   </span>
+                  </> : <>
+                    <a href="javascript:void(0);">
+                      <Skeleton width="20px" height="20px"/>
+                    </a>
+                    <span className="rbt-feature-value rbt-badge-5">
+                      <Skeleton width="60px" height="15px"/>
+                    </span>
+                  </>
+                }
+
               </li>
-                <li>
-                <Link href="javascript:void(0);">
-                    {getNumberCount.pdf_count}
-                </Link>
-                <span className="rbt-feature-value rbt-badge-5">
+              <li>
+                {
+                  isApiCall.pdfcount === 1 ? <>
+                    <Link href="javascript:void(0);">
+                      {getNumberCount.pdf_count}
+                    </Link>
+                    <span className="rbt-feature-value rbt-badge-5">
                      PDFs
                   </span>
+                  </> : <>
+                    <a href="javascript:void(0);">
+                      <Skeleton width="20px" height="20px"/>
+                    </a>
+                    <span className="rbt-feature-value rbt-badge-5">
+                      <Skeleton width="60px" height="15px"/>
+                    </span>
+                  </>
+                }
               </li>
-                <li>
-                <Link href="javascript:void(0);">
-                    {getNumberCount.ppt_count}
-                </Link>
-                <span className="rbt-feature-value rbt-badge-5">
+              <li>
+                {
+                  isApiCall.pdfcount === 1 ? <>
+                    <Link href="javascript:void(0);">
+                      {getNumberCount.ppt_count}
+                    </Link>
+                    <span className="rbt-feature-value rbt-badge-5">
                      PPTs
                   </span>
+                  </> : <>
+                    <a href="javascript:void(0);">
+                      <Skeleton width="20px" height="20px"/>
+                    </a>
+                    <span className="rbt-feature-value rbt-badge-5">
+                      <Skeleton width="60px" height="15px"/>
+                    </span>
+                  </>
+                }
               </li>
             </ul>
           </div>
-          <hr className="mt--20" />
+          <hr className="mt--20"/>
           <div className="contact-with-us text-center">
             <p>For details about the course</p>
             <p className="rbt-badge-2 mt--10 justify-content-center w-100">
