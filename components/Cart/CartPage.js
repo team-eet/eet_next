@@ -15,7 +15,7 @@ import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 import {NextResponse} from "next/server";
-import emptyCart from "@/public/images/emptyCart.PNG";
+import emptycart from "@/public/images/emptyCart.PNG";
 import Image from "next/image";
 
 // const razorpay = new Razorpay({
@@ -504,7 +504,7 @@ const CartPage = () => {
                   </> : <>
                     <div className="emptyImage w-25 m-auto">
                       <Image
-                          src={emptyCart}
+                          src={emptycart}
                           width={372}
                           height={396}
                           alt="Cart Empty"
