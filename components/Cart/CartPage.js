@@ -15,7 +15,7 @@ import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 import {NextResponse} from "next/server";
-import emptycart from "@/public/images/emptyCart.PNG";
+import emptycart from "@/public/images/emptyCart.png";
 import Image from "next/image";
 
 // const razorpay = new Razorpay({
