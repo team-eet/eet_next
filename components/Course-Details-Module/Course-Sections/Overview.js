@@ -3,6 +3,7 @@ import parse from "html-react-parser";
 
 const Overview = ({ checkMatchCourses }) => {
     // console.log(checkMatchCourses)
+    console.log("checkMatchCourses Overview",checkMatchCourses)
   const [toggle, setToggle] = useState(false);
   const { title, desc, descTwo, overviewList } = checkMatchCourses;
 

@@ -32,7 +32,7 @@ const SingleCourseTwo = () => {
     const url = window.location.href
     const parts = url.split("/");
     const courseId = parts[parts.length - 1];
-    console.log(courseId)
+
     Axios.get(`${API_URL}/api/coursemain/GetCoursesView/${courseId}`, {
       headers: {
         ApiKey: `${API_KEY}`

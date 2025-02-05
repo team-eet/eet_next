@@ -149,11 +149,11 @@ const Content = () => {
                                     <div className="course-content-right">
                                       <span className="min-lable">{list.act_cnt} Activities</span>
                                       <span className="rbt-badge variation-03 bg-primary-opacity">
-                                  <i className="feather-eye"></i> Practise
-                                </span>
+                                        <i className="feather-eye"></i> Practise
+                                      </span>
                                       <span className="course-lock">
-                                  <i className="feather-lock"></i>
-                                </span>
+                                        <i className="feather-lock"></i>
+                                      </span>
                                     </div>
 
                                     {/*)}*/}

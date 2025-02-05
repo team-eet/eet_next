@@ -8,6 +8,7 @@ import Review from "./Course-Sections/Review";
 import Viedo from "./Course-Sections/Viedo";
 import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
+import CornerRibbon from "react-corner-ribbon";
 import Skeleton, {SkeletonTheme} from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
@@ -294,6 +295,16 @@ const CourseDetailsOne = ({ checkMatchCourses }) => {
 
               </div>
             </> : <>
+              <CornerRibbon
+                  position="top-center"
+                  fontColor="#f0f0f0"
+                  backgroundColor="#637FEA"
+                  containerStyle={{}}
+                  style={{'border-bottom-right-radius': '6px'}}
+                  className=""
+              >
+                {checkMatchCourses.sLevel}
+              </CornerRibbon>
               <div className="inner">
                 <Viedo checkMatchCourses={checkMatchCourses && checkMatchCourses}/>
               </div>

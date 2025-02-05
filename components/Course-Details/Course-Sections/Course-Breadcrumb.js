@@ -114,24 +114,30 @@ const CourseBreadcrumb = ({ getMatchCourse, CourseTag, Tag }) => {
                   </div>
                 </li>
                 <li className="rbt-breadcrumb-item active">
-                  {getMatchCourse.sCategory}
+                  Courses
                 </li>
               </ul>
-              <h2 className="title">
-                {getMatchCourse.sCourseTitle}
-              </h2>
+              {/*<h2 className="title">*/}
+              {/*  {getMatchCourse.sCourseTitle}*/}
+              {/*</h2>*/}
+              <div className="d-block d-md-flex">
+                <div className="rbt-category mb--10 mb_md--0 order-1 order-md-2">
+                  <Link href="#">{getMatchCourse.sCategory}</Link>
+                </div>
+                <h4 className="rbt-card-title order-2 order-md-1 mr--10">{getMatchCourse.sCourseTitle}</h4>
+              </div>
               <p className="description">
                 {getMatchCourse.sShortDesc}
               </p>
 
+
               <div className="d-flex align-items-center mb--20 flex-wrap rbt-course-details-feature">
                 {CourseTag ? <>
                   <div className="feature-sin best-seller-badge">
-                <span className="rbt-badge-2">
-                  <span className="image">
-                  </span>
-                  {Tag[0]['sTagName']}
-                </span>
+                    <span className="rbt-badge-2">
+                      <span className="image"></span>
+                      {Tag[0]['sTagName']}
+                    </span>
                   </div>
                 </> : <></>}
 
@@ -170,19 +176,18 @@ const CourseBreadcrumb = ({ getMatchCourse, CourseTag, Tag }) => {
               <div className="rbt-author-meta mb--20">
                 <div className="rbt-avater">
                   <Link href={``}>
-                    {getMatchCourse.tutor_image && (
+                    {getMatchCourse.sProfilePhotoPath && (
                         // <Image className={'position-relative'} src={getMatchCourse.tutor_image}  width={40} height={40}></Image>
-                        <img className={'position-relative'} src={getMatchCourse.tutor_image} width={40}
+                        <img className={'position-relative'} src={getMatchCourse.sProfilePhotoPath} width={40}
                              height={40}></img>
                     )}
                   </Link>
                 </div>
                 <div className="rbt-author-info">
-                  By{" "}
+                  Course By{" "}
                   <Link href={`/profile/${getMatchCourse.id}`}>
                     {getMatchCourse.sFName} {getMatchCourse.sLName}
                   </Link>{" "}
-                  In <Link href="#">{getMatchCourse.sCategory}</Link>
                 </div>
               </div>
 
@@ -191,12 +196,8 @@ const CourseBreadcrumb = ({ getMatchCourse, CourseTag, Tag }) => {
                   <i className="feather-calendar"></i>Last updated{" "}
                   {formatDate(getMatchCourse.dUpdatedDate)}
                 </li>
-                <li>
-                  <i className="feather-globe"></i>
-                  Top rated
-                </li>
-                <li>
-                  <i className="feather-award"></i>Verified
+                <li className={'text-success'}>
+                  <i className="fa fa-check-circle"></i>Verified
                 </li>
               </ul>
             </>

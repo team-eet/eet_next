@@ -15,6 +15,7 @@ import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 
 import Razorpay from 'razorpay';
+import Skeleton from "react-loading-skeleton";
 
 
 const MySwal = withReactContent(Swal);
@@ -31,6 +32,8 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getCntImg, setCntImg] = useState('')
   const [isCartItem, setisCartItem] = useState(false)
   const [isCartId, setisCartId] = useState('')
+  const [getNumberCount, setNumberCount] = useState({});
+  const [isApiCall, setAPiCall] = useState({});
   const [cid, setcid] = useState('')
 
 
@@ -51,6 +54,7 @@ const Viedo = ({ checkMatchCourses }) => {
                 // console.log('CntActivity', res.data)
                 setCntActivity(res.data[0].cntAct)
               }
+              setAPiCall(prevState => ({ ...prevState, acttivity: 1 }));
             }
           })
           .catch(err => {
@@ -58,6 +62,32 @@ const Viedo = ({ checkMatchCourses }) => {
           })
   //
   //     //video
+
+    Axios.get(`${API_URL}/api/coursemain/GetCourseDocumentCount/${courseId}`, {
+      headers: {
+        ApiKey: `${API_KEY}`
+      }
+    })
+        .then(res => {
+          if (res.data) {
+            console.log("Count Data",res.data,'courseId',courseId)
+            if (res.data.length !== 0) {
+              console.log('CntVideo', res.data)
+              // setCntVideo(res.data[0].cntf)
+              setNumberCount(res.data[0]);
+
+              // this.setState({
+              //   CntVideo: res.data[0].cntf
+              // })
+            }
+            setAPiCall(prevState => ({ ...prevState, pdfcount: 1 }));
+
+          }
+        })
+        .catch(err => {
+          { ErrorDefaultAlert(err) }
+        })
+
       Axios.get(`${API_URL}/api/package/Show_video_count/${courseId}`, {
         headers: {
            ApiKey: `${API_KEY}`
@@ -531,29 +561,53 @@ const Viedo = ({ checkMatchCourses }) => {
         >
           <ul className="has-show-more-inner-content rbt-course-details-list-wrapper">
 
-            <li className={'d-flex'}>
-              <span>Videos</span>
-              <span className="rbt-feature-value rbt-badge-5">
-                    {getCntVideo}
+            <li className={'d-flex align-items-center'}>
+              <span>Activity</span>
+              {
+                isApiCall.acttivity === 1 ? <>
+                  <span className="rbt-feature-value rbt-badge-5">
+                    {getNumberCount.activity_count}
                   </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
+            </li>
+            <li className={'d-flex align-items-center'}>
+              <span>Activity Questions</span>
+              {
+                isApiCall.acttivity === 1 ? <>
+                <span className="rbt-feature-value rbt-badge-5">
+                    {getNumberCount.activity_question_count}
+                  </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
+            </li>
+            <li className={'d-flex align-items-center'}>
+              <span>Practice</span>
+              {
+                isApiCall.acttivity === 1 ? <>
+                <span className="rbt-feature-value rbt-badge-5">
+                    {getNumberCount.practice_count}
+                  </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
             </li>
             <li className={'d-flex'}>
-              <span>PDF</span>
-              <span className="rbt-feature-value rbt-badge-5">
-                    {getCntPdf}
+              <span>Practice Questions</span>
+              {
+                isApiCall.acttivity === 1 ? <>
+                <span className="rbt-feature-value rbt-badge-5">
+                   {getNumberCount.practice_question_count}
                   </span>
-            </li>
-            <li className={'d-flex'}>
-              <span>Image</span>
-              <span className="rbt-feature-value rbt-badge-5">
-                    {getCntImg}
-                  </span>
-            </li>
-            <li className={'d-flex'}>
-              <span>Acitivity</span>
-              <span className="rbt-feature-value rbt-badge-5">
-                    {getCntActivity}
-                  </span>
+                </> : <>
+                  <Skeleton width="40px" height="20px"/>
+                </>
+              }
             </li>
           </ul>
           <div
@@ -566,26 +620,63 @@ const Viedo = ({ checkMatchCourses }) => {
 
         <div className="social-share-wrapper mt--30 text-center">
           <div className="rbt-post-share d-flex align-items-center justify-content-center">
-            <ul className="social-icon social-default transparent-with-border justify-content-center">
+            <ul className="social-icon social-default transparent-with-border justify-content-around w-100">
               <li>
-                <Link href="https://www.facebook.com/">
-                  <i className="feather-facebook"></i>
-                </Link>
+                {
+                  isApiCall.pdfcount === 1 ? <>
+                    <Link href="javascript:void(0);">
+                      {getNumberCount.video_count}
+                    </Link>
+                    <span className="rbt-feature-value rbt-badge-5">
+                     VIDEOs
+                  </span>
+                  </> : <>
+                    <a href="javascript:void(0);">
+                      <Skeleton width="20px" height="20px"/>
+                    </a>
+                    <span className="rbt-feature-value rbt-badge-5">
+                      <Skeleton width="60px" height="15px"/>
+                    </span>
+                  </>
+                }
               </li>
               <li>
-                <Link href="https://www.twitter.com">
-                  <i className="feather-twitter"></i>
-                </Link>
+                {
+                  isApiCall.pdfcount === 1 ? <>
+                    <Link href="javascript:void(0);">
+                      {getNumberCount.pdf_count}
+                    </Link>
+                    <span className="rbt-feature-value rbt-badge-5">
+                     PDFs
+                    </span>
+                  </> : <>
+                    <a href="javascript:void(0);">
+                      <Skeleton width="20px" height="20px"/>
+                    </a>
+                    <span className="rbt-feature-value rbt-badge-5">
+                      <Skeleton width="60px" height="15px"/>
+                    </span>
+                  </>
+                }
               </li>
               <li>
-                <Link href="https://www.instagram.com/">
-                  <i className="feather-instagram"></i>
-                </Link>
-              </li>
-              <li>
-                <Link href="https://www.linkdin.com/">
-                  <i className="feather-linkedin"></i>
-                </Link>
+                {
+                  isApiCall.pdfcount === 1 ? <>
+                    <Link href="javascript:void(0);">
+                      {getNumberCount.ppt_count}
+                    </Link>
+                    <span className="rbt-feature-value rbt-badge-5">
+                     PPTs
+                  </span>
+                  </> : <>
+                    <a href="javascript:void(0);">
+                      <Skeleton width="20px" height="20px"/>
+                    </a>
+                    <span className="rbt-feature-value rbt-badge-5">
+                      <Skeleton width="60px" height="15px"/>
+                    </span>
+                  </>
+                }
               </li>
             </ul>
           </div>
@@ -593,10 +684,7 @@ const Viedo = ({ checkMatchCourses }) => {
           <div className="contact-with-us text-center">
             <p>For details about the course</p>
             <p className="rbt-badge-2 mt--10 justify-content-center w-100">
-              <i className="feather-phone mr--5"></i> Call Us:{" "}
-              <Link href="#">
-                <strong>+444 555 666 777</strong>
-              </Link>
+              <i className="feather-help-circle mr--5"></i> Inquiry Now
             </p>
           </div>
         </div>

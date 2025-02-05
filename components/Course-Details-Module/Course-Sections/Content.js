@@ -47,7 +47,6 @@ const Content = ({ checkMatchCourses }) => {
                             <div className={'row'}>
                               <Link href={`/courselesson/${EncryptData(list.nCId)}/${EncryptData(list.nMId)}/${EncryptData(list.nLId)}/${EncryptData('N')}/${EncryptData(list.nCId)}`}>
 
-                                <div className={'col-lg-5'}>
                                   <div className="course-content-left">
                                     {list.playIcon ? (
                                         <i className="feather-play-circle"></i>
@@ -56,24 +55,18 @@ const Content = ({ checkMatchCourses }) => {
                                     )}
                                     <span className="text">{list.sLessionTitle}</span>
                                   </div>
-                                </div>
-                                <div className={'col-lg-5'}>
                                   <div className="course-content-right d-flex">
                                     <span className="min-lable">{list.act_cnt} Activities</span>
-                                    <Link href={`/courselesson/${EncryptData(list.nCId)}/${EncryptData(list.nMId)}/${EncryptData(list.nLId)}/${EncryptData('N')}/${EncryptData(list.nCId)}`}>
+                                    <Link
+                                        href={`/courselesson/${EncryptData(list.nCId)}/${EncryptData(list.nMId)}/${EncryptData(list.nLId)}/${EncryptData('N')}/${EncryptData(list.nCId)}`}>
                                      <span className="rbt-badge variation-03 bg-primary-opacity">
-                                        <i className="feather-eye"></i> Preview
+                                        <i className="feather-eye"></i> Practise
                                      </span>
                                     </Link>
+                                    <span className="course-lock">
+                                      <i className="feather-lock"></i>
+                                    </span>
                                   </div>
-                                </div>
-                                <div className={'col-lg-1'}>
-                                  <div className="course-content-right">
-                                <span className="course-lock">
-                                  <i className="feather-lock"></i>
-                                </span>
-                                  </div>
-                                </div>
 
                           </Link>
                             </div>

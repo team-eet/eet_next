@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 
 import "venobox/dist/venobox.min.css";
 import Viedo from "./Course-Sections/Viedo";
@@ -21,6 +21,8 @@ import Axios from "axios";
 import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import {API_URL, API_KEY} from "../../constants/constant";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const CourseDetailsTwo = ({ checkMatchCourses }) => {
   console.log(checkMatchCourses)
@@ -29,7 +31,9 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
   const [getModule, setModule] = useState([])
   const [getDefaultModule, setDefaultModule] = useState([])
   const [getSectionItems, setSectionItems] = useState([])
+  const [getDesc, setDesc] = useState('')
   const [getTitle, setTitle] = useState('')
+  const [isContentApiCall, setIsContentApiCall] = useState(0)
 
   const scrollToContent = () => {
     if (contentRef.current) {
@@ -40,7 +44,7 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
     const url = window.location.href
     const parts = url.split("/");
     const courseId = parts[parts.length - 1];
-    console.log(courseId)
+    console.log("ID Datas",courseId)
     Axios.get(`${API_URL}/api/courseModule/GetModule/${courseId}`, {
       headers: {
         ApiKey: `${API_KEY}`
@@ -61,10 +65,13 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
                 .then(res => {
                   console.log('section items1', res.data)
                   if (res.data.length !== 0) {
+                    console.log("Short Desc",res.data[0].sShortDesc)
                     setSectionItems(res.data)
+                    setDesc(res.data[0].sShortDesc)
                   } else {
 
                   }
+                  setIsContentApiCall(1)
                 })
                 .catch(err => {
                   { ErrorDefaultAlert(err) }
@@ -87,7 +94,7 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
     const parts = url.split("/");
     const courseId = parts[parts.length - 1];
     // console.log(EncryptData(courseId), courseId)
-    console.log(EncryptData(mid), mid)
+    console.log("ID Data", courseId,EncryptData(mid))
     Axios.get(`${API_URL}/api/section/GetCourseSummaryAll/${courseId}/${EncryptData(mid)}`, {
       headers: {
         ApiKey: `${API_KEY}`
@@ -97,6 +104,7 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
           console.log('section items 2', res.data)
           if (res.data.length !== 0) {
             setSectionItems(res.data)
+            setDesc(res.data[0].sShortDesc)
           } else {
 
           }
@@ -247,9 +255,61 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
               className="course-content rbt-shadow-box coursecontent-wrapper mt--30"
               id="coursecontent"
           >
+
+
+            {
+              isContentApiCall === 0 ? <>
+                <div className="rbt-course-feature-inner">
+                  {/* Skeleton for the Course Content title */}
+                  <Skeleton width={150} height={20}/>
+                  <Skeleton height={1} style={{marginBottom: '15px'}}/>
+
+                  <div className="d-flex justify-content-between">
+                    <div className="title">
+                      <Skeleton width={150} height={40}/>
+                    </div>
+                    <div className="plus">
+                      <Skeleton width={40} height={40}/>
+                    </div>
+                  </div>
+                  <Skeleton height={1} style={{marginBottom: '15px'}}/>
+
+
+                  {/* Skeleton for each accordion item */}
+                  <div className="accordion" id="accordionExampleb2">
+                    {[...Array(10)].map((_, index) => (
+                        <div className="accordion-item card border-0" key={index}>
+
+                          {/* Accordion body */}
+                          <div id={`collapseTwo${index + 1}`} className="accordion-collapse collapse show">
+                            <div className="accordion-body card-body pr--0">
+                              <ul className="rbt-course-main-content liststyle">
+                                {/* Skeleton for course content item */}
+                                {[...Array(1)].map((_, subIndex) => (
+                                    <li key={subIndex}>
+                                      <a href="javascript:void(0)">
+                                        <div className="course-content-left">
+                                          <Skeleton width={250} height={20}/>
+                                        </div>
+                                        <div className="course-content-right">
+                                          <Skeleton width={100} height={20} style={{margin: '0px'}}/>
+                                          <Skeleton width={80} height={20} style={{margin: '0px'}}/>
+                                        </div>
+                                      </a>
+                                    </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                    ))}
+                  </div>
+                </div>
+              </> : <Content checkMatchCourses={getSectionItems}/>
+            }
             {/*{checkMatchCourses &&*/}
             {/*  checkMatchCourses.courseContent.map((data, index) => (*/}
-            <Content checkMatchCourses={getSectionItems}  />
+
             {/*  ))}*/}
           </div>
 
@@ -257,7 +317,7 @@ const CourseDetailsTwo = ({ checkMatchCourses }) => {
           <div id={"overview"}>
             {checkMatchCourses &&
             checkMatchCourses.sFullDesc ?
-                <Overview checkMatchCourses={checkMatchCourses.sFullDesc}/> : ''
+                <Overview checkMatchCourses={getDesc}/> : ''
             }
           </div>
 

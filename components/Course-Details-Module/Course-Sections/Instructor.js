@@ -12,20 +12,28 @@ const Instructor = ({ checkMatchCourses }) => {
                   <h4 className="rbt-title-style-3 text-start">Tutor</h4>
               </div>
               {/*{checkMatchCourses.body.map((teacher, innerIndex) => (*/}
-              <div className="row align-items-center">
-                  <div className="col-lg-4 thumbnail">
+              <div className="media align-items-center">
+                  <div className="thumbnail">
                       <Link href={``}>
-                          {/*<img src={checkMatchCourses.sProfilePhotoPath} width={250} height={250}></img>*/}
-                          <Image
-                            className={'position-relative'}
-                            src={checkMatchCourses.sProfilePhotoPath}
-                            width={250}
-                           height={250}
-                            alt="Author Images"
-                          />
+                          {checkMatchCourses.sProfilePhotoPath !== "" ?
+                              <img src={checkMatchCourses.sProfilePhotoPath} className={'rounded-circle shadow cusBatchesImage'} width={150} height={150}></img> :
+                              // <Image
+                              //     src={img}
+                              //     width={250}
+                              //     height={250}
+                              //     className={'position-relative'}
+                              //     alt="Author Images"
+                              // />}
+                              <img
+                                  src={img}
+                                  width={150}
+                                  height={150}
+                                  className={'rounded-circle position-relative'}
+                                  alt="Author Images"
+                              />}
                       </Link>
                   </div>
-                  <div className="col-lg-8 media-body">
+                  <div className="media-body">
                       <div className="author-info">
                           <h5 className="title text-start">
                               <Link
@@ -54,10 +62,17 @@ const Instructor = ({ checkMatchCourses }) => {
                                       <i className="feather-video"></i>{checkMatchCourses.total_courses} Courses
                                   </Link>
                               </li>
+                              <li>
+                                  <Link href="#">
+                                      <i className="feather-video"></i>5 Batches
+                                  </Link>
+                              </li>
                           </ul>
                       </div>
                       <div className="content">
-                          <p className="description text-start">{checkMatchCourses.sDesc.substring(0,150)}....</p>
+                          <p className="b3 subtitle text-start">{checkMatchCourses.sDesc && checkMatchCourses.sDesc.length > 250
+                              ? `${checkMatchCourses.sDesc.substring(0, 250)} ............Read More`
+                              : checkMatchCourses.sDesc}</p>
 
                           {/*<ul className="social-icon social-default icon-naked justify-content-start">*/}
                           {/*  {teacher.social.map((social, index) => (*/}

@@ -16,8 +16,8 @@ const Instructor = ({ checkMatchCourses }) => {
             <div className="thumbnail">
               {/*<Link href={`/profile/${teacher.id}`}>*/}
               <Link href={``}>
-                {checkMatchCourses.tutor_image !== "" ?
-                    <img src={checkMatchCourses.tutor_image} className={'shadow rounded-circle position-relative cusBatchesImage'} width={150} height={150}></img> :
+                {checkMatchCourses.sProfilePhotoPath !== "" ?
+                    <img src={checkMatchCourses.sProfilePhotoPath} className={'rounded-circle shadow cusBatchesImage'} width={150} height={150}></img> :
                     // <Image
                     //     src={img}
                     //     width={250}
@@ -29,7 +29,7 @@ const Instructor = ({ checkMatchCourses }) => {
                         src={img}
                         width={150}
                         height={150}
-                        className={'position-relative'}
+                        className={'rounded-circle position-relative'}
                         alt="Author Images"
                     />}
 
@@ -46,7 +46,7 @@ const Instructor = ({ checkMatchCourses }) => {
                     {checkMatchCourses.sFName} {checkMatchCourses.sLName}
                   </Link>
                 </h5>
-                <span className="b3 subtitle text-start">Math Teacher</span>
+                <span className="b3 subtitle text-start">{checkMatchCourses.sDegree} ({checkMatchCourses.sSpecialization})</span>
                 <ul className="rbt-meta mb--20 mt--10">
                   <li>
                     <i className="fa fa-star color-warning"></i>
@@ -64,20 +64,19 @@ const Instructor = ({ checkMatchCourses }) => {
                       <i className="feather-video"></i>5 Courses
                     </Link>
                   </li>
+                  <li>
+                    <Link href="#">
+                      <i className="feather-video"></i>5 Batches
+                    </Link>
+                  </li>
                 </ul>
               </div>
               <div className="content">
-                <p className="description text-start">Fred Guer is a brilliant educator, whose life was spent for computer science and love of nature.</p>
-
-                {/*<ul className="social-icon social-default icon-naked justify-content-start">*/}
-                {/*  {teacher.social.map((social, index) => (*/}
-                {/*    <li key={index}>*/}
-                {/*      <Link href={social.link}>*/}
-                {/*        <i className={`feather-${social.icon}`}></i>*/}
-                {/*      </Link>*/}
-                {/*    </li>*/}
-                {/*  ))}*/}
-                {/*</ul>*/}
+                <p className="b3 subtitle text-start">
+                  {checkMatchCourses.sDesc && checkMatchCourses.sDesc.length > 250
+                      ? `${checkMatchCourses.sDesc.substring(0, 250)} ............Read More`
+                      : checkMatchCourses.sDesc}
+                </p>
               </div>
             </div>
           </div>

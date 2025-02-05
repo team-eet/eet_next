@@ -182,19 +182,19 @@ console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjust
 
                         <div className="d-flex align-items-center mb--20 flex-wrap rbt-course-details-feature">
                             <div className="feature-sin best-seller-badge">
-              <span className="rbt-badge-2">
-                <span className="image">
-                  {/*{getMatchCourse.awardImg && (*/}
-                    {/*  <Image*/}
-                    {/*    src={getMatchCourse.awardImg}*/}
-                    {/*    width={30}*/}
-                    {/*    height={30}*/}
-                    {/*    alt="Best Seller Icon"*/}
-                    {/*  />*/}
-                    {/*)}*/}
-                </span>
-               Best Seller
-              </span>
+                                <span className="rbt-badge-2">
+                                    <span className="image">
+                                      {/*{getMatchCourse.awardImg && (*/}
+                                        {/*  <Image*/}
+                                        {/*    src={getMatchCourse.awardImg}*/}
+                                        {/*    width={30}*/}
+                                        {/*    height={30}*/}
+                                        {/*    alt="Best Seller Icon"*/}
+                                        {/*  />*/}
+                                        {/*)}*/}
+                                    </span>
+                                    Best Seller
+                                </span>
                             </div>
 
                             <div className="feature-sin rating">

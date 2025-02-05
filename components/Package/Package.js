@@ -53,6 +53,7 @@ const Package = ({ title, tag, col, position }) => {
             regid = '0'
         }
         // console.log(this.props.match.params.cid.toString())
+        console.log("Package",regid,courseId)
         Axios.get(`${API_URL}/api/package/GetPackageView/${regid}/${courseId}`, {
             headers: {
                 ApiKey: `${API_KEY}`

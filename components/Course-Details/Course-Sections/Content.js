@@ -144,18 +144,21 @@ const Content = ({ checkMatchCourses }) => {
                                       <span className="text">{list.sLessionTitle}</span>
                                     </div>
                                     {/*{list.status ? (*/}
-                                    <div className="course-content-right">
-                                      <span className="min-lable">{list.act_cnt} Activities</span>
-                                      <span className="rbt-badge variation-03 bg-primary-opacity">
-                                  <i className="feather-eye"></i> Preview
-                                </span>
-                                    </div>
-                                    {/*) : (*/}
-                                    <div className="course-content-right">
-                                <span className="course-lock">
-                                  <i className="feather-lock"></i>
-                                </span>
-                                    </div>
+                                      <div className="course-content-right">
+                                          <span className="min-lable">{list.act_cnt} Activities</span>
+                                          <span className="rbt-badge variation-03 bg-primary-opacity">
+                                             <i className="feather-eye"></i> Practise
+                                        </span>
+                                          <span className="course-lock">
+                                          <i className="feather-lock"></i>
+                                        </span>
+                                      </div>
+                                      {/*) : (*/}
+                                      {/*<div className="course-content-right">*/}
+                                      {/*    <span className="course-lock">*/}
+                                    {/*      <i className="feather-lock"></i>*/}
+                                    {/*    </span>*/}
+                                    {/*</div>*/}
                                     {/*)}*/}
                                   </Link>
                                 </li>

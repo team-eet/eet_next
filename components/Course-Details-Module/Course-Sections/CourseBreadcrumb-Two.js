@@ -1,8 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
+import parse from "html-react-parser";
+import React, {useEffect, useState} from "react";
 
 const CourseBreadcrumbTwo = ({ getMatchCourse }) => {
-  // console.log(getMatchCourse)
+  console.log("getMatchCourse Module",getMatchCourse)
+  const [crsid, setcrsid] = useState('')
+
+  useEffect(() => {
+    const url = window.location.href;
+    const parts = url.split("/");
+    const courseId = parts[parts.length - 1];
+    setcrsid(courseId);
+  }, []);
+  // setcrsid(courseId)
+
   const formatDate = (value, formatting = { month: 'short', day: 'numeric', year: 'numeric' }) => {
     if (!value) return value
     return new Intl.DateTimeFormat('en-US', formatting).format(new Date(value))
@@ -17,13 +29,13 @@ const CourseBreadcrumbTwo = ({ getMatchCourse }) => {
                 <span className="image">
                   {" "}
                   {getMatchCourse.awardImg && (
-                    <Image
-                        className={'position-relative'}
-                      src={getMatchCourse.awardImg}
-                      width={30}
-                      height={30}
-                      alt="Best Seller Icon"
-                    />
+                      <Image
+                          className={'position-relative'}
+                          src={getMatchCourse.awardImg}
+                          width={30}
+                          height={30}
+                          alt="Best Seller Icon"
+                      />
                   )}
                 </span>{" "}
                 Best Seller
@@ -56,19 +68,31 @@ const CourseBreadcrumbTwo = ({ getMatchCourse }) => {
               <span>{getMatchCourse.studentNumber} students</span>
             </div>
           </div>
-          <h2 className="title theme-gradient">{getMatchCourse.sCourseTitle}</h2>
+          <div className="d-block d-md-flex justify-content-center align-items-center">
+            <div className="rbt-category mb--10 mb_md--0 order-1 order-md-2">
+              <Link href="#">{getMatchCourse.sCategory}</Link>
+            </div>
+            <h4 className="title theme-gradient order-2 order-md-1 mr--10">{getMatchCourse.sCourseTitle}</h4>
+          </div>
+
+          {/*<p className="description">*/}
+          {/*  {parse(getMatchCourse.sFullDesc)}*/}
+          {/*</p>*/}
+          {/*<h2 className="title theme-gradient">{getMatchCourse.sCourseTitle}</h2>*/}
 
           <div className="rbt-author-meta mb--20 justify-content-center">
             <div className="rbt-avater">
-              <Link href={`/profile/${getMatchCourse.id}`}>
-                {getMatchCourse.tutor_image && (
-                  <Image
-                    width={40}
-                    height={40}
-                    className={'position-relative'}
-                    src={getMatchCourse.tutor_image}
-                    alt={getMatchCourse.userName}
-                  />
+              <Link href={``}>
+                {getMatchCourse.sProfilePhotoPath && (
+                    <Image className={"position-relative"} src={getMatchCourse.sProfilePhotoPath}
+                           width={40}
+                           height={40}></Image>
+                    // <Image
+                    //   width={40}
+                    //   height={40}
+                    //   src={getMatchCourse.userImg}
+                    //   alt={getMatchCourse.userName}
+                    // />
                 )}
               </Link>
             </div>
@@ -77,7 +101,6 @@ const CourseBreadcrumbTwo = ({ getMatchCourse }) => {
               <Link href={`/profile/${getMatchCourse.nCId}`}>
                 {getMatchCourse.sFName} {getMatchCourse.sLName}
               </Link>{" "}
-              In <Link href="#">{getMatchCourse.sCategory}</Link>
             </div>
           </div>
 
@@ -94,14 +117,27 @@ const CourseBreadcrumbTwo = ({ getMatchCourse }) => {
 
             </li>
             <li>
-              <i className="feather-globe"></i>
-              English
+              <i className="fa fa-bookmark"></i>
+              {getMatchCourse.sLevel}
             </li>
-            <li>
-              <i className="feather-award"></i>
-              Verified
+            <li className={'text-success'}>
+              <i className="fa fa-check-circle"></i>Verified
             </li>
           </ul>
+
+          <div className="content-item-conten w-25 m-auto mt--30">
+            <div className="add-to-card-button mt--15">
+              <Link
+                  className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
+                  href={`/Package/${crsid}`}
+              >
+                <span className="btn-text">View Packages</span>
+                <span className="btn-icon">
+                  <i className="feather-arrow-right"></i>
+                </span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </>

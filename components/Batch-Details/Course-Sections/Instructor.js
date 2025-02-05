@@ -54,13 +54,18 @@ const Instructor = ({ checkMatchCourses }) => {
                   </li>
                   <li>
                     <Link href="#">
+                      <i className="feather-video"></i>5 Courses
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="#">
                       <i className="feather-video"></i>5 Batches
                     </Link>
                   </li>
                 </ul>
               </div>
               <div className="content">
-                <p className="description text-start">
+                <p className="b3 subtitle text-start">
                   {checkMatchCourses.sDesc && checkMatchCourses.sDesc.length > 250
                       ? `${checkMatchCourses.sDesc.substring(0, 250)} ............Read More`
                       : checkMatchCourses.sDesc}

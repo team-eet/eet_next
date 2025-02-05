@@ -355,7 +355,7 @@ console.log("VideoData",checkMatchCourses)
                     </Link>
                     <span className="rbt-feature-value rbt-badge-5">
                      PDFs
-                  </span>
+                    </span>
                   </> : <>
                     <a href="javascript:void(0);">
                       <Skeleton width="20px" height="20px"/>
