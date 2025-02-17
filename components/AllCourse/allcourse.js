@@ -123,6 +123,7 @@ const AllCoursetwo = () => {
             .then(res => {
                 // console.log('Level data', res.data)
                 if (res.data.length !== 0) {
+                    console.log("Level Data",res.data)
                     setlevelData(res.data)
                     // setisLoading(false)
                 }
@@ -201,7 +202,7 @@ const AllCoursetwo = () => {
         }
     }
 
-    const handleChangeCategory = (ccid) => {
+    const handleChangeCategory = (ccid,isChecked) => {
 
         const category = categoryId !== undefined ? categoryId : EncryptData('0')
         const level = levelId !== undefined ? levelId : EncryptData('0')
@@ -209,7 +210,8 @@ const AllCoursetwo = () => {
         const searchvalue = searchValue ? searchValue : "~"
         setcategoryChecked(true)
         setcourseData([])
-        updatedCategories= [...selectedCategories];
+        // updatedCategories= [...selectedCategories];
+        updatedCategories= Array.isArray(selectedCategories) ? [...selectedCategories] : [];
 
     // Toggle the selected state of the category
     if (updatedCategories.includes(ccid)) {
@@ -217,6 +219,7 @@ const AllCoursetwo = () => {
     } else {
         updatedCategories.push(ccid);
     }
+
 
     setSelectedCategories(updatedCategories);
 
@@ -232,21 +235,40 @@ const AllCoursetwo = () => {
         })
             .then(res => {
                 console.log(res.data)
-                if (res.data.length !== 0) {
-                    // setcourseData(res.data)
-                    setdatacategorywise(res.data)
-                } else {
-                        getCourse()
+                if(isChecked){
+                    // alert("isChecked True")
+                    if (res.data.length !== 0) {
+                        // setcourseData(res.data)
+                        setdatacategorywise(res.data)
+                    }
+                }else{
+                    // alert("isChecked False");
+                    console.log("False");
+                    console.log("Updated Values -> Categories:", updatedCategories.length, "Levels:", selectedLevels.length, "Price:", selectedPrice.length);
+
+                    // ✅ Use updatedCategories instead of selectedCategories
+                    if (updatedCategories.length === 0 && selectedLevels.length === 0 && selectedPrice.length === 0) {
+                        getCourse();
+                        // alert("isChecked False 1");
+                    } else {
+                        if (res.data.length !== 0) {
+                            // alert("isChecked False 2");
+                            setdatacategorywise(res.data);
+                        }
+                    }
+
                 }
+
             })
             .catch(err => {
                 { ErrorDefaultAlert(err) }
             })
     }
 
-    const handleChangeLevel = (clid) => {
+    const handleChangeLevel = (clid,isChecked) => {
+
         const category = categoryId !== undefined ? categoryId : EncryptData('0')
-        const level = levelId !== undefined ? levelId : EncryptData('0')
+        const level = clid !== undefined ? EncryptData(clid) : EncryptData('0')
         const price = priceId !== undefined ? priceId : "~"
         const searchvalue = searchValue ? searchValue : "~"
         updatedLevels= [...selectedLevels];
@@ -259,26 +281,59 @@ const AllCoursetwo = () => {
             updatedLevels.push(clid);
         }
 
+        alert(clid)
+        alert(updatedLevels)
+
         setSelectedCategories(updatedCategories);
 
         const levelParam = updatedLevels.join('-');
         // console.log(levelParam)
         // console.log(EncryptData(levelParam));
         // levelId = EncryptData(levelParam)
-        // console.log(categoryId, levelParam, levelId);
+        console.log("Level Data",category, level, searchvalue,price);
         Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2/L/${category}/${level}/${searchvalue}/${price}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
         })
             .then(res => {
-                console.log(res.data)
-                if (res.data.length !== 0) {
-                    setdatacategorywise(res.data)
-                    // setcourseData(res.data)
-                } else {
-                    getCourse()
+                console.log("Enter",res.data)
+                // console.log("levelParam",res.data)
+                // alert("hello")
+                // Old Code
+                // if (res.data.length !== 0) {
+                //     setdatacategorywise(res.data)
+                //     // setcourseData(res.data)
+                // } else {
+                //     getCourse()
+                // }
+
+                if(isChecked){
+                    alert("isChecked True")
+                    if (res.data.length !== 0) {
+                        alert("Enter")
+                        console.log("Enter",res.data)
+                        setdatacategorywise(res.data)
+                    }
+                }else{
+                    alert("isChecked False");
+                    console.log("False");
+                    console.log("Updated Values -> Categories:", updatedCategories.length, "Levels:", selectedLevels.length, "Price:", selectedPrice.length);
+
+                    // ✅ Use updatedCategories instead of selectedCategories
+                    if (updatedLevels.length === 0 && updatedCategories.length === 0 && selectedPrice.length === 0) {
+                        getCourse();
+                        alert("isChecked False 1");
+                    } else {
+                        if (res.data.length !== 0) {
+                            alert("isChecked False 2");
+                            setdatacategorywise(res.data);
+                        }
+                    }
+
                 }
+
+
             })
             .catch(err => {
                 { ErrorDefaultAlert(err) }
@@ -490,7 +545,7 @@ const AllCoursetwo = () => {
                                                             id={`cat-list-${index}`}
                                                             type="checkbox"
                                                             name={`cat-list-${index}`}
-                                                            onChange={() => handleChangeCategory(data.nCCId)}
+                                                            onChange={() => handleChangeCategory(data.nCCId,event.target.checked)}
                                                         />
                                                         <label htmlFor={`cat-list-${index}`}>{data.sCategory}<span
                                                             className="rbt-lable count">{data.courrsecnt}</span></label>
@@ -619,7 +674,7 @@ const AllCoursetwo = () => {
                                                     <>
                                                         <li className="rbt-check-group">
                                                             <input id={`lavels-list-${index}`} type="checkbox"
-                                                                   name="lavels-list-1" onChange={() => handleChangeLevel(data.nCLId)}/>
+                                                                   name="lavels-list-1" onChange={() => handleChangeLevel(data.nCLId,event.target.checked)}/>
                                                             <label htmlFor={`lavels-list-${index}`}>{data.sLevel}<span
                                                                 className="rbt-lable count">{data.clcnt}</span></label>
                                                         </li>
@@ -910,7 +965,7 @@ const AllCoursetwo = () => {
                                             </div>
                                         </div>
                                     </> : <>
-                                        {categoryChecked ? <>
+                                        {selectedCategories?.length !== 0 || selectedLevels.length !== 0 || selectedPrice.length !== 0 ? <>
                                             {getdatacategorywise.length !== 0 ? <>
                                                 {getdatacategorywise.map((data, index) => {
                                                     return (
@@ -922,7 +977,7 @@ const AllCoursetwo = () => {
                                                                         <div className="rbt-card-img">
                                                                             {/*<a href="course-details.html">*/}
                                                                             <Image className={"position-relative"} objectFit="inherit" fill={true}
-                                                                                 alt="Card image"/>
+                                                                                 alt="Card image" src={data.sImagePath}/>
                                                                             {/*<div className="rbt-badge-3 bg-white">*/}
                                                                             {/*    <span>-40%</span>*/}
                                                                             {/*    <span>Off</span>*/}

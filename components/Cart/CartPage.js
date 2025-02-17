@@ -373,14 +373,23 @@ const CartPage = () => {
                             <tbody>
                             {courseitem.map((item, index) => {
                               console.log("Course Item List", item)
-                              const userPay = (parseInt(item.pay_price) - (parseInt(item.pay_price) * parseInt(item.discount) / 100))
+                              // const userPay = (parseInt(item.pay_price) - (parseInt(item.pay_price) * parseInt(item.discount) / 100))
+                              const userPay = item.sDiscountType === "amount"
+                                  ? parseInt(item.pay_price) - parseInt(item.discount)
+                                  : parseInt(item.pay_price) - (parseInt(item.pay_price) * parseInt(item.discount) / 100);
                               // console.log(userPay, pay_amnt)
                               const pay_amnt = parseInt(item.pay_price) - parseInt(item.user_pay)
+                              console.log("User Pay And Pay Amount ", userPay, pay_amnt)
                               // console.log(pay_amnt)
                               checkoutAmount += userPay
+                              console.log("checkoutAmount", checkoutAmount)
                               originalPrice += parseInt(item.og_price)
                               discountPrice += parseInt(item.pay_price)
-                              specialPrice += (parseInt(item.pay_price) * parseInt(item.discount) / 100)
+                              // specialPrice += (parseInt(item.pay_price) * parseInt(item.discount) / 100)
+                              specialPrice += item.sDiscountType === "amount"
+                                  ? parseInt(item.discount)  // Amount type me direct discount add hoga
+                                  : (parseInt(item.pay_price) * parseInt(item.discount) / 100); // Percentage type me discount calculate hoga
+
                               return <CartItems cartitem={courseitem} index={index} checkoutAmount={checkoutAmount}
                                                 key={index}
                                                 product={item}/>;
@@ -402,7 +411,7 @@ const CartPage = () => {
                             <div className="section-title text-start">
                             <h4 className="title mb--30">Cart Summary</h4>
                             </div>
-                            <div className="">
+                            <div className="d-none">
                               <div className="section-title text-start">
                                 <h6 className="">Discount Coupon Code</h6>
                               </div>

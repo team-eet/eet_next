@@ -47,7 +47,7 @@ const SingleCourse = () => {
       }
     })
         .then(res => {
-            console.log("Course Details",res.data)
+            console.log("Course Details",res.data , "ID" , courseId)
           if (res.data) {
             // console.log(res.data)
             if (res.data.length !== 0) {

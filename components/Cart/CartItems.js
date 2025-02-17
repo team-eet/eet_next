@@ -228,56 +228,76 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
     }
 
   return (
-    <tr key={index}>
-        <td className="pro-thumbnail">
-    <Link href={''}
-    >
-        <Image src={product.cimg}
-               className={"position-relative"}
-             width={140}
-             height={111}
-             alt="Product"
-             />
-    </Link>
-  </td>
-        <td className="pro-title">
-      {product.cname}
-  </td>
-        <td className={"pro-price"}>
-            <span className={'text-primary'} style={{fontSize:"large"}}>₹{product.pay_price}</span>
-            <span className={'text-decoration-line-through'} style={{fontSize:'13px'}}>₹{product.og_price}</span>
-        </td>
-        <td className="pro-price">
-            <span className={'text-primary'} style={{fontSize: "large"}}>₹{(parseInt(product.pay_price) - (parseInt(product.pay_price) * parseInt(product.discount) / 100))} {product.discount !== 0 && <i className='fa fa-tag' title={product.promocode}></i>}</span>
-            {product.sDiscountType === "amount" ? <>
-                {product.discount !== 0 ? <>
-              <span className={'font-13 text-success m-0'} style={{fontSize:'13px'}}>
-                  ₹ {product.discount} discount applied
-              </span>
-                </> : <></>}
-            </> : <>
-                {product.discount !== 0 ? <>
-              <span className={'font-13 text-success m-0'} style={{fontSize:'13px'}}>
-                  {product.discount}% discount applied
-              </span>
-                </> : <></>}
-            </>}
-            {/*{(item.pkgname) ? <div><span className='text-primary'>Selected Package : </span><span*/}
-            {/*    className='text-success font-weight-bolder font-16'>{item.pkgname}</span>*/}
-            {/*</div> : ''}*/}
-        </td>
-        {/*<td className="pro-subtotal">*/}
-        {/*    <span>₹{checkoutAmount}</span>*/}
-        {/*</td>*/}
-        <td className="pro-remove">
-            <button className={'btn-sm rbt-btn btn-gradient'} onClick={() => handleRemoveItem(product.nCartId, product.cid, product.pkgId)}>
-                <i className="feather-x"></i>
-            </button>
-            <button className={'mt-3 ms-3 rbt-btn btn-gradient btn-sm'} onClick={() => handleWishlistCartItem(index, product.cid)}>
-                <i className="feather-heart me-2"></i>
-            </button>
-        </td>
-    </tr>
+      <tr key={index}>
+          <td className="pro-thumbnail">
+              <Link href={''}
+              >
+                  <Image src={product.cimg}
+                         className={"position-relative"}
+                         width={140}
+                         height={111}
+                         alt="Product"
+                  />
+              </Link>
+          </td>
+          <td className="pro-title">
+              {product.cname}
+          </td>
+          <td className={"pro-price"}>
+              <span className={'text-primary'} style={{fontSize: "large"}}>₹{product.pay_price}</span>
+              <span className={'text-decoration-line-through'} style={{fontSize: '13px'}}>₹{product.og_price}</span>
+          </td>
+          {/*<td className="pro-price">*/}
+          {/*    <span className={'text-primary'} style={{fontSize: "large"}}>₹{(parseInt(product.pay_price) - (parseInt(product.pay_price) * parseInt(product.discount) / 100))} {product.discount !== 0 && <i className='fa fa-tag' title={product.promocode}></i>}</span>*/}
+          {/*    {product.sDiscountType === "amount" ? <>*/}
+          {/*        {product.discount !== 0 ? <>*/}
+          {/*      <span className={'font-13 text-success m-0'} style={{fontSize:'13px'}}>*/}
+          {/*          ₹ {product.discount} discount applied*/}
+          {/*      </span>*/}
+          {/*        </> : <></>}*/}
+          {/*    </> : <>*/}
+          {/*        {product.discount !== 0 ? <>*/}
+          {/*      <span className={'font-13 text-success m-0'} style={{fontSize:'13px'}}>*/}
+          {/*          {product.discount}% discount applied*/}
+          {/*      </span>*/}
+          {/*        </> : <></>}*/}
+          {/*    </>}*/}
+          {/*    /!*{(item.pkgname) ? <div><span className='text-primary'>Selected Package : </span><span*!/*/}
+          {/*    /!*    className='text-success font-weight-bolder font-16'>{item.pkgname}</span>*!/*/}
+          {/*    /!*</div> : ''}*!/*/}
+          {/*</td>*/}
+          <td className="pro-price">
+    <span className={'text-primary'} style={{fontSize: "large"}}>
+        ₹{product.sDiscountType === "amount"
+        ? parseInt(product.pay_price) - parseInt(product.discount)
+        : parseInt(product.pay_price) - (parseInt(product.pay_price) * parseInt(product.discount) / 100)
+    }
+        {product.discount !== 0 && <i className='fa fa-tag' title={product.promocode}></i>}
+    </span>
+
+              {product.discount !== 0 && (
+                  <span className={'font-13 text-success m-0'} style={{fontSize: '13px'}}>
+            {product.sDiscountType === "amount"
+                ? `₹${parseInt(product.user_pay)} discount applied`
+                : `₹${product.discount}% discount applied`
+            }
+        </span>
+              )}
+          </td>
+          {/*<td className="pro-subtotal">*/}
+          {/*    <span>₹{checkoutAmount}</span>*/}
+          {/*</td>*/}
+          <td className="pro-remove">
+              <button className={'btn-sm rbt-btn btn-gradient'}
+                      onClick={() => handleRemoveItem(product.nCartId, product.cid, product.pkgId)}>
+                  <i className="feather-x"></i>
+              </button>
+              <button className={'mt-3 ms-3 rbt-btn btn-gradient btn-sm'}
+                      onClick={() => handleWishlistCartItem(index, product.cid)}>
+                  <i className="feather-heart me-2"></i>
+              </button>
+          </td>
+      </tr>
   );
 };
 
