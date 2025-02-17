@@ -152,7 +152,10 @@ const Cart = () => {
                   <div className="rbt-minicart-wrapper">
                     {courseitem &&
                         courseitem.map((data, index) => {
-                              const userPay = (parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100))
+                              // const userPay = (parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100))
+                          const userPay = data.sDiscountType === "amount"
+                              ? parseInt(data.pay_price) - parseInt(data.discount)
+                              : parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100);
                               // console.log(userPay, pay_amnt)
                               const pay_amnt = parseInt(data.pay_price) - parseInt(data.user_pay)
                               // console.log(pay_amnt)
@@ -183,19 +186,20 @@ const Cart = () => {
 
                                         <span className="quantity">
                                       <span className={'me-2'}>₹{data.pay_price}</span>
-                                          {data.sDiscountType === "amount" ? <>
-                                            {data.discount !== 0 ? <>
-                                              <span className={'font-13 text-success m-0'}>
-                                                 - ₹ {data.discount} discount applied
-                                              </span>
-                                            </> : <></>}
-                                          </> : <>
-                                            {data.discount !== 0 ? <>
-                                              <span className={'font-13 text-success m-0'}>
-                                                   - {data.discount}% discount applied
-                                              </span>
-                                            </> : <></>}
-                                          </>}
+                                          {
+                                              data.sDiscountType === "amount" && data.discount !== 0 && (
+                                                  <span className="font-13 text-success m-0">
+      - ₹ {data.discount} discount applied ({parseInt(data.pay_price) - parseInt(data.discount)})
+    </span>
+                                              )
+                                          }
+                                          {
+                                              data.sDiscountType === "percentage" && data.discount !== 0 && (
+                                                  <span className="font-13 text-success m-0">
+      - {data.discount}% discount applied ({parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100)})
+    </span>
+                                              )
+                                          }
                                       </span>
                                       </div>
                                       <div className="close-btn">
