@@ -3464,3 +3464,34 @@ react-autosuggest__input {
     max-height: 150px !important;
 }
 /*Close */
+
+div:where(.swal2-container) div:where(.swal2-popup){
+    width:45em !important;
+}
+div:where(.swal2-container) h2:where(.swal2-title){
+    font-size: 2.875em !important;
+}
+
+div:where(.swal2-container) .swal2-html-container{
+    font-size: 1.5em !important;
+}
+div:where(.swal2-icon){
+    width: 9em !important;
+    height: 9em !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm),div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-cancel){
+    font-size: 1.5em !important;
+}
+
+div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=tip]{
+    top: 4.875em !important;
+    left: .8125em !important;
+    width: 3.5625em !important;
+}
+
+div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{
+    top: 4.375em !important;
+    right: .5em !important;
+    width: 5.5375em !important;
+}

@@ -152,6 +152,7 @@ const Cart = () => {
                   <div className="rbt-minicart-wrapper">
                     {courseitem &&
                         courseitem.map((data, index) => {
+                          console.log("Cart Drower Price",data)
                               // const userPay = (parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100))
                           const userPay = data.sDiscountType === "amount"
                               ? parseInt(data.pay_price) - parseInt(data.discount)
@@ -187,6 +188,7 @@ const Cart = () => {
                                         <span className="quantity">
                                       <span className={'me-2'}>₹{data.pay_price}</span>
                                           {
+
                                               data.sDiscountType === "amount" && data.discount !== 0 && (
                                                   <span className="font-13 text-success m-0">
       - ₹ {data.discount} discount applied ({parseInt(data.pay_price) - parseInt(data.discount)})

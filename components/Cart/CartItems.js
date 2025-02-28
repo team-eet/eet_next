@@ -9,6 +9,12 @@ import {API_URL, API_KEY} from "../../constants/constant";
 import { useState } from "react";
 import { toast } from 'react-toastify'
 import { ErrorMessageToast } from "@/components/Services/Toast";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+
+
+const MySwal = withReactContent(Swal)
+
 
 const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => {
     // console.log(id, product, amount)
@@ -16,69 +22,69 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
   const REACT_APP = API_URL
     const [courseitem, setcourseitem] = useState([])
     const [wishlist, setwishlist] = useState([])
-  const handleRemoveItem = (cartId, cid, pkgid) => {
-      if(localStorage.getItem('userData')){
-          // alert('Hello')
-          const udata = JSON.parse(localStorage.getItem('userData'))
-          Axios.delete(`${API_URL}/api/cart/DeleteCart/${EncryptData(cartId)}/${udata['regid']}`, {
-              headers: {
-                  ApiKey: `${API_KEY}`
-              }
-          })
-              .then(res => {
-                  console.log("Delete Cart",res.data)
-                  const retData = JSON.parse(res.data)
-                  console.log("Status",retData)
-                  if (retData.success === "1") {
-                      Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
-                          headers: {
-                              ApiKey: `${API_KEY}`
-                          }
-                      })
-                          .then(res => {
-                              alert("Cart")
-                              console.log("Cart Remove Data",res.data)
-                              if (res.data) {
-                                  console.log(res.data)
-                                  if (res.data.length !== 0) {
-                                      setcourseitem(res.data)
-                                      product = res.data
-                                      const newcartlist = res.data.filter((v, i, a) => a.findIndex(t => ((t.cid === v.cid) && (t.pkgId === v.pkgId))) === i)
-                                      setcourseitem(newcartlist)
-                                      localStorage.removeItem('cart')
-                                      localStorage.setItem('cart', JSON.stringify(newcartlist))
-                                  }
-                              }
-                          })
-                          .catch(err => {
-                              { ErrorDefaultAlert(err) }
-                          })
-                  } else { { ErrorAlert(retData) } }
-              })
-              .catch(err => {
-                  { ErrorDefaultAlert(err) }
-              })
-      }
-      // setcourseitem((state) => {
-      //     state.courseitem.filter((item, i) => i != cid)
-      // })
-      // setcourseitem((state) => {
-      //      state.courseitem.filter((item, i) => i !== cid)
-      // }, () => {
-      //     localStorage.setItem('cart', JSON.stringify(this.state.courseitem))
-      // })
 
-      if (courseitem.length === 1) {
-          localStorage.removeItem('cart')
-          this.setState(state => ({
-              courseitem: []
-          }), () => {
+    const handleRemoveItem = (cartId, cid, pkgid) => {
+        MySwal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (localStorage.getItem('userData')) {
+                    const udata = JSON.parse(localStorage.getItem('userData'));
 
-          })
-      }
-  }
+                    // 🔹 API call to delete item
+                    Axios.delete(`${API_URL}/api/cart/DeleteCart/${EncryptData(cartId)}/${udata['regid']}`, {
+                        headers: { ApiKey: `${API_KEY}` }
+                    })
+                        .then(res => {
+                            console.log("Delete Cart", res.data);
+                            const retData = JSON.parse(res.data);
+                            if (retData.success === "1") {
+                                // 🔹 Get updated cart items
+                                Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
+                                    headers: { ApiKey: `${API_KEY}` }
+                                })
+                                    .then(res => {
+                                        if (res.data && res.data.length !== 0) {
+                                            const newcartlist = res.data.filter((v, i, a) =>
+                                                a.findIndex(t => ((t.cid === v.cid) && (t.pkgId === v.pkgId))) === i
+                                            );
+                                            setcourseitem(newcartlist);
+                                            localStorage.setItem('cart', JSON.stringify(newcartlist));
+                                        } else {
+                                            setcourseitem([]);
+                                            localStorage.removeItem('cart');
+                                        }
 
-  const handleWishlistCartItem = (index, cid) => {
+                                        // ✅ Show success message
+                                        Swal.fire({
+                                            title: "Deleted!",
+                                            text: "Your item has been deleted.",
+                                            icon: "success"
+                                        }).then(() => {
+                                            window.location.reload(); // 🔄 Reload Page
+                                        });
+
+
+                                    })
+                                    .catch(err => ErrorDefaultAlert(err));
+                            } else {
+                                ErrorAlert(retData);
+                            }
+                        })
+                        .catch(err => ErrorDefaultAlert(err));
+                }
+            }
+        });
+    };
+
+
+    const handleWishlistCartItem = (index, cid) => {
       // window.location.reload(true)
       // console.log(index, cid)
 
@@ -272,7 +278,7 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
         ? parseInt(product.pay_price) - parseInt(product.discount)
         : parseInt(product.pay_price) - (parseInt(product.pay_price) * parseInt(product.discount) / 100)
     }
-        {product.discount !== 0 && <i className='fa fa-tag' title={product.promocode}></i>}
+        {product.discount !== 0 && <i className='fa fa-tag ml--5' title={product.promocode}></i>}
     </span>
 
               {product.discount !== 0 && (

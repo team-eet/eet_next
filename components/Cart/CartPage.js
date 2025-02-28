@@ -66,6 +66,8 @@ const CartPage = () => {
                   console.log(res.data)
                   const retData = JSON.parse(res.data)
                   if(retData.success === "1"){
+                    // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
+                    // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
                     router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
                   } else {
                     //payment not verified error
