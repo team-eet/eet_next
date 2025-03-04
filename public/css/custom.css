@@ -3462,6 +3462,8 @@ react-autosuggest__input {
 .cusBatchesImage{
     min-width: 150px !important;
     max-height: 150px !important;
+    width: 150px;
+    height: 150px;
 }
 /*Close */
 
@@ -3494,4 +3496,38 @@ div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long]{
     top: 4.375em !important;
     right: .5em !important;
     width: 5.5375em !important;
+}
+div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{
+    top: 4.3125em !important;
+    width: 6.9375em !important;
+}
+
+.modal-header{
+    background-color: var(--color-primary);
+}
+.modal-title{
+    color: #fff;
+    font-weight: 500;
+    font-family: var(--font-secondary);
+}
+.modal-header i{
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    line-height: 41px;
+    text-align: center;
+    border-radius: 100%;
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    padding: 0;
+    border: 0;
+    display: block;
+    transition: 0.7s ;
+    cursor: pointer;
+
+}
+.modal-header i:hover{
+    color: var(--color-primary);
+    background-color: #fff;
 }

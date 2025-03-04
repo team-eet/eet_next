@@ -1264,7 +1264,7 @@ const AllCoursetwo = () => {
                                                                                             className="off-price">₹{data.nCourseAmount}</span>
                                                                                     </div>
                                                                                     <Link className="rbt-btn-link"
-                                                                                       href="course-details.html">Learn
+                                                                                       href={`/course-details/${EncryptData(data.nCId)}`}>Learn
                                                                                         More<i
                                                                                             className="feather-arrow-right"></i></Link>
                                                                                 </> : <>

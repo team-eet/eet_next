@@ -169,7 +169,7 @@ const SimilarCourses = ({ checkMatchCourses }) => {
                                     <div className="rbt-price">
                                         <Skeleton height={30} width={80}/>
                                     </div>
-                                    <Link className="rbt-btn-link" href="/course-details">
+                                    <Link className="rbt-btn-link" href="javascript:void(0)">
                                         <Skeleton height={30} width={50}/>
                                     </Link>
                                 </div>
@@ -209,7 +209,7 @@ const SimilarCourses = ({ checkMatchCourses }) => {
                                     <div className="rbt-price">
                                         <Skeleton height={30} width={80}/>
                                     </div>
-                                    <Link className="rbt-btn-link" href="/course-details">
+                                    <Link className="rbt-btn-link" href="javascript:void(0)">
                                         <Skeleton height={30} width={50}/>
                                     </Link>
                                 </div>
@@ -260,14 +260,14 @@ const SimilarCourses = ({ checkMatchCourses }) => {
                                                             <Link
                                                                 className="rbt-round-btn"
                                                                 title="Bookmark"
-                                                                href="#"
+                                                                href="javascript:void(0)"
                                                             >
                                                                 <i className="feather-bookmark"></i>
                                                             </Link>
                                                         </div>
                                                     </div>
                                                     <h4 className="rbt-card-title">
-                                                        <Link href={''}>{data.sCourseTitle}</Link>
+                                                        <Link href={`/course-details/${EncryptData(data.nCId)}`}>{data.sCourseTitle}</Link>
                                                     </h4>
                                                     <ul className="rbt-meta">
                                                         <li>
@@ -284,7 +284,7 @@ const SimilarCourses = ({ checkMatchCourses }) => {
                                                     {/**/}
                                                     <div className="rbt-author-meta mb--20">
                                                         <div className="rbt-avater">
-                                                            <Link href={``}>
+                                                            <Link href={`javascript:void(0)`}>
                                                                 {/*<Image*/}
                                                                 {/*    src={data.sPhoto}*/}
                                                                 {/*    width={33}*/}
@@ -304,9 +304,9 @@ const SimilarCourses = ({ checkMatchCourses }) => {
                                                         </div>
                                                         <div className="rbt-author-info">
                                                             By{" "}
-                                                            <Link href={``}>{data.sFName} {data.sLName}</Link>{" "}
+                                                            <Link href={`javascript:void(0)`}>{data.sFName} {data.sLName}</Link>{" "}
                                                             In {" "}
-                                                            <Link href="#">{data.sCategory}</Link>
+                                                            <Link href="javascript:void(0)">{data.sCategory}</Link>
                                                         </div>
                                                     </div>
                                                     <div className="rbt-card-bottom">
@@ -314,7 +314,7 @@ const SimilarCourses = ({ checkMatchCourses }) => {
                                                         <span className="current-price">₹ {data.dAmount}</span>
                                                             <span className="off-price">{data.nCourseAmount}</span>
                                                         </div>
-                                                        <Link className="rbt-btn-link" href="/course-details">
+                                                        <Link className="rbt-btn-link" href={`/course-details/${EncryptData(data.nCId)}`}>
                                                             Learn More<i className="feather-arrow-right"></i>
                                                         </Link>
                                                     </div>

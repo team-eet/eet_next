@@ -31,7 +31,7 @@ const SingleCourse = () => {
     const [courseTag, setCourseTag] = useState([])
     const REACT_APP = API_URL
     const [isLoading, setisLoading] = useState(true)
-
+    const [getvideoOpenModal,setvideoOpenModal] = useState('')
 
 
     // let getCourse;
@@ -52,6 +52,14 @@ const SingleCourse = () => {
             // console.log(res.data)
             if (res.data.length !== 0) {
                 console.log("Course Detils New", res.data)
+                console.log("Course Detils New Path", res.data[0].sVideoURL,res.data[0].sVideoPath)
+                if (res.data[0].sVideoURL !== ""){
+                    setvideoOpenModal(res.data[0].sVideoURL)
+                }else if(res.data[0].sVideoPath !== ""){
+                    setvideoOpenModal(res.data[0].sVideoPath)
+                }else{
+                    setvideoOpenModal('')
+                }
                   setcourseData(res.data)
                     setisLoading(false)
                 // console.log(EncryptData(res.data[0]['nCTId']))
@@ -103,39 +111,77 @@ const SingleCourse = () => {
     <>
       <PageHead title="Course Details - Online Courses & Education NEXTJS14 Template" />
       <Provider store={Store}>
-        <Context>
-          <MobileMenu />
-          <HeaderStyleTen headerSticky="" headerType={true} />
-          <Cart />
+          <Context>
+              <MobileMenu/>
+              <HeaderStyleTen headerSticky="" headerType={true}/>
+              <Cart/>
 
-          <div className="rbt-breadcrumb-default rbt-breadcrumb-style-3">
-              <CourseHead CourseTag={Tag} Tag={courseTag} checkMatch={checkMatch !== undefined ? checkMatch : ""} />
-          </div>
-
-          <div className="rbt-course-details-area ptb--60">
-            <div className="container">
-              <div className="row g-5">
-                <CourseDetailsOne checkMatchCourses={checkMatch !== undefined ? checkMatch : ""} />
+              <div className="rbt-breadcrumb-default rbt-breadcrumb-style-3">
+                  <CourseHead CourseTag={Tag} Tag={courseTag} checkMatch={checkMatch !== undefined ? checkMatch : ""}/>
               </div>
-            </div>
-          </div>
 
-          {/*<CourseActionBottom*/}
-          {/*  checkMatchCourses={checkMatch !== undefined ? checkMatch : ""}*/}
-          {/*/>*/}
+              <div className="rbt-course-details-area ptb--60">
+                  <div className="container">
+                      <div className="row g-5">
+                          <CourseDetailsOne checkMatchCourses={checkMatch !== undefined ? checkMatch : ""}/>
+                      </div>
+                  </div>
+              </div>
 
-          <div className="rbt-related-course-area bg-color-white pt--60 rbt-section-gapBottom">
-            <SimilarCourses
-              checkMatchCourses={
-                checkMatch !== undefined ? checkMatch.nCCId : ""
-              }
-            />
-          </div>
+              {/*<CourseActionBottom*/}
+              {/*  checkMatchCourses={checkMatch !== undefined ? checkMatch : ""}*/}
+              {/*/>*/}
 
-          <BackToTop />
+              <div className="rbt-related-course-area bg-color-white pt--60 rbt-section-gapBottom">
+                  <SimilarCourses
+                      checkMatchCourses={
+                          checkMatch !== undefined ? checkMatch.nCCId : ""
+                      }
+                  />
+              </div>
+              {/* Video Using Modal Open */}
+              <div className="modal fade" id="videoOpenModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+                   aria-hidden="true">
+                  <div className="modal-dialog modal-fullscreen">
+                      <div className="modal-content">
+                          <div className="modal-header">
+                              <h1 className="modal-title fs-3" id="exampleModalToggleLabel">{checkMatch.sCourseTitle}</h1>
+                              {/*<button type="button" className="btn-close" data-bs-dismiss="modal"*/}
+                              {/*        aria-label="Close"></button>*/}
+                              <i className="feather-x" data-bs-dismiss="modal"
+                                 aria-label="Close"></i>
+                          </div>
+                          <div className="modal-body text-center">
+                          {typeof getvideoOpenModal === "string" && getvideoOpenModal.trim() !== "" ? (
+                                  getvideoOpenModal.includes("youtube.com") || getvideoOpenModal.includes("youtu.be") ? (
+                                      <iframe
+                                          width="100%"
+                                          height="100%"
+                                          style={{minHeight: "90vh"}}
+                                          src={getvideoOpenModal}
+                                          title="YouTube video player"
+                                          frameBorder="0"
+                                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                          allowFullScreen>
+                                      </iframe>
+                                  ) : (
+                                      <video width="100%" height="100%" style={{minHeight: "90vh"}} controls>
+                                          <source src={getvideoOpenModal} type="video/mp4"/>
+                                          Your browser does not support the video tag.
+                                      </video>
+                                  )
+                              ) : null}
+                          </div>
+                      </div>
+                  </div>
+              </div>
 
-          <FooterOne />
-        </Context>
+              {/* Close Video Using Modal Open */}
+
+              <BackToTop/>
+
+              <FooterOne/>
+          </Context>
       </Provider>
     </>
   );

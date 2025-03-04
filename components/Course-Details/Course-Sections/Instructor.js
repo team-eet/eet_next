@@ -15,7 +15,7 @@ const Instructor = ({ checkMatchCourses }) => {
           <div className="media align-items-center">
             <div className="thumbnail">
               {/*<Link href={`/profile/${teacher.id}`}>*/}
-              <Link href={``}>
+              <Link href={`javascript:void(0)`}>
                 {checkMatchCourses.sProfilePhotoPath !== "" ?
                     <img src={checkMatchCourses.sProfilePhotoPath} className={'rounded-circle shadow cusBatchesImage'} width={150} height={150}></img> :
                     // <Image
@@ -41,7 +41,7 @@ const Instructor = ({ checkMatchCourses }) => {
                   <Link
                     className="hover-flip-item-wrapper "
                     // href={`/profile/${teacher.id}`}
-                    href={``}
+                    href={`javascript:void(0)`}
                   >
                     {checkMatchCourses.sFName} {checkMatchCourses.sLName}
                   </Link>
@@ -60,12 +60,12 @@ const Instructor = ({ checkMatchCourses }) => {
                     Students
                   </li>
                   <li>
-                    <Link href="#">
+                    <Link href="javascript:void(0)">
                       <i className="feather-video"></i>5 Courses
                     </Link>
                   </li>
                   <li>
-                    <Link href="#">
+                    <Link href="javascript:void(0)">
                       <i className="feather-video"></i>5 Batches
                     </Link>
                   </li>

@@ -35,6 +35,7 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getNumberCount, setNumberCount] = useState({});
   const [isApiCall, setAPiCall] = useState({});
   const [cid, setcid] = useState('')
+  const [getvideoOpenData,setvideoOpenData] = useState('')
 
 
   const getFeatureCount = (crsid) => {
@@ -191,6 +192,14 @@ const Viedo = ({ checkMatchCourses }) => {
     localStorage.setItem("hiStudy", JSON.stringify(cart));
     getCartItem();
     // console.log(EncryptData('0'))
+
+    if (checkMatchCourses.sVideoURL !== ""){
+      setvideoOpenData(checkMatchCourses.sVideoURL)
+    }else if(checkMatchCourses.sVideoPath !== ""){
+      setvideoOpenData(checkMatchCourses.sVideoPath)
+    }else{
+      setvideoOpenData('')
+    }
   }, [])
   // console.log(checkMatchCourses)
   const { cartToggle, setCart } = useAppContext();
@@ -436,6 +445,7 @@ const Viedo = ({ checkMatchCourses }) => {
   //   alert(id)
   // }
 
+
   const formatDate = (dateTimeString) => {
     const date = new Date(dateTimeString); // Create a Date object from the dateTimeString
     const day = date.getDate(); // Get the day of the month (1-31)
@@ -454,19 +464,34 @@ const Viedo = ({ checkMatchCourses }) => {
 
   return (
     <>
-      <Link
+
+      {/*<Link*/}
+      {/*  className={`video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15 ${*/}
+      {/*    hideOnScroll ? "d-none" : ""*/}
+      {/*  }`}*/}
+      {/*  data-vbtype="video"*/}
+      {/*  href={`${getvideoOpenData !== "" ? getvideoOpenData : ""}`}*/}
+      {/*  // href={`${checkMatchCourses.sVideoURL !== "" ? checkMatchCourses.sVideoURL : ""}`}*/}
+      {/*>*/}
+        <Link
         className={`video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15 ${
           hideOnScroll ? "d-none" : ""
         }`}
-        data-vbtype="video"
-        href={`${checkMatchCourses.sVideoURL !== "" ? checkMatchCourses.sVideoURL : ""}`}
+        href={"javascript:void(0)"}
+        // data-vbtype="video"
+        {...(getvideoOpenData !== null && {
+          "data-bs-toggle": "modal",
+          "data-bs-target": "#videoOpenModal"
+        })}
+
+        // href={`${checkMatchCourses.sVideoURL !== "" ? checkMatchCourses.sVideoURL : ""}`}
       >
         {/*{console.log(checkMatchCourses)}*/}
         <div className="video-content">
           {/*<Image className={'position-relative'} src={checkMatchCourses.sImagePath} height={255} width={355}></Image>*/}
           <img className={'position-relative'} src={checkMatchCourses.sImagePath} height={255} width={355}></img>
 
-          {checkMatchCourses.sVideoPath !== null ? <>
+          {getvideoOpenData !== null ? <>
             <div className="position-to-top">
             <span className="rbt-btn rounded-player-2 with-animation">
               <span className="play-icon"></span>
@@ -525,14 +550,14 @@ const Viedo = ({ checkMatchCourses }) => {
             </> : <>
               {
                 isCartId !== '' ? <button
-                    className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
-                    onClick={() => addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)}
-                >
-                  <span className="btn-text">Go to Cart</span>
-                  <span className="btn-icon">
+                        className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
+                        onClick={() => addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)}
+                    >
+                      <span className="btn-text">Go to Cart</span>
+                      <span className="btn-icon">
     <i className="feather-arrow-right"></i>
   </span>
-                </button> :
+                    </button> :
                     <Link href={'/cart'}
                           className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
                     >
@@ -542,8 +567,6 @@ const Viedo = ({ checkMatchCourses }) => {
               </span>
                     </Link>
               }
-
-
 
 
             </>}
@@ -680,7 +703,7 @@ const Viedo = ({ checkMatchCourses }) => {
               </li>
             </ul>
           </div>
-          <hr className="mt--20" />
+          <hr className="mt--20"/>
           <div className="contact-with-us text-center">
             <p>For details about the course</p>
             <p className="rbt-badge-2 mt--10 justify-content-center w-100">
@@ -688,6 +711,7 @@ const Viedo = ({ checkMatchCourses }) => {
             </p>
           </div>
         </div>
+
       </div>
     </>
   );

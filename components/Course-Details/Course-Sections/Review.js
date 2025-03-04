@@ -11,7 +11,7 @@ const Review = () => {
           <div className="col-lg-3">
             <div className="rating-box">
               <div className="rating-number">5.0</div>
-              <div className="rating text-start">
+              <div className="rating text-start d-flex justify-content-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={16}
