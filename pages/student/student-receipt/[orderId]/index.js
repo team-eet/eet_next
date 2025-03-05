@@ -15,6 +15,7 @@ import {useEffect, useState} from "react";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import Reciept from "@/components/Student/Receipt";
+import FooterThree from "@/components/Footer/Footer-Three";
 const StudentReceipt = () => {
 
     return (
@@ -52,7 +53,8 @@ const StudentReceipt = () => {
 
                     <BackToTop />
                     <Separator />
-                    <FooterOne />
+                    {/*<FooterOne />*/}
+                    <FooterThree />
                 </Context>
             </Provider>
         </>

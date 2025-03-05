@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import React from "react";
 import { Provider } from "react-redux";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const InstructorDashboard = () => {
   return (
@@ -48,7 +49,8 @@ const InstructorDashboard = () => {
 
           <BackToTop />
           <Separator />
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>

@@ -543,7 +543,7 @@ const MainDemo = () => {
                             <div className="rbt-card variation-01 rbt-hover">
                               <div className="rbt-card-img">
                                 <Link href={`/course-details/${EncryptData(data.nCId)}`}>
-                                  <Image className={"position-relative"} objectFit="none" fill={true} src={data.sImagePath} alt="Card image"></Image>
+                                  <Image className={"position-relative"} objectFit="inherit" fill={true} src={data.sImagePath} alt="Card image"></Image>
                                   {/*{data.offPrice > 0 ? (*/}
                                   {/*    <div className="rbt-badge-3 bg-white">*/}
                                   {/*      <span>-{data.offPrice}%</span>*/}
@@ -626,13 +626,10 @@ const MainDemo = () => {
                                     <span className="off-price">₹{data.nCourseAmount}</span>
                                   </div>
                                   {/*{data.button ? (*/}
-                                  <button
-                                      className="rbt-btn-link left-icon border-0"
-                                      style={{ backgroundColor: 'transparent' }}
-                                      onClick={() => addToCartFun(data.nCId, data.dAmount, data)}
-                                  >
-                                    <i className="feather-shopping-cart"></i> Add To Cart
-                                  </button>
+                                  <Link className="rbt-btn-link"
+                                        href={`/course-details/${EncryptData(data.nCId)}`}>Learn
+                                    More<i
+                                        className="feather-arrow-right"></i></Link>
                                   {/*) : (*/}
 
                                   {/*<Link*/}

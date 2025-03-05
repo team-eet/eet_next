@@ -17,6 +17,7 @@ import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import {API_URL, API_KEY} from "../../../../constants/constant";
 import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import BatchDetailsOne from "@/components/Batch-Details/CourseDetails-One";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const SingleCourse = () => {
   const router = useRouter();
@@ -191,7 +192,8 @@ const SingleCourse = () => {
 
           <BackToTop />
           {/*<Separator />*/}
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>

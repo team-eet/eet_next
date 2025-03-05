@@ -11,6 +11,7 @@ import PageHead from "@/pages/Head";
 import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const StudentAnnouncements = () => {
   return (
@@ -48,7 +49,8 @@ const StudentAnnouncements = () => {
 
           <BackToTop />
           <Separator />
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>

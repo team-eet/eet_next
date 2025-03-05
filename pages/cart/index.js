@@ -10,6 +10,7 @@ import CartPage from "@/components/Cart/CartPage";
 import Separator from "@/components/Common/Separator";
 import FooterOne from "@/components/Footer/Footer-One";
 import CartBreadCrumb from "@/components/Common/Cart-BreadCrumb";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const CartPageLayout = () => {
   return (
@@ -27,7 +28,8 @@ const CartPageLayout = () => {
           </div>
 
           <Separator />
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>

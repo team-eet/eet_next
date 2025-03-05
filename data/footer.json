@@ -7,38 +7,72 @@
       "address": "North America, USA",
       "usefulLinks": [
         {
-          "text": "Learn Courses",
+          "text": "Courses",
           "link": "/all-courses"
         },
         {
-          "text": "Join Batch",
+          "text": "Batches",
           "link": "/all-batches"
-        },
-        {
-          "text": "Fast track",
-          "link": "/"
-        },
-        {
-          "text": "FAQ",
-          "link": "/pages/faqs"
-        }
-      ],
-      "ourCompany": [
-        {
-          "text": "Contact Us",
-          "link": "/contact"
-        },
-        {
-          "text": "Become a teacher",
-          "link": "/become-a-teacher"
         },
         {
           "text": "Blogs",
           "link": "/blog-list"
         },
         {
-          "text": "Success Story",
-          "link": "/"
+          "text": "Reels",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "E-Store",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Become a Tutor",
+          "link": "/become-a-teacher"
+        }
+      ],
+      "ourCompany": [
+        {
+          "text": "About Us",
+          "link": "/pages/about-us-02"
+        },
+        {
+          "text": "Our Team",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Testimonial",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Reviews",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "FAQ",
+          "link": "javascript:void(0)"
+        }
+      ],
+      "policies": [
+        {
+          "text": "Privacy",
+          "link": "/privacy-policy"
+        },
+        {
+          "text": "Terms And Conditions",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Refund Policy",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Tutor Policy",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Pricing And Promotion",
+          "link": "javascript:void(0)"
         }
       ],
       "socialLink": [

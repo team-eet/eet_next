@@ -12,6 +12,7 @@ import Cart from "@/components/Header/Offcanvas/Cart";
 import Dashboard from "@/components/Student/Dashboard";
 import StudentDashboardHeader from "@/components/Student/StudentDashboardHeader";
 import StudentDashboardSidebar from "@/components/Student/StudentDashboardSidebar";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const StudentDashboard = () => {
   return (
@@ -49,7 +50,8 @@ const StudentDashboard = () => {
 
           <BackToTop />
           <Separator />
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>

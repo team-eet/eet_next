@@ -21,6 +21,7 @@ import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import {API_URL, API_KEY} from "../../../constants/constant";
 import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import 'react-loading-skeleton/dist/skeleton.css'
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const SingleCourse = () => {
     const router = useRouter();
@@ -180,7 +181,8 @@ const SingleCourse = () => {
 
               <BackToTop/>
 
-              <FooterOne/>
+              {/*<FooterOne/>*/}
+              <FooterThree/>
           </Context>
       </Provider>
     </>

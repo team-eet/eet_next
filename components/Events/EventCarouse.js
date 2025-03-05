@@ -240,24 +240,30 @@ const EventCarouse = () => {
                                 <i className="feather-clock"></i> {data.sUpcomingTime}
                               </li>
                             </ul>
-                            <h4 className="rbt-card-title">
+                            <h4 className="rbt-card-title mb--10">
                               <Link href={`/course-details/${EncryptData(data.nCId)}`}>
                                 {data.sCourseTitle}
                               </Link>
                             </h4>
+                            <div className="rbt-author-meta mb--10">
+                              <div className="rbt-author-info">
+                                By{" "}
+                                <Link href="javascript:void(0)">{data.sFName} {data.sLName}</Link>
+                              </div>
+                            </div>
                             {/**/}
                             <div className="read-more-btn">
                               <Link
                                   className="rbt-btn btn-border hover-icon-reverse btn-sm radius-round"
-                                  href={`/course-details/${EncryptData(data.nCId)}`}
+                                  href="javascript:void(0)"
                               >
                         <span className="icon-reverse-wrapper">
-                          <span className="btn-text">View More</span>
+                          <span className="btn-text">Interested</span>
                           <span className="btn-icon">
-                            <i className="feather-arrow-right"></i>
+                            <i className="feather-heart"></i>
                           </span>
                           <span className="btn-icon">
-                            <i className="feather-arrow-right"></i>
+                            <i className="feather-heart"></i>
                           </span>
                         </span>
                               </Link>
@@ -271,7 +277,6 @@ const EventCarouse = () => {
             )
           })}
         </>}
-
 
 
         <div className="rbt-swiper-arrow rbt-arrow-left">
@@ -288,7 +293,7 @@ const EventCarouse = () => {
           </div>
         </div>
 
-        <div className="rbt-swiper-pagination" style={{ bottom: "0" }}></div>
+        <div className="rbt-swiper-pagination" style={{bottom: "0"}}></div>
       </Swiper>
     </>
   );

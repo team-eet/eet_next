@@ -14,6 +14,7 @@ import { Provider } from "react-redux";
 import {useEffect, useState} from "react";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
+import FooterThree from "@/components/Footer/Footer-Three";
 const StudentProfile = () => {
 
   return (
@@ -51,7 +52,8 @@ const StudentProfile = () => {
 
           <BackToTop />
           <Separator />
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>
