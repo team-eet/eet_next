@@ -25,7 +25,7 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getCntImg, setCntImg] = useState('')
   const [getNumberCount, setNumberCount] = useState({});
   const [isApiCall, setAPiCall] = useState({});
-
+  const [getvideoOpenData,setvideoOpenData] = useState('')
 console.log("VideoData",checkMatchCourses)
    const getFeatureCount = (crsid) => {
     // console.log(checkMatchCourses.nCId)
@@ -130,6 +130,13 @@ console.log("VideoData",checkMatchCourses)
   useEffect(() => {
     getFeatureCount();
     // console.log(EncryptData('0'))
+    if (checkMatchCourses.sVideoURL !== ""){
+      setvideoOpenData(checkMatchCourses.sVideoURL)
+    }else if(checkMatchCourses.sVideoPath !== ""){
+      setvideoOpenData(checkMatchCourses.sVideoPath)
+    }else{
+      setvideoOpenData('')
+    }
   }, [])
   console.log("getNumberCount",getNumberCount)
   const [getsectionItems, setsectionItems] = useState([])
@@ -191,12 +198,23 @@ console.log("VideoData",checkMatchCourses)
 
   return (
     <>
-      <Link
-        className={`video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15 ${
+      {/*<Link*/}
+      {/*  className={`video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15 ${*/}
+      {/*    hideOnScroll ? "d-none" : ""*/}
+      {/*  }`}*/}
+      {/*  data-vbtype="video"*/}
+      {/*  href={`${checkMatchCourses.sVideoPath !== "" ? checkMatchCourses.sVideoPath : ""}`}*/}
+      {/*>*/}
+        <Link
+        className={`video-popup-with-text video-popup-wrapper text-center sidebar-video-hidden mb--15 ${
           hideOnScroll ? "d-none" : ""
         }`}
-        data-vbtype="video"
-        href={`${checkMatchCourses.sVideoPath !== "" ? checkMatchCourses.sVideoPath : ""}`}
+        href={"javascript:void(0)"}
+            // data-vbtype="video"
+        {...(getvideoOpenData !== null && {
+          "data-bs-toggle": "modal",
+          "data-bs-target": "#videoOpenModal"
+        })}
       >
         <div className="video-content">
           <Image className={"position-relative"} src={checkMatchCourses.sImagePath} height={255} width={355}></Image>

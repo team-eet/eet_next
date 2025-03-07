@@ -172,7 +172,7 @@ console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjust
                         </ul>
                         <div className="d-block d-md-flex">
                             <div className="rbt-category mb--10 mb_md--0 order-1 order-md-2">
-                                <Link href="#">{getMatchCourse.sCategory}</Link>
+                                <Link href="javascript:void(0)">{getMatchCourse.sCategory}</Link>
                             </div>
                             <h4 className="rbt-card-title order-2 order-md-1 mr--10">{getMatchCourse.sCourseTitle}</h4>
                         </div>
@@ -198,26 +198,26 @@ console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjust
                             </div>
 
                             <div className="feature-sin rating">
-                                <Link href="#">{getMatchCourse.star}</Link>
-                                <Link href="#">
+                                <Link href="javascript:void(0)">{getMatchCourse.star}</Link>
+                                <Link href="javascript:void(0)">
                                     <i className="fa fa-star"></i>
                                 </Link>
-                                <Link href="#">
+                                <Link href="javascript:void(0)">
                                     <i className="fa fa-star"></i>
                                 </Link>
-                                <Link href="#">
+                                <Link href="javascript:void(0)">
                                     <i className="fa fa-star"></i>
                                 </Link>
-                                <Link href="#">
+                                <Link href="javascript:void(0)">
                                     <i className="fa fa-star"></i>
                                 </Link>
-                                <Link href="#">
+                                <Link href="javascript:void(0)">
                                     <i className="fa fa-star"></i>
                                 </Link>
                             </div>
 
                             <div className="feature-sin total-rating">
-                                <Link className="rbt-badge-4" href="#">
+                                <Link className="rbt-badge-4" href="javascript:void(0)">
                                     {getMatchCourse.user_rate_cnt} rating
                                 </Link>
                             </div>
@@ -227,7 +227,7 @@ console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjust
                         <div className="rbt-author-meta mb--20">
                             <div className="rbt-avater">
                                 {/*<Link href={`/profile/${getMatchCourse.id}`}>*/}
-                                <Link href={``}>
+                                <Link href="javascript:void(0)">
                                     {getMatchCourse.sProfilePhotoPath && (
                                         <Image className={"position-relative"} src={getMatchCourse.sProfilePhotoPath}
                                                width={40}
@@ -243,7 +243,7 @@ console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjust
                             </div>
                             <div className="rbt-author-info">
                                 Batch By{" "}
-                                <Link href={`/profile/${getMatchCourse.id}`}>
+                                <Link href="javascript:void(0)">
                                     {getMatchCourse.sFName} {getMatchCourse.sLName}
                                 </Link>{" "}
                             </div>

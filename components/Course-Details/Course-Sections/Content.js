@@ -16,6 +16,7 @@ const Content = ({ checkMatchCourses }) => {
   // console.log(router)
   // console.log(checkMatchCourses)
   const [getsectionItems, setsectionItems] = useState([])
+  const [getNumberCount, setNumberCount] = useState({})
 
   const getcourseContent = () => {
     const url = window.location.href
@@ -38,10 +39,35 @@ const Content = ({ checkMatchCourses }) => {
         .catch(err => {
           { ErrorDefaultAlert(err) }
         })
+
+      Axios.get(`${API_URL}/api/coursemain/GetCourseDocumentCount/${courseId}`, {
+          headers: {
+              ApiKey: `${API_KEY}`
+          }
+      })
+          .then(res => {
+              if (res.data) {
+                  console.log("Count Data",res.data,'courseId',courseId)
+                  if (res.data.length !== 0) {
+                      console.log('CntVideo Content', res.data)
+                      // setCntVideo(res.data[0].cntf)
+                      setNumberCount(res.data[0]);
+
+                      // this.setState({
+                      //   CntVideo: res.data[0].cntf
+                      // })
+                  }
+
+              }
+          })
+          .catch(err => {
+              { ErrorDefaultAlert(err) }
+          })
   }
 
   useEffect(() => {
     getcourseContent();
+
   }, []);
   // },[])
   return (
@@ -97,10 +123,18 @@ const Content = ({ checkMatchCourses }) => {
         </> : <>
           <div className="rbt-course-feature-inner">
             <div className="section-title">
-              <h4 className="rbt-title-style-3 text-start">Course Content</h4>
+                <div className="courseTitle rbt-title-style-3 d-flex align-items-center justify-content-between">
+                    <h4 className="text-start mb-0">Course Content</h4>
+                    <div className="cntAncPrc d-flex align-items-center">
+                        <span className="badge text-bg-success rbt-badge-5">Total Activity : {getNumberCount.activity_count}</span>
+                        <span className="badge text-bg-success rbt-badge-5 ms-1">Total Practises : {getNumberCount.practice_count}</span>
+                    </div>
+
+                </div>
+
             </div>
-            <div className="rbt-accordion-style rbt-accordion-02 accordion">
-              <div className="accordion" id="accordionExampleb2">
+              <div className="rbt-accordion-style rbt-accordion-02 accordion">
+                  <div className="accordion" id="accordionExampleb2">
                 {getsectionItems && getsectionItems.map((item, innerIndex) => (
                     <div className="accordion-item card" key={innerIndex}>
                       <h2
@@ -108,7 +142,7 @@ const Content = ({ checkMatchCourses }) => {
                           id={`headingTwo${innerIndex}`}
                       >
                         <button
-                            className={`accordion-button ${
+                            className={`accordion-button d-flex align-items-center justify-content-between ${
                                 !item.collapsed ? "collapsed" : ""
                             }`}
                             type="button"
@@ -117,8 +151,13 @@ const Content = ({ checkMatchCourses }) => {
                             aria-expanded={item.expand}
                             aria-controls={`collapseTwo${innerIndex + 1}`}
                         >
-                          {item.sSectionTitle}
-                          <span className="rbt-badge-5 ml--10">{item.act_Total} Activities</span>
+                          <div className="accordionTitle">
+                            {item.sSectionTitle}
+                          </div>
+                          <div className="accordionButton d-flex">
+                            <span className="rbt-badge-5 ml--10">{item.act_Total} Activities</span>
+                            <span className="rbt-badge-5 ml--10">{item.pact_Total} Practises</span>
+                          </div>
                         </button>
                       </h2>
                       <div
@@ -145,10 +184,8 @@ const Content = ({ checkMatchCourses }) => {
                                     </div>
                                     {/*{list.status ? (*/}
                                       <div className="course-content-right">
-                                          <span className="min-lable">{list.act_cnt} Activities</span>
-                                          <span className="rbt-badge variation-03 bg-primary-opacity">
-                                             <i className="feather-eye"></i> Practise
-                                        </span>
+                                          <span className="rbt-badge variation-03 bg-primary-opacity">{list.act_cnt} Activities</span>
+                                          <span className="rbt-badge variation-03 bg-primary-opacity">{list.pact_cnt} Practise</span>
                                           <span className="course-lock">
                                           <i className="feather-lock"></i>
                                         </span>

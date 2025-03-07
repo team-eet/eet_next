@@ -28,6 +28,7 @@ const SingleCourse = () => {
   const [getStudentcnt, setStudentcnt] = useState(0)
   const[getsectionItems, setsectionItems] = useState([])
   const REACT_APP = API_URL
+  const [getvideoOpenModal,setvideoOpenModal] = useState('')
   // let getCourse;
 
 
@@ -70,6 +71,14 @@ const SingleCourse = () => {
             if (res.data.length !== 0) {
               console.log('Final Result', res.data)
               setbatchData(res.data)
+              console.log("Batch Video Details", res.data[0].sVideoURL,res.data[0].sVideoPath)
+              if (res.data[0].sVideoURL !== ""){
+                setvideoOpenModal(res.data[0].sVideoURL)
+              }else if(res.data[0].sVideoPath !== ""){
+                setvideoOpenModal(res.data[0].sVideoPath)
+              }else{
+                setvideoOpenModal('')
+              }
               if (res.data[0].nTBId === null) {
                 setFirstName(res.data[0].sFName)
                 setLastName(res.data[0].sLName)
@@ -189,6 +198,45 @@ const SingleCourse = () => {
               </div>
             </div>
           </div>
+
+          {/* Video Using Modal Open */}
+          <div className="modal fade" id="videoOpenModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+               aria-hidden="true">
+            <div className="modal-dialog modal-fullscreen">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h1 className="modal-title fs-3" id="exampleModalToggleLabel">{checkMatch.sCourseTitle}</h1>
+                  {/*<button type="button" className="btn-close" data-bs-dismiss="modal"*/}
+                  {/*        aria-label="Close"></button>*/}
+                  <i className="feather-x" data-bs-dismiss="modal"
+                     aria-label="Close"></i>
+                </div>
+                <div className="modal-body text-center">
+                  {typeof getvideoOpenModal === "string" && getvideoOpenModal.trim() !== "" ? (
+                      getvideoOpenModal.includes("youtube.com") || getvideoOpenModal.includes("youtu.be") ? (
+                          <iframe
+                              width="100%"
+                              height="100%"
+                              style={{minHeight: "90vh"}}
+                              src={getvideoOpenModal}
+                              title="YouTube video player"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen>
+                          </iframe>
+                      ) : (
+                          <video width="100%" height="100%" style={{minHeight: "90vh"}} controls>
+                            <source src={getvideoOpenModal} type="video/mp4"/>
+                            Your browser does not support the video tag.
+                          </video>
+                      )
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Close Video Using Modal Open */}
 
           <BackToTop />
           {/*<Separator />*/}

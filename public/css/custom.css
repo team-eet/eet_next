@@ -3531,3 +3531,6 @@ div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{
     color: var(--color-primary);
     background-color: #fff;
 }
+.courseTitle h4{
+    font-size: 20px;
+}

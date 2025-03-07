@@ -998,8 +998,8 @@ const AllCoursetwo = () => {
                                                                                 </div>
                                                                                 <div className="rbt-bookmark-btn">
                                                                                     <Link className="rbt-round-btn"
-                                                                                       title="Bookmark"
-                                                                                       href="#"><i
+                                                                                          title="Bookmark"
+                                                                                          href="#"><i
                                                                                         className="feather-heart"></i></Link>
                                                                                 </div>
                                                                             </div>
@@ -1024,7 +1024,8 @@ const AllCoursetwo = () => {
                                                                                     {data.enroll_cnt} Students
                                                                                 </li>
                                                                             </ul>
-
+                                                                            <div
+                                                                                className={`badge text-bg-secondary`}>{data.sLevel}</div>
                                                                             {data.sShortDesc.length > 165 ?
                                                                                 <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                 <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1037,8 +1038,8 @@ const AllCoursetwo = () => {
                                                                                 {/*    </a>*/}
                                                                                 {/*</div>*/}
                                                                                 <div className="rbt-author-info">
-                                                                                    By <Link href="profile.html">{data.sFName} {data.sLName}</Link>
-                                                                                    In <Link href="#">{data.sCategory}</Link>
+                                                                                    By <Link
+                                                                                    href="javascript:void(0)">{data.sFName} {data.sLName}</Link>
                                                                                 </div>
                                                                             </div>
                                                                             <div className="rbt-card-bottom">
@@ -1050,14 +1051,15 @@ const AllCoursetwo = () => {
                                                                                             className="off-price">₹{data.nCourseAmount}</span>
                                                                                     </div>
                                                                                     <Link className="rbt-btn-link"
-                                                                                       href="course-details.html">Learn
+                                                                                          href={`/course-details/${EncryptData(data.nCId)}`}>Learn
                                                                                         More<i
                                                                                             className="feather-arrow-right"></i></Link>
                                                                                 </> : <>
                                                                                     <div
                                                                                         className="read-more-btn m-auto">
-                                                                                        <Link className="rbt-moderbt-btn"
-                                                                                           href="#">
+                                                                                        <Link
+                                                                                            className="rbt-moderbt-btn"
+                                                                                            href="#">
                                                                                         <span
                                                                                             className="moderbt-btn-text">View Packages</span>
                                                                                             <i className="feather-arrow-right"></i>
@@ -1098,8 +1100,8 @@ const AllCoursetwo = () => {
                                                                                     </div>
                                                                                     <div className="rbt-bookmark-btn">
                                                                                         <Link className="rbt-round-btn"
-                                                                                           title="Bookmark"
-                                                                                           href="#"><i
+                                                                                              title="Bookmark"
+                                                                                              href="#"><i
                                                                                             className="feather-heart"></i></Link>
                                                                                     </div>
                                                                                 </div>
@@ -1124,7 +1126,8 @@ const AllCoursetwo = () => {
                                                                                         {data.enroll_cnt} Students
                                                                                     </li>
                                                                                 </ul>
-
+                                                                                <div
+                                                                                    className={`badge text-bg-secondary`}>{data.sLevel}</div>
                                                                                 {data.sShortDesc.length > 165 ?
                                                                                     <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                     <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1138,8 +1141,7 @@ const AllCoursetwo = () => {
                                                                                     {/*</div>*/}
                                                                                     <div className="rbt-author-info">
                                                                                         By <Link
-                                                                                        href="profile.html">{data.sFName} {data.sLName}</Link> In <Link
-                                                                                        href="#">{data.sCategory}</Link>
+                                                                                        href="javascript:void(0)">{data.sFName} {data.sLName}</Link>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="rbt-card-bottom">
@@ -1151,7 +1153,7 @@ const AllCoursetwo = () => {
                                                                                                 className="off-price">₹{data.nCourseAmount}</span>
                                                                                         </div>
                                                                                         <Link className="rbt-btn-link"
-                                                                                           href="course-details.html">Learn
+                                                                                              href={`/course-details/${EncryptData(data.nCId)}`}>Learn
                                                                                             More<i
                                                                                                 className="feather-arrow-right"></i></Link>
                                                                                     </> : <>
@@ -1237,7 +1239,7 @@ const AllCoursetwo = () => {
                                                                                     {data.enroll_cnt} Students
                                                                                 </li>
                                                                             </ul>
-
+                                                                            <div className={`badge text-bg-secondary`}>{data.sLevel}</div>
                                                                             {data.sShortDesc.length > 165 ?
                                                                                 <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                 <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1251,8 +1253,7 @@ const AllCoursetwo = () => {
                                                                                 {/*</div>*/}
                                                                                 <div className="rbt-author-info">
                                                                                     By <Link
-                                                                                    href="profile.html">{data.sFName} {data.sLName}</Link> In <Link
-                                                                                    href="#">{data.sCategory}</Link>
+                                                                                    href="javascript:void(0)">{data.sFName} {data.sLName}</Link>
                                                                                 </div>
                                                                             </div>
                                                                             <div className="rbt-card-bottom">
@@ -1312,8 +1313,8 @@ const AllCoursetwo = () => {
                                                                                     </div>
                                                                                     <div className="rbt-bookmark-btn">
                                                                                         <Link className="rbt-round-btn"
-                                                                                           title="Bookmark"
-                                                                                           href="#"><i
+                                                                                              title="Bookmark"
+                                                                                              href="#"><i
                                                                                             className="feather-heart"></i></Link>
                                                                                     </div>
                                                                                 </div>
@@ -1338,7 +1339,8 @@ const AllCoursetwo = () => {
                                                                                         {data.enroll_cnt} Students
                                                                                     </li>
                                                                                 </ul>
-
+                                                                                <div
+                                                                                    className="badge text-bg-secondary">{data.sLevel}</div>
                                                                                 {data.sShortDesc.length > 165 ?
                                                                                     <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                     <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1352,8 +1354,7 @@ const AllCoursetwo = () => {
                                                                                     {/*</div>*/}
                                                                                     <div className="rbt-author-info">
                                                                                         By <Link
-                                                                                        href="profile.html">{data.sFName} {data.sLName}</Link> In <Link
-                                                                                        href="#">{data.sCategory}</Link>
+                                                                                        href="javascript:void(0)">{data.sFName} {data.sLName}</Link>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="rbt-card-bottom">
@@ -1365,7 +1366,7 @@ const AllCoursetwo = () => {
                                                                                                 className="off-price">₹{data.nCourseAmount}</span>
                                                                                         </div>
                                                                                         <Link className="rbt-btn-link"
-                                                                                           href="course-details.html">Learn
+                                                                                              href={`/course-details/${EncryptData(data.nCId)}`}>Learn
                                                                                             More<i
                                                                                                 className="feather-arrow-right"></i></Link>
                                                                                     </> : <>
@@ -1473,13 +1474,14 @@ const AllCoursetwo = () => {
                                                                         </div>
                                                                         <div className="rbt-bookmark-btn">
                                                                             <Link className="rbt-round-btn"
-                                                                               title="Bookmark"
-                                                                               href="#"><i
+                                                                                  title="Bookmark"
+                                                                                  href="#"><i
                                                                                 className="feather-heart"></i></Link>
                                                                         </div>
                                                                     </div>
                                                                     <h4 className="rbt-card-title">
-                                                                        <Link href={`/course-details/${EncryptData(data.nCId)}`}>
+                                                                        <Link
+                                                                            href={`/course-details/${EncryptData(data.nCId)}`}>
                                                                             {data.sCourseTitle}
                                                                         </Link>
                                                                     </h4>
@@ -1497,6 +1499,8 @@ const AllCoursetwo = () => {
                                                                             {data.enroll_cnt} Students
                                                                         </li>
                                                                     </ul>
+                                                                    <div
+                                                                        className={`badge text-bg-secondary`}>{data.sLevel}</div>
                                                                     {data.sShortDesc.length > 165 ?
                                                                         <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                         <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1504,7 +1508,7 @@ const AllCoursetwo = () => {
                                                                     <div className="rbt-author-meta mb--10">
 
                                                                         <div className="rbt-author-info">
-                                                                            By {data.sFName} {data.sLName} In {data.sCategory}
+                                                                            By {data.sFName} {data.sLName}
                                                                         </div>
                                                                     </div>
                                                                     <div className="rbt-card-bottom">
@@ -1516,7 +1520,7 @@ const AllCoursetwo = () => {
                                                                                     className="off-price">₹{data.nCourseAmount}</span>
                                                                             </div>
                                                                             <Link className="rbt-btn-link m-auto"
-                                                                               href={`/course-details/${EncryptData(data.nCId)}`}>Learn
+                                                                                  href={`/course-details/${EncryptData(data.nCId)}`}>Learn
                                                                                 More<i
                                                                                     className="feather-arrow-right"></i></Link>
                                                                         </> : <>
@@ -1593,6 +1597,8 @@ const AllCoursetwo = () => {
                                                                             {data.enroll_cnt} Students
                                                                         </li>
                                                                     </ul>
+                                                                    <div
+                                                                        className={`badge text-bg-secondary`}>{data.sLevel}</div>
                                                                     {data.sShortDesc.length > 165 ?
                                                                         <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                         <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1600,7 +1606,7 @@ const AllCoursetwo = () => {
                                                                     <div className="rbt-author-meta mb--10">
 
                                                                         <div className="rbt-author-info">
-                                                                            By {data.sFName} {data.sLName} In {data.sCategory}
+                                                                            By {data.sFName} {data.sLName}
                                                                         </div>
                                                                     </div>
                                                                     {/*<div className="rbt-card-bottom">*/}
@@ -1614,8 +1620,9 @@ const AllCoursetwo = () => {
                                                                                     className="off-price">₹{data.nCourseAmount}</span>
                                                                             </div>
                                                                             {/*<Link className="rbt-btn-link m-auto"*/}
-                                                                            <Link className={`rbt-btn-link ${data.bIsAccosiateModule !== 'no' ? 'm-auto' : ''}`}
-                                                                                  href={`/course-details/${EncryptData(data.nCId)}`}>Learn
+                                                                            <Link
+                                                                                className={`rbt-btn-link ${data.bIsAccosiateModule !== 'no' ? 'm-auto' : ''}`}
+                                                                                href={`/course-details/${EncryptData(data.nCId)}`}>Learn
                                                                                 More<i
                                                                                     className="feather-arrow-right"></i></Link>
                                                                         </> : <>

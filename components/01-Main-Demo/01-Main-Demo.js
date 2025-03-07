@@ -613,8 +613,7 @@ const MainDemo = () => {
                                   {/*</div>*/}
                                   <div className="rbt-author-info">
                                     By{" "}
-                                    <Link href={`/profile/${data.nCId}`}>{data.sFName} {data.sLName}</Link>{" "}
-                                    In <Link href="#">{data.sCategory}</Link>
+                                    <Link href={`/profile/${data.nCId}`}>{data.sFName} {data.sLName}</Link>
                                   </div>
                                 </div>
                                 {/*) : (*/}

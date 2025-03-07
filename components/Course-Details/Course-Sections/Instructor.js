@@ -1,10 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, {useState} from "react";
 import img from '../../../public/images/client/blank-profile-picture-973460_1280.png'
 
 const Instructor = ({ checkMatchCourses }) => {
-    // console.log(checkMatchCourses)
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleReadMore = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const description = checkMatchCourses.sDesc || "";
+
   return (
     <>
       <div className="about-author border-0 pb--0 pt--0">
@@ -39,14 +46,15 @@ const Instructor = ({ checkMatchCourses }) => {
               <div className="author-info">
                 <h5 className="title text-start">
                   <Link
-                    className="hover-flip-item-wrapper "
-                    // href={`/profile/${teacher.id}`}
-                    href={`javascript:void(0)`}
+                      className="hover-flip-item-wrapper "
+                      // href={`/profile/${teacher.id}`}
+                      href={`javascript:void(0)`}
                   >
                     {checkMatchCourses.sFName} {checkMatchCourses.sLName}
                   </Link>
                 </h5>
-                <span className="b3 subtitle text-start">{checkMatchCourses.sDegree} ({checkMatchCourses.sSpecialization})</span>
+                <span
+                    className="b3 subtitle text-start">{checkMatchCourses.sDegree} ({checkMatchCourses.sSpecialization})</span>
                 <ul className="rbt-meta mb--20 mt--10">
                   <li>
                     <i className="fa fa-star color-warning"></i>
@@ -73,9 +81,14 @@ const Instructor = ({ checkMatchCourses }) => {
               </div>
               <div className="content">
                 <p className="b3 subtitle text-start">
-                  {checkMatchCourses.sDesc && checkMatchCourses.sDesc.length > 250
-                      ? `${checkMatchCourses.sDesc.substring(0, 250)} ............Read More`
-                      : checkMatchCourses.sDesc}
+                  {isExpanded || description.length <= 250
+                      ? description
+                      : `${description.substring(0, 250)}...`}
+                  {description.length > 250 && (
+                      <button className="btn btn-lg ms-1 btn-link p-0" onClick={toggleReadMore}>
+                        {isExpanded ? "Read Less" : "Read More"}
+                      </button>
+                  )}
                 </p>
               </div>
             </div>
