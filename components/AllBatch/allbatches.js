@@ -52,6 +52,45 @@ const AllBatches = () => {
         }
     };
 
+    // New Code
+    const getTimeDifference = (startTime, endTime, days) => {
+        if (!startTime || !endTime || !days) {
+            return { hours: 0, minutes: 0 };
+        }
+
+        days = parseInt(days); // Ensure days is a number
+
+        const isValidTimeFormat = (time) => /^\d{1,2}:\d{2}\s*(am|pm)$/i.test(time);
+        if (!isValidTimeFormat(startTime) || !isValidTimeFormat(endTime)) {
+            console.error("Invalid time format:", startTime, endTime);
+            return { hours: 0, minutes: 0 };
+        }
+
+        const [startHour, startMinute] = startTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+        const [endHour, endMinute] = endTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+
+        const startPeriod = startTime.toLowerCase().includes("pm") && startHour !== 12 ? 12 : 0;
+        const endPeriod = endTime.toLowerCase().includes("pm") && endHour !== 12 ? 12 : 0;
+
+        const startDate = new Date(0, 0, 0, (startHour % 12) + startPeriod, startMinute);
+        const endDate = new Date(0, 0, 0, (endHour % 12) + endPeriod, endMinute);
+
+        let differenceInMs = endDate - startDate;
+        if (differenceInMs < 0) {
+            differenceInMs += 24 * 60 * 60 * 1000; // Adjust for next day scenarios
+        }
+
+        const differenceInMinutes = differenceInMs / (1000 * 60);
+        const totalMinutes = differenceInMinutes * days; // Multiply by days
+        const totalHours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
+
+        console.log("Final Calculation:", { totalHours, remainingMinutes });
+
+        return { totalHours, remainingMinutes };
+    };
+    // Close Code
+
 
     useEffect(() => {
         getCourse();
@@ -521,18 +560,18 @@ const AllBatches = () => {
                                 </div>
                             </> : <>
                                 {currentRecords && currentRecords.map((data, index) => {
-                                    const startHour = parseInt(data.sBatchStartTime[0])
-                                    const endHour = parseInt(data.sBatchEndTime[0])
-
-                                    // Calculate the difference in hours
-                                    const hoursDifference = endHour - startHour
+                                    const { totalHours, remainingMinutes } = getTimeDifference(
+                                        data.sBatchStartTime,
+                                        data.sBatchEndTime,
+                                        data.batchdays
+                                    );
                                     return (
                                         <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-5" key={index}>
                                             <div className="rbt-card variation-01 rbt-hover" style={{margin: '10px'}}>
                                                 <div className="rbt-card-img">
                                                     <Link
                                                         href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
-                                                        <Image className={"position-relative"} objectFit="none"
+                                                        <Image className={"position-relative"} objectFit="inherit"
                                                                fill={true} src={data.batchimg} alt="Card image"/>
                                                         {/*style={{ height: '200px' }}*/}
                                                     </Link>
@@ -551,8 +590,12 @@ const AllBatches = () => {
                                                     <span className="lesson-number mb-1">By <span
                                                         className={'text-dark'}><b>{data.sFName} {data.sLName}</b></span></span>
                                                     <br></br>
-                                                    <span className="lesson-number">{data.batchdays} days <span
-                                                        className="lesson-time">({data.batchdays * hoursDifference} hrs)</span></span>
+                                                    <span className="lesson-number">
+    {data.batchdays} Days
+    <span className="lesson-time ms-2">
+        ({totalHours} Hours {remainingMinutes} Minutes)
+    </span>
+</span>
                                                     <p className="rbt-card-text m-0">
                                                         <span
                                                             className={'mr-2'}>{new Date(data.batchstartdatenew).getDate()} {new Date(data.batchstartdatenew).toLocaleString('default', {month: 'short'})} - {new Date(data.dBatchEndDate).getDate()} {new Date(data.dBatchEndDate).toLocaleString('default', {month: 'short'})}</span> |
@@ -829,11 +872,11 @@ const AllBatches = () => {
                                 </div>
                             </> : <>
                                 {currentRecords && currentRecords.map((data, index) => {
-                                    const startHour = parseInt(data.sBatchStartTime[0])
-                                    const endHour = parseInt(data.sBatchEndTime[0])
-
-                                    // Calculate the difference in hours
-                                    const hoursDifference = endHour - startHour
+                                    const { totalHours, remainingMinutes } = getTimeDifference(
+                                        data.sBatchStartTime,
+                                        data.sBatchEndTime,
+                                        data.batchdays
+                                    );
                                     return (
                                         <div className="course-grid-4" key={index} data-sal-delay="150"
                                              data-sal="data-up"
@@ -842,7 +885,7 @@ const AllBatches = () => {
                                                 <div className="rbt-card-img">
                                                     <Link
                                                         href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
-                                                        <Image className={"position-relative"} objectFit="none"
+                                                        <Image className={"position-relative"} objectFit="inherit"
                                                                fill={true} src={data.batchimg} alt="Card image"/>
                                                     </Link>
                                                 </div>
@@ -858,8 +901,12 @@ const AllBatches = () => {
                                                     </h4>
                                                     <span className="lesson-number mb-1">By <span
                                                         className={'text-dark'}><b>{data.sFName} {data.sLName}</b></span></span>
-                                                    <span className="lesson-number">{data.batchdays} days <span
-                                                        className="lesson-time">({data.batchdays * hoursDifference} hrs)</span></span>
+                                                    <span className="lesson-number">
+    {data.batchdays} Days
+    <span className="lesson-time ms-2">
+        ({totalHours} Hours {remainingMinutes} Minutes)
+    </span>
+</span>
                                                     <p className="rbt-card-text m-0">
                                                     <span
                                                         className={'mr-2'}>{new Date(data.batchstartdatenew).getDate()} {new Date(data.batchstartdatenew).toLocaleString('default', {month: 'short'})} - {new Date(data.dBatchEndDate).getDate()} {new Date(data.dBatchEndDate).toLocaleString('default', {month: 'short'})}</span> |

@@ -11,6 +11,7 @@ import FooterOne from "@/components/Footer/Footer-One";
 import HeaderStyleTen from "@/components/Header/HeaderStyle-Ten";
 import MobileMenu from "@/components/Header/MobileMenu";
 import Cart from "@/components/Header/Offcanvas/Cart";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const FaqsPage = () => {
   return (
@@ -22,7 +23,7 @@ const FaqsPage = () => {
           <HeaderStyleTen headerSticky="rbt-sticky" headerType="" />
           <MobileMenu />
           <Cart />
-          <BreadCrumb title="Faqs" text="Faqs" />
+          <BreadCrumb title="FAQs" text="FAQs" />
 
           <div className="rbt-accordion-area accordion-style-1 bg-color-white rbt-section-gap">
             <Faq />
@@ -30,7 +31,8 @@ const FaqsPage = () => {
           <ContactForm gap="rbt-section-gap" />
 
           <Separator />
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>

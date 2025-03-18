@@ -220,7 +220,7 @@ const EventCarouse = () => {
                       <div className="single-slide">
                         <div className="rbt-card event-grid-card variation-01 rbt-hover">
                           <div className="rbt-card-img">
-                            <Link href={`/course-details/${EncryptData(data.nCId)}`}>
+                            <Link href="javascript:void(0)">
                               <Image
                                   src={data.sImagePath}
                                   width={710}
@@ -241,7 +241,7 @@ const EventCarouse = () => {
                               </li>
                             </ul>
                             <h4 className="rbt-card-title mb--10">
-                              <Link href={`/course-details/${EncryptData(data.nCId)}`}>
+                              <Link href="javascript:void(0)">
                                 {data.sCourseTitle}
                               </Link>
                             </h4>

@@ -11,6 +11,7 @@ import Instagram from "@/components/Instagram/Instagram";
 import PrivacyPolicy from "@/components/Privacy-Policy/PrivacyPolicy";
 import TermsOfService from "@/components/Terms&Conditions/TermsOfService";
 import RefundPolicy from "@/components/Refund/RefundPolicy";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const Refund = () => {
     return (
@@ -24,7 +25,8 @@ const Refund = () => {
                     <Cart />
 
                    <RefundPolicy />
-                    <FooterOne />
+                    {/*<FooterOne />*/}
+                    <FooterThree />
                 </Context>
             </Provider>
         </>

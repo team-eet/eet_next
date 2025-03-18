@@ -1,7 +1,7 @@
 {
   "newsletterOne": [
     {
-      "subTitle": "Get Latest Histudy Update",
+      "subTitle": "Get Latest EET English Update",
       "strong": "Subscribe",
       "title": "Our Newsletter",
       "desc": "Subscribe to our newsletter and never miss out on the latest updates, tips, and resources designed to help you excel in your English language learning journey."
@@ -9,7 +9,7 @@
   ],
   "newsletterTwo": [
     {
-      "subTitle": "Get Latest Histudy Update",
+      "subTitle": "Get Latest EET English Update",
       "strong": "Subscribe",
       "title": "Our Newsletter",
       "text": "No ads, No trails, No commitments",
@@ -18,15 +18,27 @@
         {
           "num": 500,
           "title": "Successfully Trained",
-          "subTitle": "Learners & counting",
+          "subTitle": "Students",
           "offset": true
         },
         {
+          "num": 50,
+          "title": "Registered and Verified",
+          "subTitle": "Tutors",
+          "offset": false
+        },
+        {
           "num": 100,
-          "title": "Certification Students",
-          "subTitle": "Online Course",
+          "title": "Online Recorded",
+          "subTitle": "Courses",
+          "offset": false
+        },{
+          "num": 50,
+          "title": "Online Live Sessions",
+          "subTitle": "Batches",
           "offset": false
         }
+
       ]
     }
   ],

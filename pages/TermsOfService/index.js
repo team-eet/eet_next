@@ -10,11 +10,12 @@ import Cart from "@/components/Header/Offcanvas/Cart";
 import Instagram from "@/components/Instagram/Instagram";
 import PrivacyPolicy from "@/components/Privacy-Policy/PrivacyPolicy";
 import TermsOfService from "@/components/Terms&Conditions/TermsOfService";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const TermsConditions = () => {
     return (
         <>
-            <PageHead title="Terms & Conditions- Online Courses & Education NEXTJS14 Template" />
+            <PageHead title="Terms And Conditions" />
 
             <Provider store={Store}>
                 <Context>
@@ -23,7 +24,8 @@ const TermsConditions = () => {
                     <Cart />
 
                     <TermsOfService />
-                    <FooterOne />
+                    {/*<FooterOne />*/}
+                    <FooterThree />
                 </Context>
             </Provider>
         </>

@@ -9,6 +9,7 @@ import HeaderStyleTen from "@/components/Header/HeaderStyle-Ten";
 import MobileMenu from "@/components/Header/MobileMenu";
 import Cart from "@/components/Header/Offcanvas/Cart";
 import FooterOne from "@/components/Footer/Footer-One";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const ContactPage = () => {
   return (
@@ -54,7 +55,8 @@ const ContactPage = () => {
             ></iframe>
           </div>
 
-          <FooterOne/>
+          {/*<FooterOne/>*/}
+          <FooterThree/>
         </Context>
       </Provider>
     </>

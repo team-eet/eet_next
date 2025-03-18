@@ -8,11 +8,11 @@
       "usefulLinks": [
         {
           "text": "Courses",
-          "link": "/all-courses"
+          "link": "/all-course"
         },
         {
           "text": "Batches",
-          "link": "/all-batches"
+          "link": "/all-batch"
         },
         {
           "text": "Blogs",
@@ -60,11 +60,11 @@
         },
         {
           "text": "Terms And Conditions",
-          "link": "javascript:void(0)"
+          "link": "/TermsOfService"
         },
         {
           "text": "Refund Policy",
-          "link": "javascript:void(0)"
+          "link": "/Refund"
         },
         {
           "text": "Tutor Policy",

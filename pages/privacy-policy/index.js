@@ -9,6 +9,7 @@ import MobileMenu from "@/components/Header/MobileMenu";
 import Cart from "@/components/Header/Offcanvas/Cart";
 import Instagram from "@/components/Instagram/Instagram";
 import PrivacyPolicy from "@/components/Privacy-Policy/PrivacyPolicy";
+import FooterThree from "@/components/Footer/Footer-Three";
 
 const PrivacyPolicyPage = () => {
   return (
@@ -24,7 +25,8 @@ const PrivacyPolicyPage = () => {
           <PrivacyPolicy />
           {/*<Instagram />*/}
 
-          <FooterOne />
+          {/*<FooterOne />*/}
+          <FooterThree />
         </Context>
       </Provider>
     </>

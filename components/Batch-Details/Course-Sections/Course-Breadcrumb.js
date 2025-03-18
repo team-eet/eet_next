@@ -6,78 +6,142 @@ import Skeleton from "react-loading-skeleton";
 
 const CourseBreadcrumb = ({ getMatchCourse }) => {
   const [isLoading, setisLoading] = useState(true)
+    // New Code
+    const [totalDuration, setTotalDuration] = useState({ adjustedHours: 0, adjustedMinutes: 0 });
+    // Close
 
   useEffect(() => {
     if (getMatchCourse.length !== 0) {
       setisLoading(false);
+        calculateDuration();
     }
   }, [getMatchCourse]);
-  // console.log(getMatchCourse)
-  // const formattedDate = `${getMatchCourse.dUpdatedDate.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`
-  const formatDate = (value, formatting = { month: 'short', day: 'numeric', year: 'numeric' }) => {
-    if (!value) return value
-    return new Intl.DateTimeFormat('en-US', formatting).format(new Date(value))
-  }
-  // Function to calculate time difference
-  // const sBatchStartTime = getMatchCourse.sBatchStartTime;
-  // const sBatchEndTime = getMatchCourse.sBatchEndTime;
-  // const sBatchStartTime = "12:30pm";
-  // const sBatchEndTime = "13:45pm";
+
+  console.log("Time Deferant",getMatchCourse.sBatchStartTime,getMatchCourse.sBatchEndTime,getMatchCourse.nBatchDurationDays)
+    // New Code
+    const getTimeDifference = (startTime, endTime) => {
+        if (!startTime || !endTime) {
+            throw new Error("Start time or end time is undefined");
+        }
+
+        // Validate time format (hh:mm am/pm)
+        const isValidTimeFormat = (time) => /^\d{1,2}:\d{2}\s*(am|pm)$/i.test(time);
+        if (!isValidTimeFormat(startTime) || !isValidTimeFormat(endTime)) {
+            throw new Error("Invalid time format. Expected format: hh:mm am/pm");
+        }
+
+        // Extract hours and minutes
+        const [startHour, startMinute] = startTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+        const [endHour, endMinute] = endTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+
+        // Determine AM/PM
+        const startPeriod = startTime.toLowerCase().includes("pm") ? 12 : 0;
+        const endPeriod = endTime.toLowerCase().includes("pm") ? 12 : 0;
+
+        // Convert to Date objects
+        const startDate = new Date(0, 0, 0, (startHour % 12) + startPeriod, startMinute);
+        const endDate = new Date(0, 0, 0, (endHour % 12) + endPeriod, endMinute);
+
+        // Calculate difference in minutes
+        const differenceInMs = endDate - startDate;
+        const differenceInMinutes = differenceInMs / (1000 * 60);
+
+        const hours = Math.floor(differenceInMinutes / 60);
+        const minutes = differenceInMinutes % 60;
+
+        return { hours, minutes };
+    };
+
+    // Function to calculate total duration
+    const calculateTotalDuration = (startTime, endTime, days) => {
+        const { hours, minutes } = getTimeDifference(startTime, endTime);
+        const totalHours = hours * days;
+        const totalMinutes = minutes * days;
+        const adjustedHours = totalHours + Math.floor(totalMinutes / 60);
+        const adjustedMinutes = totalMinutes % 60;
+        return { adjustedHours, adjustedMinutes };
+    };
+
+    // Calculate duration if data is available
+    const calculateDuration = () => {
+        try {
+            const sBatchStartTime = getMatchCourse.sBatchStartTime || "00:00 am"; // Default start time
+            const sBatchEndTime = getMatchCourse.sBatchEndTime || "00:00 pm";   // Default end time
+            const nBatchDurationDays = getMatchCourse.nBatchDurationDays || 0; // Default duration
+
+            if (sBatchStartTime && sBatchEndTime) {
+                const duration = calculateTotalDuration(sBatchStartTime, sBatchEndTime, nBatchDurationDays);
+                setTotalDuration(duration);
+            }
+        } catch (error) {
+            console.error("Error calculating duration:", error.message);
+        }
+    };
+    // Close New Code
 
 // Function to calculate time difference
-  console.log("Time",getMatchCourse.sBatchStartTime,getMatchCourse.sBatchEndTime,getMatchCourse.nBatchDurationDays)
+//   console.log("Time",getMatchCourse.sBatchStartTime,getMatchCourse.sBatchEndTime,getMatchCourse.nBatchDurationDays)
+//   console.log("Time Latest",getMatchCourse.tBatchStart,getMatchCourse.tBatchEnd,getMatchCourse.nBatchDurationDays)
 //   const TimeDurationCalculator = () => {
-    const sBatchStartTime = "09:30am";
-    const sBatchEndTime = "10:45am";
-    const nBatchDurationDays = 10;
+
+    // const sBatchStartTime = "09:30am";
+    // const sBatchEndTime = "10:45am";
+
+    // const sBatchStartTime = getMatchCourse.sBatchStartTime;
+    // const sBatchEndTime = getMatchCourse.sBatchEndTime;
+    //
+    // const nBatchDurationDays = 10;
 //     const sBatchStartTime = getMatchCourse.sBatchStartTime;
 //     const sBatchEndTime = getMatchCourse.sBatchEndTime;
 //     const nBatchDurationDays = getMatchCourse.nBatchDurationDays;
 
-  const getTimeDifference = (startTime, endTime) => {
-      // Match hours and minutes
-      const [startHour, startMinute] = startTime.match(/(\d+):(\d+)/).slice(1).map(Number);
-      const [endHour, endMinute] = endTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+    // if (sBatchStartTime !== "undefined" && sBatchEndTime !== "undefined" && nBatchDurationDays !== ""){
+    //     const getTimeDifference = (startTime, endTime) => {
+    //         // Match hours and minutes
+    //         const [startHour, startMinute] = startTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+    //         const [endHour, endMinute] = endTime.match(/(\d+):(\d+)/).slice(1).map(Number);
+    //
+    //         // Determine AM/PM
+    //         const startPeriod = startTime.includes("pm") ? 12 : 0;
+    //         const endPeriod = endTime.includes("pm") ? 12 : 0;
+    //
+    //         // Convert to Date objects
+    //         const startDate = new Date(0, 0, 0, (startHour % 12) + startPeriod, startMinute);
+    //         const endDate = new Date(0, 0, 0, (endHour % 12) + endPeriod, endMinute);
+    //
+    //         // Calculate difference in minutes
+    //         const differenceInMs = endDate - startDate;
+    //         const differenceInMinutes = differenceInMs / (1000 * 60);
+    //
+    //         const hours = Math.floor(differenceInMinutes / 60);
+    //         const minutes = differenceInMinutes % 60;
+    //
+    //         return { hours, minutes };
+    //     };
+    //
+    //     const calculateTotalDuration = (startTime, endTime, days) => {
+    //         const { hours, minutes } = getTimeDifference(startTime, endTime);
+    //
+    //         // Multiply hours and minutes by the number of days
+    //         const totalHours = hours * days;
+    //         const totalMinutes = minutes * days;
+    //
+    //         // Adjust total hours by converting minutes to hours
+    //         const adjustedHours = totalHours + Math.floor(totalMinutes / 60);
+    //         const adjustedMinutes = totalMinutes % 60;
+    //
+    //         return { adjustedHours, adjustedMinutes };
+    //     };
+    //
+    //
+    //     const totalDuration = calculateTotalDuration(sBatchStartTime, sBatchEndTime, nBatchDurationDays);
+    //     // console.log("totalDuration",totalDuration)
+    //     // };
+    //     console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjustedMinutes} minutes`);
+    //
+    //     console.log('getMatchCourse', getMatchCourse)
+    // }
 
-      // Determine AM/PM
-      const startPeriod = startTime.includes("pm") ? 12 : 0;
-      const endPeriod = endTime.includes("pm") ? 12 : 0;
-
-      // Convert to Date objects
-      const startDate = new Date(0, 0, 0, (startHour % 12) + startPeriod, startMinute);
-      const endDate = new Date(0, 0, 0, (endHour % 12) + endPeriod, endMinute);
-
-      // Calculate difference in minutes
-      const differenceInMs = endDate - startDate;
-      const differenceInMinutes = differenceInMs / (1000 * 60);
-
-      const hours = Math.floor(differenceInMinutes / 60);
-      const minutes = differenceInMinutes % 60;
-
-      return { hours, minutes };
-    };
-
-    const calculateTotalDuration = (startTime, endTime, days) => {
-      const { hours, minutes } = getTimeDifference(startTime, endTime);
-
-      // Multiply hours and minutes by the number of days
-      const totalHours = hours * days;
-      const totalMinutes = minutes * days;
-
-      // Adjust total hours by converting minutes to hours
-      const adjustedHours = totalHours + Math.floor(totalMinutes / 60);
-      const adjustedMinutes = totalMinutes % 60;
-
-      return { adjustedHours, adjustedMinutes };
-    };
-
-
-    const totalDuration = calculateTotalDuration(sBatchStartTime, sBatchEndTime, nBatchDurationDays);
-    // console.log("totalDuration",totalDuration)
-  // };
-console.log(`${totalDuration.adjustedHours}:  hour(s) and ${totalDuration.adjustedMinutes} minutes`);
-
-  console.log('getMatchCourse', getMatchCourse)
   return (
     <>
       <div className="col-lg-8">

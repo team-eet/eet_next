@@ -2,15 +2,14 @@
   "contactOne": [
     {
       "title": "Contact Phone Number",
-      "numOne": "9909080665",
+      "numOne": "+91 9909080665",
       "numTwo": "",
       "icon": "feather-headphones",
       "address": ""
     },
     {
       "title": "Our Email Address",
-      "mailOne": "info@gmail.com",
-      "mailTwo": "inquiry@gmail.com",
+      "mailOne": "info@eetenglish.com",
       "icon": "feather-mail",
       "numOne": "",
       "address": "",

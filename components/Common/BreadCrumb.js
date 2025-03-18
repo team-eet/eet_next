@@ -69,22 +69,6 @@ const BreadCrumb = ({ title, text }) => {
                 </li>
                 <li className="rbt-breadcrumb-item active">{text}</li>
               </ul>
-              {showContinue ? <>
-                <button
-                    className="rbt-btn btn-gradient hover-icon-reverse radius-round mt-3 ms-3"
-                    onClick={OnContinue}
-                >
-                    <span className="icon-reverse-wrapper">
-                      <span className="btn-text">Continue</span>
-                      <span className="btn-icon">
-                        <i className="feather-arrow-right"></i>
-                      </span>
-                      <span className="btn-icon">
-                        <i className="feather-arrow-right"></i>
-                      </span>
-                    </span>
-                </button>
-              </> : <></>}
 
             </div>
           </div>

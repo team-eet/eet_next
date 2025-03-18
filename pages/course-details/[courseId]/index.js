@@ -133,13 +133,13 @@ const SingleCourse = () => {
               {/*  checkMatchCourses={checkMatch !== undefined ? checkMatch : ""}*/}
               {/*/>*/}
 
-              <div className="rbt-related-course-area bg-color-white pt--60 rbt-section-gapBottom">
+              {/*<div className="rbt-related-course-area bg-color-white pt--60 rbt-section-gapBottom">*/}
                   <SimilarCourses
                       checkMatchCourses={
                           checkMatch !== undefined ? checkMatch.nCCId : ""
                       }
                   />
-              </div>
+              {/*</div>*/}
               {/* Video Using Modal Open */}
               <div className="modal fade" id="videoOpenModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
                    aria-hidden="true">

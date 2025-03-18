@@ -1024,8 +1024,17 @@ const AllCoursetwo = () => {
                                                                                     {data.enroll_cnt} Students
                                                                                 </li>
                                                                             </ul>
-                                                                            <div
-                                                                                className={`badge text-bg-secondary`}>{data.sLevel}</div>
+                                                                            {
+                                                                                data.sLevel !== '' || data.sCategory !== '' ? <>
+                                                                                    <div
+                                                                                        className="lavelArea d-flex align-items-center justify-content-between mb--15">
+                                                                                        {data.sLevel !== '' ? <div
+                                                                                            className={`badge text-bg-secondary`}>{data.sLevel}</div> : null}
+                                                                                        {data.sCategory !== '' ? <div
+                                                                                            className={`badge customBadge`}>{data.sCategory}</div> : null}
+                                                                                    </div>
+                                                                                </> : null
+                                                                            }
                                                                             {data.sShortDesc.length > 165 ?
                                                                                 <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                 <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1126,8 +1135,17 @@ const AllCoursetwo = () => {
                                                                                         {data.enroll_cnt} Students
                                                                                     </li>
                                                                                 </ul>
-                                                                                <div
-                                                                                    className={`badge text-bg-secondary`}>{data.sLevel}</div>
+                                                                                {
+                                                                                    data.sLevel !== '' || data.sCategory !== '' ? <>
+                                                                                        <div
+                                                                                            className="lavelArea d-flex align-items-center justify-content-between mb--15">
+                                                                                            {data.sLevel !== '' ? <div
+                                                                                                className={`badge text-bg-secondary`}>{data.sLevel}</div> : null}
+                                                                                            {data.sCategory !== '' ? <div
+                                                                                                className={`badge customBadge`}>{data.sCategory}</div> : null}
+                                                                                        </div>
+                                                                                    </> : null
+                                                                                }
                                                                                 {data.sShortDesc.length > 165 ?
                                                                                     <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                     <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1239,7 +1257,18 @@ const AllCoursetwo = () => {
                                                                                     {data.enroll_cnt} Students
                                                                                 </li>
                                                                             </ul>
-                                                                            <div className={`badge text-bg-secondary`}>{data.sLevel}</div>
+                                                                            {
+                                                                                data.sLevel !== '' || data.sCategory !== '' ? <>
+                                                                                    <div
+                                                                                        className="lavelArea d-flex align-items-center justify-content-between mb--15">
+                                                                                        {data.sLevel !== '' ? <div
+                                                                                            className={`badge text-bg-secondary`}>{data.sLevel}</div> : null}
+                                                                                        {data.sCategory !== '' ? <div
+                                                                                            className={`badge customBadge`}>{data.sCategory}</div> : null}
+                                                                                    </div>
+                                                                                </> : null
+                                                                            }
+
                                                                             {data.sShortDesc.length > 165 ?
                                                                                 <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                 <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1339,8 +1368,17 @@ const AllCoursetwo = () => {
                                                                                         {data.enroll_cnt} Students
                                                                                     </li>
                                                                                 </ul>
-                                                                                <div
-                                                                                    className="badge text-bg-secondary">{data.sLevel}</div>
+                                                                                {
+                                                                                    data.sLevel !== '' || data.sCategory !== '' ? <>
+                                                                                        <div
+                                                                                            className="lavelArea d-flex align-items-center justify-content-between mb--15">
+                                                                                            {data.sLevel !== '' ? <div
+                                                                                                className={`badge text-bg-secondary`}>{data.sLevel}</div> : null}
+                                                                                            {data.sCategory !== '' ? <div
+                                                                                                className={`badge customBadge`}>{data.sCategory}</div> : null}
+                                                                                        </div>
+                                                                                    </> : null
+                                                                                }
                                                                                 {data.sShortDesc.length > 165 ?
                                                                                     <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                                     <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1499,8 +1537,17 @@ const AllCoursetwo = () => {
                                                                             {data.enroll_cnt} Students
                                                                         </li>
                                                                     </ul>
-                                                                    <div
-                                                                        className={`badge text-bg-secondary`}>{data.sLevel}</div>
+                                                                    {
+                                                                        data.sLevel !== '' || data.sCategory !== '' ? <>
+                                                                            <div
+                                                                                className="lavelArea d-flex align-items-center justify-content-between mb--15">
+                                                                                {data.sLevel !== '' ? <div
+                                                                                    className={`badge text-bg-secondary`}>{data.sLevel}</div> : null}
+                                                                                {data.sCategory !== '' ? <div
+                                                                                    className={`badge customBadge`}>{data.sCategory}</div> : null}
+                                                                            </div>
+                                                                        </> : null
+                                                                    }
                                                                     {data.sShortDesc.length > 165 ?
                                                                         <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                         <p className="rbt-card-text">{data.sShortDesc}</p>
@@ -1597,8 +1644,17 @@ const AllCoursetwo = () => {
                                                                             {data.enroll_cnt} Students
                                                                         </li>
                                                                     </ul>
-                                                                    <div
-                                                                        className={`badge text-bg-secondary`}>{data.sLevel}</div>
+                                                                    {
+                                                                        data.sLevel !== '' || data.sCategory !== '' ? <>
+                                                                            <div
+                                                                                className="lavelArea d-flex align-items-center justify-content-between mb--15">
+                                                                                {data.sLevel !== '' ? <div
+                                                                                    className={`badge text-bg-secondary`}>{data.sLevel}</div> : null}
+                                                                                {data.sCategory !== '' ? <div
+                                                                                    className={`badge customBadge`}>{data.sCategory}</div> : null}
+                                                                            </div>
+                                                                        </> : null
+                                                                    }
                                                                     {data.sShortDesc.length > 165 ?
                                                                         <p className="rbt-card-text">{data.sShortDesc.substring(0, 110)}...</p> :
                                                                         <p className="rbt-card-text">{data.sShortDesc}</p>

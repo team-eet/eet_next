@@ -3534,3 +3534,7 @@ div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{
 .courseTitle h4{
     font-size: 20px;
 }
+.customBadge{
+    background: rgba(10, 83, 190, 0.4);
+    backdrop-filter: blur(8px);
+}

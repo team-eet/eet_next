@@ -66,7 +66,7 @@ const TermsOfService = () => {
                         <Image src={bgImg} alt="Education Images" />
                     </div>
                     <div className="breadcrumb-content-top text-center">
-                        <h1 className="title">Terms Of Service</h1>
+                        <h1 className="title">Terms And Conditions</h1>
                         {/*<p className="mb--20">Histudy Course Privacy Policy Here.</p>*/}
                         <ul className="page-list">
                             <li className="rbt-breadcrumb-item">
@@ -77,7 +77,7 @@ const TermsOfService = () => {
                                     <i className="feather-chevron-right"></i>
                                 </div>
                             </li>
-                            <li className="rbt-breadcrumb-item active">Terms of service</li>
+                            <li className="rbt-breadcrumb-item active">Terms And Conditions</li>
                         </ul>
                     </div>
                 </div>
