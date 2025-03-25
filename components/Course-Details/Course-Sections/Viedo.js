@@ -21,6 +21,8 @@ import Skeleton from "react-loading-skeleton";
 const MySwal = withReactContent(Swal);
 
 const Viedo = ({ checkMatchCourses }) => {
+
+  console.log("Data Check",checkMatchCourses)
   const REACT_APP = API_URL
   // console.log(checkMatchCourses)
   const router = useRouter();
@@ -31,11 +33,12 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getCntPdf, setCntPdf] = useState('')
   const [getCntImg, setCntImg] = useState('')
   const [isCartItem, setisCartItem] = useState(false)
-  const [isCartId, setisCartId] = useState('')
+  const [isCartId, setisCartId] = useState(0)
   const [getNumberCount, setNumberCount] = useState({});
   const [isApiCall, setAPiCall] = useState({});
   const [cid, setcid] = useState('')
   const [getvideoOpenData,setvideoOpenData] = useState('')
+  const [getPromoCodeData,setPromoCodeData] = useState({})
 
 
   const getFeatureCount = (crsid) => {
@@ -43,6 +46,9 @@ const Viedo = ({ checkMatchCourses }) => {
     //  const url = window.location.href
     //  const parts = url.split("/");
     //  const courseId = parts[parts.length - 1];
+
+    // setcid(courseId);
+    // alert("Course Id Top",cid);
   //     //activity
        Axios.get(`${API_URL}/api/package/Show_activity_count/${courseId}`, {
         headers: {
@@ -147,32 +153,69 @@ const Viedo = ({ checkMatchCourses }) => {
   const getCartItem = () => {
     if(localStorage.getItem('userData')){
       const udata = JSON.parse(localStorage.getItem('userData'))
-      Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
+      // Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
+      //   headers: {
+      //     ApiKey: `${API_KEY}`
+      //   }
+      // })
+      //     .then(res => {
+      //       console.log("Ankit Cart Data isCartItem")
+      //       if(res.data.length !== 0){
+      //         console.log("Ankit Get Cart Video.js",res.data)
+      //         for (let i = 0; i < res.data.length; i++) {
+      //           if (!isCartItem) {
+      //             //alert("Compare ID " + " "+ i + EncryptData(res.data[i].cid) + " " + courseId);
+      //             if (EncryptData(res.data[i].cid) === courseId) {
+      //               setisCartItem(true)
+      //             }
+      //             // setisCartId(res.data[0].nCartId)
+      //
+      //           } else {
+      //             console.log("Ankit Cart Data Blank")
+      //             break
+      //           }
+      //         }
+      //       }
+      //     })
+      //     .catch(err => {
+      //       { ErrorDefaultAlert(err) }
+      //     })
+
+      // Cart Insert And Update Code
+
+      Axios.get(`${API_URL}/api/cart/GetCartItemCourse/${udata['regid']}/${courseId}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }
       })
           .then(res => {
-            console.log("Ankit Cart Data isCartItem")
-            if(res.data.length !== 0){
-              console.log("Ankit Get Cart Video.js",res.data)
-              for (let i = 0; i < res.data.length; i++) {
-                if (!isCartItem) {
-                  if (EncryptData(res.data[i].cid) === courseId) {
-                    setisCartItem(true)
-                  }
-                  setisCartId(res.data[0].nCartId)
+            console.log("Full API Response:", res);
+            console.log("Ankit Cart Data isCartItem");
+            console.log("Ankit Cart Data isCartItem 1", res.data);
 
+            // Check if res.data exists and is an array
+            if (res.data && Array.isArray(res.data)) {
+              console.log("Ankit Get Cart Video.js", res.data);
+
+              // Cart New Code
+              if (!isCartItem) {
+                if (res.data.length > 0 && EncryptData(res.data[0].cid) === courseId) {
+                  setisCartItem(true);
+                  setisCartId(res.data[0].nCartId);
                 } else {
-                  console.log("Ankit Cart Data Blank")
-                  break
+                  setisCartId(0);
                 }
+              } else {
+                console.log("Ankit Cart Data Blank");
               }
+            } else {
+              console.log("API response is not an array or is undefined:", res.data);
+              setisCartId(0);
             }
           })
           .catch(err => {
-            { ErrorDefaultAlert(err) }
-          })
+            ErrorDefaultAlert(err);
+          });
     }
     const handleScroll = () => {
       const currentScrollPos = window.pageYOffset;
@@ -186,10 +229,41 @@ const Viedo = ({ checkMatchCourses }) => {
     };
   }
 
+  const getPromocodeDetails = () => {
+    const udatas = JSON.parse(localStorage.getItem('userData'))
+    const getamt = (checkMatchCourses.bIsAccosiateModule === 'yes') ? parseInt(checkMatchCourses.pkg_price) : parseInt(checkMatchCourses.dAmount)
+
+    Axios.get(`${API_URL}/api/promocode/Get_promocode_detail/${courseId}/${udatas['regid']}/${EncryptData(getamt)}`, {
+      headers: {
+        ApiKey: `${API_KEY}`
+      }
+    })
+        .then(res => {
+          if (res.data) {
+            if (res.data.length !== 0) {
+              const resData = JSON.parse(res.data)
+              setPromoCodeData(resData)
+              console.log("promoCode",resData)
+              console.log("isCartId",isCartId)
+            }
+          }
+        })
+        .catch(err => {
+          console.log('err1', err)
+          { ErrorDefaultAlert(err) }
+        })
+  }
+
   useEffect(() => {
+    const url = window.location.href
+    const parts = url.split("/");
+    const courseId = parts[parts.length - 1];
+    setcid(courseId);
+
     getFeatureCount();
     dispatch({ type: "COUNT_CART_TOTALS" });
     localStorage.setItem("hiStudy", JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
     getCartItem();
     // console.log(EncryptData('0'))
 
@@ -200,6 +274,11 @@ const Viedo = ({ checkMatchCourses }) => {
     }else{
       setvideoOpenData('')
     }
+
+    // Get PromoCode
+    getPromocodeDetails()
+    // Close Promocode
+
   }, [])
   // console.log(checkMatchCourses)
   const { cartToggle, setCart } = useAppContext();
@@ -219,7 +298,8 @@ const Viedo = ({ checkMatchCourses }) => {
 
   }, [Razorpay]);
   const addToCartFun = (id, amount, product) => {
-    // alert('hellooooooooo')
+    //alert('hellooooooooo'+ id + amount + product)
+    //console.log('hellooooooooo'+ id + amount + product)
     if(localStorage.getItem('userData')) {
       // const order = createOrder(params);
 
@@ -253,11 +333,13 @@ const Viedo = ({ checkMatchCourses }) => {
                 const url = window.location.href
                 const parts = url.split("/");
                 const courseId = parts[parts.length - 1];
-                //alert(courseId)
+                // alert(courseId)
                 setcid(courseId)
                 setisCartItem(true)
 
-                const getamt = (checkMatchCourses.bIsAccosiateCourse === 'yes') ? parseInt(checkMatchCourses.dAmount) : parseInt(checkMatchCourses.pkg_price)
+                console.log("Course Main",checkMatchCourses)
+
+                const getamt = (checkMatchCourses.bIsAccosiateModule === 'yes') ? parseInt(checkMatchCourses.pkg_price) : parseInt(checkMatchCourses.dAmount)
 
                 //check user is login or not
                 if(localStorage.getItem('userData')) {
@@ -271,38 +353,67 @@ const Viedo = ({ checkMatchCourses }) => {
                       .then(res => {
                         if (res.data) {
                           if (res.data.length !== 0) {
-                            console.log(res.data)
                             const resData = JSON.parse(res.data)
-                            // console.log("promoCode",resData)
-                            if(isCartId === ''){
+                            console.log("promoCode",resData)
+                            console.log("isCartId",isCartId)
+                            const cnewamt = (checkMatchCourses.dAmount) ? checkMatchCourses.dAmount : 0
+                            // const discountPayPrice = resData.user_pay
+                            if(isCartId === 0){
                               const insert_arr = {
-                                nRegId: udata['regid'],
-                                cid: courseId,
-                                cname: checkMatchCourses.sCourseTitle,
-                                fname: checkMatchCourses.sFName,
-                                lname: checkMatchCourses.sLName,
-                                camt: (checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0,
-                                cnewamt: (checkMatchCourses.dAmount) ? checkMatchCourses.dAmount : 0,
-                                pkgprice: checkMatchCourses.pkg_price,
-                                isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
-                                cimg: checkMatchCourses.sImagePath,
-                                pkgId: EncryptData(0),
-                                pkgname: '',
-                                PCId: resData.pcid,
-                                promocode: resData.promocode,
-                                Discount: resData.discAmt
-                              }
+                                // nCartId : 0,
+                                // nRegId: udata['regid'],
+                                // cid: courseId,
+                                // cname: checkMatchCourses.sCourseTitle,
+                                // fname: checkMatchCourses.sFName,
+                                // lname: checkMatchCourses.sLName,
+                                // camt: String((checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0),
+                                // cnewamt: String(cnewamt),
+                                // pkgprice: String(checkMatchCourses.pkg_price),
+                                // isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
+                                // cimg: checkMatchCourses.sImagePath,
+                                // pkgId: EncryptData(0),
+                                // pkgname: '',
+                                // PCId: resData.pcid,
+                                // promocode: resData.promocode,
+                                // dDiscount : "50"
 
+                                nRegId: "5DIa9ItogWUtLP6SNdB-tg==",
+                                cid: "P0wlavKSdX5KPbj0kldllQ==",
+                                cname: "IELTS Essay Writing in 10 Days",
+                                fname: "Bhaveshkumar J.",
+                                lname: "Patel",
+                                camt: "3000",
+                                cnewamt: "500",
+                                pkgprice: "0",
+                                isaccosiatecourse: "no",
+                                cimg: "https://eetstorage01.blob.core.windows.net/course/Image/b667e36e-6e93-4c19-a3cd-4c3ac65aea2c.jpeg",
+                                pkgId: "Z2jXHCKV1iXoc0BFOLzlTw==",
+                                pkgname: "Test",
+                                oid: 0,
+                                PCId: "125",
+                                promocode: "EET50",
+                                dDiscount: "50"
+
+                              }
                               console.log("insert_arr",insert_arr)
+                              console.log("Bheja ja raha data:", JSON.stringify(insert_arr, null, 2));
                               if (insert_arr) {
-                                Axios.post(`${API_URL}/api/cart/InsertCart`, insert_arr, {
+                                Axios.post(`${API_URL}/api/cart/InsertCartData`, JSON.stringify(insert_arr, null, 2), {
                                   headers: {
-                                    ApiKey: `${API_KEY}`
+                                    "ApiKey": `${API_KEY}`, // Tumhara actual API key yaha daal do
+                                    "Content-Type": "application/json",
+                                    // "Accept": "*/*",
+                                    // "User-Agent": "PostmanRuntime/7.36.0",
+                                    // "Accept-Encoding": "gzip, deflate, br",
+                                    // "Connection": "keep-alive",
+                                    // "Postman-Token": "123e4567-e89b-12d3-a456-426614174000"
                                   }
-                                }).then(res => {
+                                })
+                                    .then(res => {
                                   const retData = JSON.parse(res.data)
                                   // localStorage.setItem('cart', insert_arr)
                                   localStorage.setItem('cart', JSON.stringify(insert_arr))
+                                      console.log("Status",retData.success,retData)
                                   if (retData.success === "1") {
                                     if (!localStorage.getItem('cart')) {
                                       const str_arr = JSON.stringify([insert_arr])
@@ -326,7 +437,7 @@ const Viedo = ({ checkMatchCourses }) => {
                                     setCart(!cartToggle);
 
                                   } else if (retData.success === "0") {
-                                    { ErrorAlert(retData) }
+                                    { ErrorDefaultAlert(retData) }
                                   }
                                 })
                                     .catch(err => {
@@ -334,7 +445,8 @@ const Viedo = ({ checkMatchCourses }) => {
                                       { ErrorDefaultAlert(JSON.stringify(err.response)) }
                                     })
                               }
-                            }else{
+                            }
+                            else{
                               const update_arr = {
                                 nCartId : parseInt(isCartId),
                                 nRegId: udata['regid'],
@@ -343,7 +455,7 @@ const Viedo = ({ checkMatchCourses }) => {
                                 fname: checkMatchCourses.sFName,
                                 lname: checkMatchCourses.sLName,
                                 camt: (checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0,
-                                cnewamt: (checkMatchCourses.dAmount) ? checkMatchCourses.dAmount : 0,
+                                cnewamt: cnewamt,
                                 pkgprice: checkMatchCourses.pkg_price,
                                 isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
                                 cimg: checkMatchCourses.sImagePath,
@@ -351,7 +463,8 @@ const Viedo = ({ checkMatchCourses }) => {
                                 pkgname: '',
                                 PCId: resData.pcid,
                                 promocode: resData.promocode,
-                                Discount: resData.discAmt
+                                dDiscount : "50"
+                                // Discount: resData.user_pay
                               }
 
                               console.log("update_arr",update_arr)
@@ -507,9 +620,28 @@ const Viedo = ({ checkMatchCourses }) => {
       </Link>
       <div className="content-item-content">
         <div className="rbt-price-wrapper d-flex flex-wrap align-items-center justify-content-between">
-          <div className="rbt-price">
+          <div className="rbt-price flex-wrap">
             <span className="current-price">₹{checkMatchCourses.dAmount}</span>
             <span className="off-price">₹{checkMatchCourses.nCourseAmount}</span>
+            <div className="dicount d-block">
+              <span className="quantity d-block">
+              {
+
+                  getPromoCodeData.discount_type === "amount" && getPromoCodeData.discount !== 0 && (
+                      <span className="font-13 text-success m-0">
+           Get ₹ {getPromoCodeData.discount} discount in cart
+                    </span>
+                  )
+              }
+                {
+                    getPromoCodeData.discount_type === "percentage" && getPromoCodeData.discount !== 0 && (
+                        <span className="font-13 text-success m-0">
+           Get {getPromoCodeData.discount}% discount in cart (upto ₹{parseInt(getPromoCodeData.user_pay)})
+                     </span>
+                    )
+                }
+          </span>
+            </div>
           </div>
           {/*<div className="discount-time">*/}
           {/*  <span className="rbt-badge color-danger bg-color-danger-opacity">*/}

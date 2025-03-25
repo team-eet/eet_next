@@ -17,6 +17,7 @@ const MySwal = withReactContent(Swal)
 
 
 const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => {
+    console.log("product",product)
     // console.log(id, product, amount)
   const dispatch = useDispatch();
   const REACT_APP = API_URL
@@ -275,8 +276,8 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
           <td className="pro-price">
     <span className={'text-primary'} style={{fontSize: "large"}}>
         ₹{product.sDiscountType === "amount"
-        ? parseInt(product.pay_price) - parseInt(product.discount)
-        : parseInt(product.pay_price) - (parseInt(product.pay_price) * parseInt(product.discount) / 100)
+        ? parseInt(product.user_pay)
+        : parseInt(product.pay_price) - parseInt(product.user_pay)
     }
         {product.discount !== 0 && <i className='fa fa-tag ml--5' title={product.promocode}></i>}
     </span>

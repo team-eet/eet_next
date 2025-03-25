@@ -68,7 +68,30 @@ const CartPage = () => {
                   if(retData.success === "1"){ 
                     // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
                     // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
-                    router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
+                    // router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
+                  // New Code
+                    Axios.get(`${API_URL}/api/cart/GetUserCart/${udata['regid']}/${EncryptData(response)}`, {
+                      headers: {
+                        ApiKey: `${API_KEY}`
+                      }
+                    }).then(res => {
+                      if (res.data) {
+                        const retData = JSON.parse(res.data)
+                        if(retData.success === "1"){
+                          // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
+                          // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
+                          // router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
+                          router.push(`/payment-detail/${retData.payid}`)
+                        } else {
+                          //payment not verified error
+                        }
+                      }
+                    })
+                        .catch(err => {
+                          console.log(err)
+                          { ErrorDefaultAlert(err) }
+                        })
+                    // Close Code
                   } else {
                     //payment not verified error
                   }

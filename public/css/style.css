@@ -34802,5 +34802,7 @@ Course Sidebar
   }
 }
 
-
+.outlineBtnRadius,.outlineBtnRadius::before{
+  border-radius: 6px !important;
+}
 /*# sourceMappingURL=../maps/style.css.map */

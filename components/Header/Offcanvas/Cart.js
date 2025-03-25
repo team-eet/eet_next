@@ -154,13 +154,13 @@ const Cart = () => {
                         courseitem.map((data, index) => {
                           console.log("Cart Drower Price",data)
                               // const userPay = (parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100))
-                          const userPay = data.sDiscountType === "amount"
-                              ? parseInt(data.pay_price) - parseInt(data.discount)
-                              : parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100);
+                          // const userPay = data.sDiscountType === "amount"
+                          //     ? parseInt(data.pay_price) - parseInt(data.discount)
+                          //     : parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100);
                               // console.log(userPay, pay_amnt)
                               const pay_amnt = parseInt(data.pay_price) - parseInt(data.user_pay)
                               // console.log(pay_amnt)
-                              checkoutAmount += userPay
+                              checkoutAmount += pay_amnt
                               return (
                                   <>
                                     <li className="minicart-item" key={index}>
@@ -186,23 +186,24 @@ const Cart = () => {
                                         </h6>
 
                                         <span className="quantity">
-                                      <span className={'me-2'}>₹{data.pay_price}</span>
+                                          <span className={'me-2'}>₹{data.pay_price}</span>
                                           {
 
                                               data.sDiscountType === "amount" && data.discount !== 0 && (
                                                   <span className="font-13 text-success m-0">
-      - ₹ {data.discount} discount applied ({parseInt(data.pay_price) - parseInt(data.discount)})
-    </span>
+          - ₹ {data.discount} discount applied (upto {parseInt(data.user_pay)})
+        </span>
                                               )
                                           }
                                           {
                                               data.sDiscountType === "percentage" && data.discount !== 0 && (
                                                   <span className="font-13 text-success m-0">
-      - {data.discount}% discount applied ({parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100)})
-    </span>
+          - {data.discount}% discount applied (upto {parseInt(data.user_pay)})
+        </span>
                                               )
                                           }
-                                      </span>
+                                          </span>
+
                                       </div>
                                       <div className="close-btn">
                                         <button
@@ -220,12 +221,11 @@ const Cart = () => {
                   </div>
                 </> : <>
                   {isLoading ? <>
-                    <Skeleton height={500} />
+                    <Skeleton height={500}/>
                   </> : <>
-                  <h6 className={'text-center'}>Your cart is empty!</h6>
+                    <h6 className={'text-center'}>Your cart is empty!</h6>
                   </>}
                 </>}
-
 
 
             </nav>
@@ -234,7 +234,7 @@ const Cart = () => {
               <hr className="mb--0"/>
               <div className="rbt-cart-subttotal">
                 <p className="subtotal">
-                  <strong>Subtotal:</strong>
+                <strong>Subtotal:</strong>
                 </p>
                 <p className="price">₹{checkoutAmount}</p>
               </div>
