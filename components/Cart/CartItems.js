@@ -275,19 +275,19 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
           {/*</td>*/}
           <td className="pro-price">
     <span className={'text-primary'} style={{fontSize: "large"}}>
-        ₹{product.sDiscountType === "amount"
-        ? parseInt(product.user_pay)
-        : parseInt(product.pay_price) - parseInt(product.user_pay)
-    }
+       {parseInt(product.pay_price) - parseInt(product.user_pay)}
         {product.discount !== 0 && <i className='fa fa-tag ml--5' title={product.promocode}></i>}
     </span>
 
               {product.discount !== 0 && (
                   <span className={'font-13 text-success m-0'} style={{fontSize: '13px'}}>
-            {product.sDiscountType === "amount"
-                ? `₹${parseInt(product.user_pay)} discount applied`
-                : `₹${product.discount}% discount applied`
-            }
+                      {
+                          product.sDiscountType ? product.sDiscountType === "amount"
+                                  ? `₹${parseInt(product.user_pay)} discount applied`
+                                  : `₹${product.discount}% discount applied (upto ₹${product.user_pay})`
+                          : null
+                      }
+
         </span>
               )}
           </td>

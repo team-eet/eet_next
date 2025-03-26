@@ -33,7 +33,7 @@ const Viedo = ({ checkMatchCourses }) => {
   const [getCntPdf, setCntPdf] = useState('')
   const [getCntImg, setCntImg] = useState('')
   const [isCartItem, setisCartItem] = useState(false)
-  const [isCartId, setisCartId] = useState(0)
+  const [isCartId, setisCartId] = useState(EncryptData(0))
   const [getNumberCount, setNumberCount] = useState({});
   const [isApiCall, setAPiCall] = useState({});
   const [cid, setcid] = useState('')
@@ -201,16 +201,16 @@ const Viedo = ({ checkMatchCourses }) => {
               if (!isCartItem) {
                 if (res.data.length > 0 && EncryptData(res.data[0].cid) === courseId) {
                   setisCartItem(true);
-                  setisCartId(res.data[0].nCartId);
+                  setisCartId(EncryptData(res.data[0].nCartId));
                 } else {
-                  setisCartId(0);
+                  setisCartId(EncryptData(0));
                 }
               } else {
                 console.log("Ankit Cart Data Blank");
               }
             } else {
               console.log("API response is not an array or is undefined:", res.data);
-              setisCartId(0);
+              setisCartId(EncryptData(0));
             }
           })
           .catch(err => {
@@ -358,59 +358,55 @@ const Viedo = ({ checkMatchCourses }) => {
                             console.log("isCartId",isCartId)
                             const cnewamt = (checkMatchCourses.dAmount) ? checkMatchCourses.dAmount : 0
                             // const discountPayPrice = resData.user_pay
-                            if(isCartId === 0){
+                            if(DecryptData(isCartId) === 0){
                               const insert_arr = {
-                                // nCartId : 0,
-                                // nRegId: udata['regid'],
-                                // cid: courseId,
-                                // cname: checkMatchCourses.sCourseTitle,
-                                // fname: checkMatchCourses.sFName,
-                                // lname: checkMatchCourses.sLName,
-                                // camt: String((checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0),
-                                // cnewamt: String(cnewamt),
-                                // pkgprice: String(checkMatchCourses.pkg_price),
-                                // isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
-                                // cimg: checkMatchCourses.sImagePath,
-                                // pkgId: EncryptData(0),
-                                // pkgname: '',
-                                // PCId: resData.pcid,
-                                // promocode: resData.promocode,
-                                // dDiscount : "50"
+                                nCartId : EncryptData(0),
+                                nRegId: udata['regid'],
+                                cid: courseId,
+                                cname: checkMatchCourses.sCourseTitle,
+                                fname: checkMatchCourses.sFName,
+                                lname: checkMatchCourses.sLName,
+                                camt: String((checkMatchCourses.nCourseAmount) ? checkMatchCourses.nCourseAmount : 0),
+                                cnewamt: String(cnewamt),
+                                pkgprice: String(checkMatchCourses.pkg_price),
+                                isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse,
+                                cimg: checkMatchCourses.sImagePath,
+                                pkgId: EncryptData(0),
+                                pkgname: '',
+                                PCId: resData.pcid,
+                                promocode: resData.promocode,
+                                dDiscount :resData.discount
 
-                                nRegId: "5DIa9ItogWUtLP6SNdB-tg==",
-                                cid: "P0wlavKSdX5KPbj0kldllQ==",
-                                cname: "IELTS Essay Writing in 10 Days",
-                                fname: "Bhaveshkumar J.",
-                                lname: "Patel",
-                                camt: "3000",
-                                cnewamt: "500",
-                                pkgprice: "0",
-                                isaccosiatecourse: "no",
-                                cimg: "https://eetstorage01.blob.core.windows.net/course/Image/b667e36e-6e93-4c19-a3cd-4c3ac65aea2c.jpeg",
-                                pkgId: "Z2jXHCKV1iXoc0BFOLzlTw==",
-                                pkgname: "Test",
-                                oid: 0,
-                                PCId: "125",
-                                promocode: "EET50",
-                                dDiscount: "50"
+                                // nRegId: "5DIa9ItogWUtLP6SNdB-tg==",
+                                // cid: "P0wlavKSdX5KPbj0kldllQ==",
+                                // cname: "IELTS Essay Writing in 10 Days",
+                                // fname: "Bhaveshkumar J.",
+                                // lname: "Patel",
+                                // camt: "3000",
+                                // cnewamt: "500",
+                                // pkgprice: "0",
+                                // isaccosiatecourse: "no",
+                                // cimg: "https://eetstorage01.blob.core.windows.net/course/Image/b667e36e-6e93-4c19-a3cd-4c3ac65aea2c.jpeg",
+                                // pkgId: "Z2jXHCKV1iXoc0BFOLzlTw==",
+                                // pkgname: "Test",
+                                // oid: 0,
+                                // PCId: "125",
+                                // promocode: "EET50",
+                                // dDiscount: "50"
 
                               }
                               console.log("insert_arr",insert_arr)
                               console.log("Bheja ja raha data:", JSON.stringify(insert_arr, null, 2));
                               if (insert_arr) {
-                                Axios.post(`${API_URL}/api/cart/InsertCartData`, JSON.stringify(insert_arr, null, 2), {
+                                Axios.post(`${API_URL}/api/cart/InsertCart`, JSON.stringify(insert_arr), {
                                   headers: {
                                     "ApiKey": `${API_KEY}`, // Tumhara actual API key yaha daal do
                                     "Content-Type": "application/json",
-                                    // "Accept": "*/*",
-                                    // "User-Agent": "PostmanRuntime/7.36.0",
-                                    // "Accept-Encoding": "gzip, deflate, br",
-                                    // "Connection": "keep-alive",
-                                    // "Postman-Token": "123e4567-e89b-12d3-a456-426614174000"
                                   }
                                 })
                                     .then(res => {
                                   const retData = JSON.parse(res.data)
+                                      console.log("retData",retData)
                                   // localStorage.setItem('cart', insert_arr)
                                   localStorage.setItem('cart', JSON.stringify(insert_arr))
                                       console.log("Status",retData.success,retData)
@@ -463,7 +459,8 @@ const Viedo = ({ checkMatchCourses }) => {
                                 pkgname: '',
                                 PCId: resData.pcid,
                                 promocode: resData.promocode,
-                                dDiscount : "50"
+                                dDiscount : resData.discount
+                                // dDiscount : "50"
                                 // Discount: resData.user_pay
                               }
 

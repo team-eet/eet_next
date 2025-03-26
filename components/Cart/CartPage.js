@@ -25,6 +25,7 @@ import Image from "next/image";
 
 const CartPage = () => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const { cart, total_amount, shipping_fee } = useSelector(
     (state) => state.CartReducer
   );
@@ -76,6 +77,7 @@ const CartPage = () => {
                       }
                     }).then(res => {
                       if (res.data) {
+                        setLoading(false);
                         const retData = JSON.parse(res.data)
                         if(retData.success === "1"){
                           // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
@@ -83,13 +85,13 @@ const CartPage = () => {
                           // router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
                           router.push(`/payment-detail/${retData.payid}`)
                         } else {
-                          //payment not verified error
+                          rzpay.close();
                         }
                       }
                     })
                         .catch(err => {
                           console.log(err)
-                          { ErrorDefaultAlert(err) }
+                          ErrorDefaultAlert(err)
                         })
                     // Close Code
                   } else {
@@ -116,26 +118,34 @@ const CartPage = () => {
       theme: {
         color: "#4b71fc",
       },
+      modal: {
+        ondismiss: function () {
+          setLoading(false);
+        },
+      },
     };
 
     const rzpay = new Razorpay(options);
     rzpay.on('payment.failed', function (response){
+      // alert(EncryptData(response.error.metadata.payment_id));
+      // alert(rzpay.close())
       if(response.error.code !== 'undefined'){
-        router.push('redirect to failure page')
+        window.location.href = `/payment-detail/${EncryptData(response.error.metadata.payment_id)}`;
       }
-      alert(response.error.code);
-      alert(response.error.description);
-      alert(response.error.source);
-      alert(response.error.step);
-      alert(response.error.reason);
-      alert(response.error.metadata.order_id);
-      alert(response.error.metadata.payment_id);
+      // alert(response.error.code);
+      // alert(response.error.description);
+      // alert(response.error.source);
+      // alert(response.error.step);
+      // alert(response.error.reason);
+      // alert(response.error.metadata.order_id);
+
     })
     rzpay.open();
   };
 
   // const [cidarr, setcidarr] = useState([])
   const handlePayment = () => {
+    setLoading(true);
     if(localStorage.getItem('userData')) {
     const regID = JSON.parse(localStorage.getItem('userData'))
       // alert(checkoutAmount * 100)
@@ -406,14 +416,14 @@ const CartPage = () => {
                               const pay_amnt = parseInt(item.pay_price) - parseInt(item.user_pay)
                               console.log("User Pay And Pay Amount ", userPay, pay_amnt)
                               // console.log(pay_amnt)
-                              checkoutAmount += userPay
+                              checkoutAmount += pay_amnt
                               console.log("checkoutAmount", checkoutAmount)
                               originalPrice += parseInt(item.og_price)
                               discountPrice += parseInt(item.pay_price)
                               // specialPrice += (parseInt(item.pay_price) * parseInt(item.discount) / 100)
                               specialPrice += item.sDiscountType === "amount"
                                   ? parseInt(item.discount)  // Amount type me direct discount add hoga
-                                  : (parseInt(item.pay_price) * parseInt(item.discount) / 100); // Percentage type me discount calculate hoga
+                                  : (parseInt(item.user_pay)); // Percentage type me discount calculate hoga
 
                               return <CartItems cartitem={courseitem} index={index} checkoutAmount={checkoutAmount}
                                                 key={index}
@@ -489,7 +499,7 @@ const CartPage = () => {
                             {/*  Discounted Price <span>₹ {discountPrice}</span>*/}
                             {/*</p>*/}
                             <p>
-                              Discounted Price <span> (-) ₹ {specialPrice}</span>
+                              Discount Price <span> (-) ₹ {specialPrice}</span>
                             </p>
                             {/*{handleGST ? <>*/}
                             {/*  <p>*/}
@@ -519,13 +529,29 @@ const CartPage = () => {
                               Payable Price{" "}
                               <span>₹ {checkoutAmount}</span>
                             </h2>
+                            {/*<div className="mt-5">*/}
+                            {/*  <div className="single-button">*/}
+                            {/*    <div*/}
+                            {/*        onClick={handlePayment}*/}
+                            {/*        className="rbt-btn btn-gradient rbt-switch-btn rbt-switch-y w-100 text-center"*/}
+                            {/*    >*/}
+                            {/*      <span data-text="Pay Now">Pay Now</span>*/}
+                            {/*    </div>*/}
+                            {/*  </div>*/}
+                            {/*</div>*/}
+
                             <div className="mt-5">
                               <div className="single-button">
                                 <div
-                                    onClick={handlePayment}
-                                    className="rbt-btn btn-gradient rbt-switch-btn rbt-switch-y w-100 text-center"
+                                    onClick={!loading ? handlePayment : null} // Click disabled when loading
+                                    className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${loading ? "disabled" : ""}`}
+                                    style={{pointerEvents: loading ? "none" : "auto", opacity: loading ? 0.7 : 1}}
                                 >
-                                  <span data-text="Pay Now">Pay Now</span>
+                                  {loading ? (
+                                      <span data-text="Proceeding..."><i className="fa fa-spinner fa-spin p-0"></i> Proceeding...</span>
+                                  ) : (
+                                      <span data-text="Pay Now">Pay Now</span>
+                                  )}
                                 </div>
                               </div>
                             </div>

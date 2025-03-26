@@ -191,14 +191,14 @@ const Cart = () => {
 
                                               data.sDiscountType === "amount" && data.discount !== 0 && (
                                                   <span className="font-13 text-success m-0">
-          - ₹ {data.discount} discount applied (upto {parseInt(data.user_pay)})
+          - ₹ {data.discount} discount applied
         </span>
                                               )
                                           }
                                           {
                                               data.sDiscountType === "percentage" && data.discount !== 0 && (
                                                   <span className="font-13 text-success m-0">
-          - {data.discount}% discount applied (upto {parseInt(data.user_pay)})
+          - {data.discount}% discount applied (upto ₹{parseInt(data.user_pay)})
         </span>
                                               )
                                           }
