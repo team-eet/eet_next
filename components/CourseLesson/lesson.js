@@ -89,7 +89,7 @@ const CourseLesson = () => {
         }
 
         if (localStorage.getItem('userData')) {
-            const udata = JSON.parse(localStorage.getItem('userData'))
+            const udata = DecryptData(localStorage.getItem('userData'))
             setRegid(udata)
         // console.log(cid)
         Axios.get(`${API_URL}/api/section/GetSectionLessionData/${acid}/${mid}`, {

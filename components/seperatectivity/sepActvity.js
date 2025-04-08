@@ -27,7 +27,7 @@ const SeperateActivity = () => {
         const aqid = parts[parts.length - 1];
 
         if (localStorage.getItem('userData')) {
-            const udata = JSON.parse(localStorage.getItem('userData'))
+            const udata = DecryptData(localStorage.getItem('userData'))
             // console.log(cid)
 
             Axios.get(`${API_URL}/api/activityQue/GetActivityQueListSeparateViewActivity/${aqid}/${udata['regid']}/${cid}`, {

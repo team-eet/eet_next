@@ -16,7 +16,7 @@ const Wishlist = () => {
     // return () => {
       //check user is login or not
       if (localStorage.getItem('userData')) {
-        const udata = JSON.parse(localStorage.getItem('userData'))
+        const udata = DecryptData(localStorage.getItem('userData'))
         Axios.delete(`${API_URL}/api/wishList/DeleteWishlist/${EncryptData(wishlistitem[index].cid)}/${EncryptData(wishlistitem[index].pkgId)}/${udata['regid']}`, {
           headers: {
             ApiKey: `${API_KEY}`
@@ -50,7 +50,7 @@ const Wishlist = () => {
   useEffect(() => {
 
     if (localStorage.getItem('userData')) {
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
 
       //get cart data from db
       Axios.get(`${API_URL}/api/wishList/GetWishlistItem/${udata['regid']}`, {

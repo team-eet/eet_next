@@ -369,10 +369,10 @@ const Certification = () => {
     // console.log(a)
 
     if(localStorage.getItem('userData')) {
-      setregId(JSON.parse(localStorage.getItem('userData')).regid)
+      setregId(DecryptData(localStorage.getItem('userData')).regid)
 
 
-      Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }
@@ -397,7 +397,7 @@ const Certification = () => {
           })
 
 
-      Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }
@@ -412,7 +412,7 @@ const Certification = () => {
             { ErrorDefaultAlert(err) }
           })
 
-      Axios.get(`${API_URL}/api/TutorCertification/GetTutorCertiData/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorCertification/GetTutorCertiData/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }
@@ -466,7 +466,7 @@ const Certification = () => {
             { ErrorDefaultAlert(err) }
           })
 
-      Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }
@@ -663,7 +663,7 @@ const Certification = () => {
                                 resetForm({})
                                 if(retData.success === '1') {
 
-                                  Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                  Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                                     headers: {
                                       ApiKey: `${API_KEY}`
                                     }

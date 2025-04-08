@@ -28,13 +28,13 @@ const  Nav = () => {
     const domain = window.location.hostname
 
     if (localStorage.getItem('userData')) {
-      const Token = JSON.parse(localStorage.getItem('userData')).accessToken
+      const Token = DecryptData(localStorage.getItem('userData')).accessToken
       // console.log('EncryptedToken', EncryptData(Token))
-      // console.log('AccessToken', JSON.parse(localStorage.getItem('userData')).accessToken)
+      // console.log('AccessToken', DecryptData(localStorage.getItem('userData')).accessToken)
       setToken(EncryptData(Token))
 
       setshowDashboard(true)
-      Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }

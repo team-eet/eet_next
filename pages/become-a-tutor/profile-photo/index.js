@@ -25,7 +25,7 @@ const TutorProfile = () => {
   // useEffect(() => {
   //   const fetchUserProfile = async () => {
   //     try {
-  //       const userData = JSON.parse(localStorage.getItem('userData'));
+  //       const userData = DecryptData(localStorage.getItem('userData'));
   //       const regid = userData.regid;
   //
   //       const response = await Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorProfile/${regid}`, {
@@ -44,9 +44,9 @@ const TutorProfile = () => {
   //     }
   //   };
   //   fetchUserProfile()
-  // //   const userData = JSON.parse(localStorage.getItem('userData'));
+  // //   const userData = DecryptData(localStorage.getItem('userData'));
   // //   const regid = userData.regid;
-  // //   // console.log(JSON.parse(localStorage.getItem('userData')).regid)
+  // //   // console.log(DecryptData(localStorage.getItem('userData')).regid)
   // //   Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorProfile/${regid}`, {
   // //     headers: {
   // //       ApiKey: `${REACT_APP.API_KEY}`

@@ -224,7 +224,7 @@ const Setting = () => {
           { ErrorDefaultAlert(err) }
         })
     if(localStorage.getItem('userData')){
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
       setnRegid(udata)
       setupdatedrole(udata['roleid'])
       Axios.get(`${API_URL}/api/registration/FillUserProfile/${udata['regid']}`, {
@@ -378,7 +378,7 @@ const Setting = () => {
                           { SuccessAlert(retData) }
 
                           //get localstorage and update name
-                          const gdata = JSON.parse(localStorage.getItem('userData'))
+                          const gdata = DecryptData(localStorage.getItem('userData'))
 
                           if (gdata.length !== 0) {
                             gdata.fname = values.sFName

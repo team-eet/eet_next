@@ -170,7 +170,7 @@ console.log("VideoData",checkMatchCourses)
 
   useEffect(() => {
     dispatch({ type: "COUNT_CART_TOTALS" });
-    localStorage.setItem("hiStudy", JSON.stringify(cart));
+    localStorage.setItem("eetData", JSON.stringify(cart));
   }, []);
 
   // =====> For video PopUp

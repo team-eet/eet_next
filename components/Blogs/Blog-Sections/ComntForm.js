@@ -90,10 +90,10 @@ const ComntForm = () => {
         const parts = url.split("/");
         const postId = parts[parts.length - 1];
         setblogId(postId)
-        // console.log(DecryptData(JSON.parse(localStorage.getItem('userData')).username))
-        setsFname(JSON.parse(localStorage.getItem('userData')).fname)
-        setsLname(JSON.parse(localStorage.getItem('userData')).lname)
-        setRegId(JSON.parse(localStorage.getItem('userData')).regid)
+        // console.log(DecryptData(DecryptData(localStorage.getItem('userData')).username))
+        setsFname(DecryptData(localStorage.getItem('userData')).fname)
+        setsLname(DecryptData(localStorage.getItem('userData')).lname)
+        setRegId(DecryptData(localStorage.getItem('userData')).regid)
         getAllBlog()
     }, []);
 

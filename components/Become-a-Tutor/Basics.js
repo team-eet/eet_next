@@ -350,7 +350,7 @@ const Basics = () => {
 
       if(localStorage.getItem('userData')) {
 
-          Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+          Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
               headers: {
                   ApiKey: `${API_KEY}`
               }
@@ -371,7 +371,7 @@ const Basics = () => {
                   { ErrorDefaultAlert(err) }
               })
 
-          Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+          Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
               headers: {
                   ApiKey: `${API_KEY}`
               }
@@ -389,22 +389,22 @@ const Basics = () => {
                   { ErrorDefaultAlert(err) }
               })
           // console.log(JSON.parse(localStorage.getItem('verify_mobile')))
-          // console.log((DecryptData(JSON.parse(localStorage.getItem('userData')).username).Username))
-          setsFname(JSON.parse(localStorage.getItem('userData')).fname)
-          setsLname(JSON.parse(localStorage.getItem('userData')).lname)
-          setregId(JSON.parse(localStorage.getItem('userData')).regid)
-          // setUsername(DecryptData(JSON.parse(localStorage.getItem('userData')).username))
-          setUsername((DecryptData(JSON.parse(localStorage.getItem('userData')).username).EM))
+          // console.log((DecryptData(DecryptData(localStorage.getItem('userData')).username).Username))
+          setsFname(DecryptData(localStorage.getItem('userData')).fname)
+          setsLname(DecryptData(localStorage.getItem('userData')).lname)
+          setregId(DecryptData(localStorage.getItem('userData')).regid)
+          // setUsername(DecryptData(DecryptData(localStorage.getItem('userData')).username))
+          setUsername((DecryptData(DecryptData(localStorage.getItem('userData')).username).EM))
 
-          console.log(DecryptData(JSON.parse(localStorage.getItem('userData')).username))
+          console.log(DecryptData(DecryptData(localStorage.getItem('userData')).username))
 
-          if((DecryptData(JSON.parse(localStorage.getItem('userData')).username).EM) === 'email'){
+          if((DecryptData(DecryptData(localStorage.getItem('userData')).username).EM) === 'email'){
               // EM
               if(localStorage.getItem('verify_email')) {
-                  // setsEmail(DecryptData(JSON.parse(localStorage.getItem('userData')).username).Email)
+                  // setsEmail(DecryptData(DecryptData(localStorage.getItem('userData')).username).Email)
                   setsEmail(JSON.stringify(localStorage.getItem('verify_email')))
               } else {
-                  setsEmail((DecryptData(JSON.parse(localStorage.getItem('userData')).username).Email))
+                  setsEmail((DecryptData(DecryptData(localStorage.getItem('userData')).username).Email))
               }
           } else {
               // if(localStorage.getItem('verify_email')) {
@@ -415,10 +415,10 @@ const Basics = () => {
               //     setsEmail('')
               // }
               setsEmail('')
-              setsMobile((DecryptData(JSON.parse(localStorage.getItem('userData')).username).Username))
+              setsMobile((DecryptData(DecryptData(localStorage.getItem('userData')).username).Username))
           }
 
-          Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+          Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${DecryptData(localStorage.getItem('userData')).regid}`, {
               headers: {
                   ApiKey: `${API_KEY}`
               }
@@ -455,7 +455,7 @@ const Basics = () => {
               return formattedDate;
           };
 
-          Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+          Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
               headers: {
                   ApiKey: `${API_KEY}`
               }

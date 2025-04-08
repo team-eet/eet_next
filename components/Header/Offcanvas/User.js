@@ -4,6 +4,7 @@ import UserData from "../../../data/user.json";
 import Link from "next/link";
 import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
+import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 import nouser from '../../../public/images/testimonial/default-avatar-profile-icon-of-social-media-user-vector.jpg'
 
 const User = ({fname, lname, profile}) => {
@@ -20,9 +21,9 @@ const handleLogout = () =>{
 
   useEffect(() => {
     if (localStorage.getItem('userData')){
-      const data = JSON.parse(localStorage.getItem('userData'))
+      const data = DecryptData(localStorage.getItem('userData'))
       setuserRole(data)
-      setuuid(JSON.parse(localStorage.getItem('userData')).uuid)
+      setuuid(DecryptData(localStorage.getItem('userData')).uuid)
     }
   }, []);
   return (

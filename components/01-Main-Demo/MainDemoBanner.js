@@ -7,6 +7,7 @@ import shape2 from "../../public/images/shape/shape-02.png";
 
 import HomeCourses from "./Home-Sections/HomeCourse";
 import {useEffect, useState} from "react";
+import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import { API_URL,  API_KEY} from "../../constants/constant";
@@ -24,7 +25,7 @@ const MainDemoBanner = () => {
       setisLoading(false)
     }, 3000)
     if (localStorage.getItem('userData')) {
-      Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }

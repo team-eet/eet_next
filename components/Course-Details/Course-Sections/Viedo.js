@@ -152,7 +152,7 @@ const Viedo = ({ checkMatchCourses }) => {
 
   const getCartItem = () => {
     if(localStorage.getItem('userData')){
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
       // Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
       //   headers: {
       //     ApiKey: `${API_KEY}`
@@ -230,28 +230,33 @@ const Viedo = ({ checkMatchCourses }) => {
   }
 
   const getPromocodeDetails = () => {
-    const udatas = JSON.parse(localStorage.getItem('userData'))
+    // const udatas = DecryptData(localStorage.getItem('userData'))
+    const encryptedData = localStorage.getItem('userData')
     const getamt = (checkMatchCourses.bIsAccosiateModule === 'yes') ? parseInt(checkMatchCourses.pkg_price) : parseInt(checkMatchCourses.dAmount)
-
-    Axios.get(`${API_URL}/api/promocode/Get_promocode_detail/${courseId}/${udatas['regid']}/${EncryptData(getamt)}`, {
-      headers: {
-        ApiKey: `${API_KEY}`
-      }
-    })
-        .then(res => {
-          if (res.data) {
-            if (res.data.length !== 0) {
-              const resData = JSON.parse(res.data)
-              setPromoCodeData(resData)
-              console.log("promoCode",resData)
-              console.log("isCartId",isCartId)
+    if (encryptedData) {
+      const udatas = DecryptData(encryptedData)
+      Axios.get(`${API_URL}/api/promocode/Get_promocode_detail/${courseId}/${udatas['regid']}/${EncryptData(getamt)}`, {
+        headers: {
+          ApiKey: `${API_KEY}`
+        }
+      })
+          .then(res => {
+            if (res.data) {
+              if (res.data.length !== 0) {
+                const resData = JSON.parse(res.data)
+                setPromoCodeData(resData)
+                console.log("promoCode",resData)
+                console.log("isCartId",isCartId)
+              }
             }
-          }
-        })
-        .catch(err => {
-          console.log('err1', err)
-          { ErrorDefaultAlert(err) }
-        })
+          })
+          .catch(err => {
+            console.log('err1', err)
+            { ErrorDefaultAlert(err) }
+          })
+    }
+
+
   }
 
   useEffect(() => {
@@ -262,7 +267,7 @@ const Viedo = ({ checkMatchCourses }) => {
 
     getFeatureCount();
     dispatch({ type: "COUNT_CART_TOTALS" });
-    localStorage.setItem("hiStudy", JSON.stringify(cart));
+    localStorage.setItem("eetData", JSON.stringify(cart));
     localStorage.setItem("cart", JSON.stringify(cart));
     getCartItem();
     // console.log(EncryptData('0'))
@@ -343,7 +348,7 @@ const Viedo = ({ checkMatchCourses }) => {
 
                 //check user is login or not
                 if(localStorage.getItem('userData')) {
-                  const udata = JSON.parse(localStorage.getItem('userData'))
+                  const udata = DecryptData(localStorage.getItem('userData'))
 
                   Axios.get(`${API_URL}/api/promocode/Get_promocode_detail/${courseId}/${udata['regid']}/${EncryptData(getamt)}`, {
                     headers: {

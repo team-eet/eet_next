@@ -143,7 +143,7 @@ const MainDemo = () => {
 
               //check user is login or not
               if(localStorage.getItem('userData')) {
-                const udata = JSON.parse(localStorage.getItem('userData'))
+                const udata = DecryptData(localStorage.getItem('userData'))
 
                 Axios.get(`${API_URL}/api/promocode/Get_promocode_detail/${EncryptData(id)}/${udata['regid']}/${EncryptData(getamt)}`, {
                   headers: {

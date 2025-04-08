@@ -308,9 +308,9 @@ const Education = () => {
 
     useEffect(() => {
         if(localStorage.getItem('userData')) {
-            const rid = DecryptData(JSON.parse(localStorage.getItem('userData')).regid)
+            const rid = DecryptData(DecryptData(localStorage.getItem('userData')).regid)
             setdrid(rid)
-            Axios.get(`${API_URL}/api/TutorEducation/GetTutorEducationVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+            Axios.get(`${API_URL}/api/TutorEducation/GetTutorEducationVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }
@@ -324,10 +324,10 @@ const Education = () => {
                 .catch(err => {
                     { ErrorDefaultAlert(err) }
                 })
-            setregId(JSON.parse(localStorage.getItem('userData')).regid)
+            setregId(DecryptData(localStorage.getItem('userData')).regid)
 
 
-        Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+        Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${DecryptData(localStorage.getItem('userData')).regid}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
@@ -342,7 +342,7 @@ const Education = () => {
                 { ErrorDefaultAlert(err) }
             })
 
-        Axios.get(`${API_URL}/api/TutorEducation/GetTutorEducation/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+        Axios.get(`${API_URL}/api/TutorEducation/GetTutorEducation/${DecryptData(localStorage.getItem('userData')).regid}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
@@ -447,7 +447,7 @@ const Education = () => {
                                             // console.log(retData)
                                             resetForm({})
                                             if(retData.success === '1') {
-                                                Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                                                     headers: {
                                                         ApiKey: `${REACT_APP.API_KEY}`
                                                     }

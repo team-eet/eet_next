@@ -58,9 +58,9 @@ const Description = () => {
   useEffect(() => {
 
     if (localStorage.getItem('userData')) {
-      setregId(JSON.parse(localStorage.getItem('userData')).regid)
+      setregId(DecryptData(localStorage.getItem('userData')).regid)
 
-    Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+    Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
@@ -83,7 +83,7 @@ const Description = () => {
           { ErrorDefaultAlert(err) }
         })
 
-    Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+    Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
@@ -239,7 +239,7 @@ const Description = () => {
                       const retData = JSON.parse(res.data)
                       resetForm({})
                       if(retData.success === '1') {
-                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                           headers: {
                             ApiKey: `${API_KEY}`
                           }

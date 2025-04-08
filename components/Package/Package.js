@@ -47,7 +47,7 @@ const Package = ({ title, tag, col, position }) => {
         const courseId = parts[parts.length - 1];
         setcid(courseId)
         if (localStorage.getItem('userData')) {
-            const udata = JSON.parse(localStorage.getItem('userData'))
+            const udata = DecryptData(localStorage.getItem('userData'))
             regid = udata['regid']
         } else {
             regid = '0'
@@ -112,7 +112,7 @@ const Package = ({ title, tag, col, position }) => {
                         console.log(getamt)
                         //check user is login or not
                         if (localStorage.getItem('userData')) {
-                            const udata = JSON.parse(localStorage.getItem('userData'))
+                            const udata = DecryptData(localStorage.getItem('userData'))
 
                             //Get Promocode detail if applied for course
 
@@ -306,7 +306,7 @@ const Package = ({ title, tag, col, position }) => {
         getCourse()
 
         if (localStorage.getItem('userData')) {
-            const udata = JSON.parse(localStorage.getItem('userData'))
+            const udata = DecryptData(localStorage.getItem('userData'))
 
             //get cart data from db
             Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {

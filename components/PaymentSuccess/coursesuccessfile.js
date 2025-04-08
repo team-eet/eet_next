@@ -26,8 +26,9 @@ const CourseSuccessFile = () => {
         const parts = url.split("/");
 
         const payId = (parts[parts.length - 1]);
+        // const payId = EncryptData('pay_QAyKg76vNPtgjYs');
         // const payId = (EncryptData('pay_QAyKg76vNPtgjY'));
-        const udata = JSON.parse(localStorage.getItem('userData'))
+        const udata = DecryptData(localStorage.getItem('userData'))
         if (payId !== '' && payId !== null && udata['regid'] !== ''){
 
             Axios.get(`${API_URL}/api/cart/GetCartCourseDone/${udata['regid']}/${payId}`, {
@@ -50,7 +51,7 @@ const CourseSuccessFile = () => {
                       setApiCall(1)
                   }else {
                       // Payment Failed And Refueled
-                      Axios.get(`${API_URL}/api/cart/checkPaymentSaus/${DecryptData(payId)}`, {
+                      Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${DecryptData(payId)}/${udata['regid']}`, {
                           headers: {
                               ApiKey: `${API_KEY}`
                           }
@@ -58,15 +59,9 @@ const CourseSuccessFile = () => {
                           .then(res => {
                               console.log("Payment Failled Data",res.data)
                               if(res.data.length !== 0){
-                                  // setItemCount(res.data.length)
-                                  // setcourseitem(res.data)
 
                                   setPaymentDetails({
-                                      // payment_method: res.data?.[0]?.payment_method || "",
                                       payment_status: res.data.status || "",
-                                      // payment_id: res.data?.[0]?.payment_id || "",
-                                      // sOID: res.data?.[0]?.sOID || "",
-                                      // txnAmount: res.data?.[0]?.txnAmount || "",
                                       error_description : res.data.error_description || ""
                                   });
                                   setApiCall(1)

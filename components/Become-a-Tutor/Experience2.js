@@ -415,10 +415,10 @@ const Experience = () => {
 
     useEffect(() => {
         if(localStorage.getItem('userData')) {
-            setregId(JSON.parse(localStorage.getItem('userData')).regid)
+            setregId(DecryptData(localStorage.getItem('userData')).regid)
 
 
-            Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+            Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }
@@ -442,7 +442,7 @@ const Experience = () => {
                 })
 
             bindCountry()
-            Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+            Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${DecryptData(localStorage.getItem('userData')).regid}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }
@@ -457,7 +457,7 @@ const Experience = () => {
                     { ErrorDefaultAlert(err) }
                 })
 
-            Axios.get(`${API_URL}/api/TutorTeachExperience/GetTutorExpData/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+            Axios.get(`${API_URL}/api/TutorTeachExperience/GetTutorExpData/${DecryptData(localStorage.getItem('userData')).regid}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }
@@ -502,7 +502,7 @@ const Experience = () => {
                     { ErrorDefaultAlert(err) }
                 })
 
-            Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+            Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }
@@ -744,7 +744,7 @@ const Experience = () => {
                                                     resetForm({})
 
                                                     if(retData.success === '1') {
-                                                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                                                             headers: {
                                                                 ApiKey: `${API_KEY}`
                                                             }

@@ -153,11 +153,11 @@ const Login = () => {
                       //check user login is true or false by company setting
                       if (retData.ulogin) {
                         if (retData.success === "1") {
-                          localStorage.setItem('userData', JSON.stringify(srt))
-                          localStorage.setItem('roles', retData.role)
+                          localStorage.setItem('userData', res.data)
+                          // localStorage.setItem('roles', retData.role)
                           const notificationdata = {
                             nSenderID : EncryptData(0),
-                            nReciverID : localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).regid : '',
+                            nReciverID : localStorage.getItem('userData') ? DecryptData(localStorage.getItem('userData')).regid : '',
                             sNMID : EncryptData(3)
                           }
                           // console.log(notificationdata)

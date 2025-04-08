@@ -68,7 +68,7 @@ const BecomeATeacher = () => {
         getTutorData()
         getCourseData()
         if(localStorage.getItem('userData')) {
-            Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+            Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${DecryptData(localStorage.getItem('userData')).regid}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }

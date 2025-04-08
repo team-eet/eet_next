@@ -268,10 +268,10 @@ const Experience = () => {
   const [verifySts, setverifySts] = useState()
   useEffect(() => {
     if(localStorage.getItem('userData')) {
-      setregId(JSON.parse(localStorage.getItem('userData')).regid)
+      setregId(DecryptData(localStorage.getItem('userData')).regid)
 
 
-    Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+    Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
@@ -287,7 +287,7 @@ const Experience = () => {
         })
 
     bindCountry()
-    Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+    Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${DecryptData(localStorage.getItem('userData')).regid}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
@@ -302,7 +302,7 @@ const Experience = () => {
           { ErrorDefaultAlert(err) }
         })
 
-    Axios.get(`${API_URL}/api/TutorTeachExperience/GetTutorTeachExper/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+    Axios.get(`${API_URL}/api/TutorTeachExperience/GetTutorTeachExper/${DecryptData(localStorage.getItem('userData')).regid}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
@@ -405,7 +405,7 @@ const Experience = () => {
                         // console.log(retData)
                         resetForm({})
                         if(retData.success === '1') {
-                          Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                          Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                             headers: {
                               ApiKey: `${API_KEY}`
                             }

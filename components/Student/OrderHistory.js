@@ -15,7 +15,7 @@ const OrderHistory = () => {
 
   useEffect(() => {
     if(localStorage.getItem('userData')){
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
 
       Axios.get(`${API_URL}/api/myOrder/GetOrderItem/${udata['regid']}`, {
         headers: {

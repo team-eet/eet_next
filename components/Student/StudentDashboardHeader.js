@@ -15,7 +15,7 @@ const StudentDashboardHeader = () => {
 
   const getPurchasedCourse = () => {
     if (localStorage.getItem('userData')) {
-      const udata = JSON.parse(localStorage.getItem('userData')).regid
+      const udata = DecryptData(localStorage.getItem('userData')).regid
       // console.log('api called')
       Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`, {
         headers: {
@@ -38,11 +38,11 @@ const StudentDashboardHeader = () => {
   }
   useEffect(() => {
     if (localStorage.getItem('userData')){
-      // if(JSON.parse(localStorage.getItem('userData')).profile === "") {
-        setprofilePhoto(JSON.parse(localStorage.getItem('userData')).profile)
-        setFname(JSON.parse(localStorage.getItem('userData')).fname)
-        setLname(JSON.parse(localStorage.getItem('userData')).lname)
-        setuuid(JSON.parse(localStorage.getItem('userData')).uuid)
+      // if(DecryptData(localStorage.getItem('userData')).profile === "") {
+        setprofilePhoto(DecryptData(localStorage.getItem('userData')).profile)
+        setFname(DecryptData(localStorage.getItem('userData')).fname)
+        setLname(DecryptData(localStorage.getItem('userData')).lname)
+        setuuid(DecryptData(localStorage.getItem('userData')).uuid)
     }
     getPurchasedCourse()
   }, [])

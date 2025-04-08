@@ -16,7 +16,7 @@ const Dashboard = () => {
     // console.log(DecryptData('mUnt9JQjA_W_MMMfEAje0Q=='))
     // bhavika@123
     if (localStorage.getItem('userData')) {
-      const udata = JSON.parse(localStorage.getItem('userData')).regid
+      const udata = DecryptData(localStorage.getItem('userData')).regid
       // console.log('api called')
       Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`, {
         headers: {

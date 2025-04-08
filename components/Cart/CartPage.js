@@ -57,7 +57,7 @@ const CartPage = () => {
 
         //api call backend
         if(localStorage.getItem('userData')){
-          const udata = JSON.parse(localStorage.getItem('userData'))
+          const udata = DecryptData(localStorage.getItem('userData'))
           Axios.post(`${API_URL}/api/cart/PaymentOrderVerify/${udata['regid']}/${EncryptData(orderDetails.orderId)}/${EncryptData(response)}`, '1', {
             headers: {
               ApiKey: `${API_KEY}`
@@ -147,7 +147,7 @@ const CartPage = () => {
   const handlePayment = () => {
     setLoading(true);
     if(localStorage.getItem('userData')) {
-    const regID = JSON.parse(localStorage.getItem('userData'))
+    const regID = DecryptData(localStorage.getItem('userData'))
       // alert(checkoutAmount * 100)
 
 
@@ -247,10 +247,10 @@ const CartPage = () => {
   let specialPrice = 0
   useEffect(() => {
     dispatch({ type: "COUNT_CART_TOTALS" });
-    localStorage.setItem("hiStudy", JSON.stringify(cart));
+    localStorage.setItem("eetData", JSON.stringify(cart));
 
     if (localStorage.getItem('userData')) {
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
 
       //get cart data from db
       Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {

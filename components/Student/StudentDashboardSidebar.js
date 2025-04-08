@@ -11,8 +11,8 @@ const StudentDashboardSidebar = () => {
 
     useEffect(() => {
         if(localStorage.getItem('userData')) {
-            setsFname(JSON.parse(localStorage.getItem('userData')).fname)
-            setsLname(JSON.parse(localStorage.getItem('userData')).lname)
+            setsFname(DecryptData(localStorage.getItem('userData')).fname)
+            setsLname(DecryptData(localStorage.getItem('userData')).lname)
         }
     }, []);
   return (

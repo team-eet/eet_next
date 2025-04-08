@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAppContext } from "@/context/Context";
 import Axios from 'axios'
 import {API_URL, API_KEY} from "../../../constants/constant";
-import { EncryptData } from "@/components/Services/encrypt-decrypt";
+import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 import { ErrorDefaultAlert, ErrorAlert } from "@/components/Services/SweetAlert";
 import Skeleton from "react-loading-skeleton";
 
@@ -28,7 +28,7 @@ const Cart = () => {
 
   const handleRemoveItem = (cartId, cid, pkgid) => {
     if(localStorage.getItem('userData')){
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
       Axios.delete(`${API_URL}/api/cart/DeleteCart/${EncryptData(cartId)}/${udata['regid']}`, {
         headers: {
           ApiKey: `${API_KEY}`
@@ -83,9 +83,9 @@ const Cart = () => {
       setisLoading(true)
     }, 5000)
     dispatch({ type: "COUNT_CART_TOTALS" });
-    localStorage.setItem("hiStudy", JSON.stringify(cart));
+    localStorage.setItem("eetData", JSON.stringify(cart));
     if(localStorage.getItem('userData')) {
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
 
       Axios.get(`${API_URL}/api/cart/GetCartItem/${udata['regid']}`, {
         headers: {

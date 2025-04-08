@@ -36,7 +36,7 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
         }).then((result) => {
             if (result.isConfirmed) {
                 if (localStorage.getItem('userData')) {
-                    const udata = JSON.parse(localStorage.getItem('userData'));
+                    const udata = DecryptData(localStorage.getItem('userData'));
 
                     // 🔹 API call to delete item
                     Axios.delete(`${API_URL}/api/cart/DeleteCart/${EncryptData(cartId)}/${udata['regid']}`, {
@@ -170,7 +170,7 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
                             //
                             // check user is login or not
                             if (localStorage.getItem('userData')) {
-                                const udata = JSON.parse(localStorage.getItem('userData'))
+                                const udata = DecryptData(localStorage.getItem('userData'))
                                 if (newwishlist.length !== 0) {
                                     //check course is already in cart ot not
                                     //const insdata = newwishlist.findIndex(obj => obj.cid === newarr.cid)
@@ -276,7 +276,7 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
           <td className="pro-price">
     <span className={'text-primary'} style={{fontSize: "large"}}>
        {parseInt(product.pay_price) - parseInt(product.user_pay)}
-        {product.discount !== 0 && <i className='fa fa-tag ml--5' title={product.promocode}></i>}
+        {product.discount !== "0" && <i className='fa fa-tag ml--5' title={product.promocode}></i>}
     </span>
 
               {product.discount !== 0 && (

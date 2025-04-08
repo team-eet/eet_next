@@ -181,11 +181,11 @@ const Cover = () => {
     const [isCoverAlert, setisCoverAlert] = useState(0)
     useEffect(() => {
         if (localStorage.getItem('userData')) {
-            setregId(JSON.parse(localStorage.getItem('userData')).regid)
+            setregId(DecryptData(localStorage.getItem('userData')).regid)
 
             console.log("verifysts",verifysts)
 
-        Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+        Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
@@ -217,7 +217,7 @@ const Cover = () => {
                 { ErrorDefaultAlert(err) }
             })
 
-        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
@@ -426,7 +426,7 @@ const Cover = () => {
                                                     resetForm({})
                                                     if (retData.success === '1') {
 
-                                                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                        Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                                                             headers: {
                                                                 ApiKey: `${API_KEY}`
                                                             }
@@ -474,7 +474,7 @@ const Cover = () => {
                                                                     ErrorDefaultAlert(err)
                                                                 }
                                                             })
-                                                        // Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+                                                        // Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
                                                         //     headers: {
                                                         //         ApiKey: `${REACT_APP.API_KEY}`
                                                         //     }

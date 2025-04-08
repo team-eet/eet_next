@@ -39,7 +39,7 @@ const Reciept = () => {
         setoid(DecryptData(currentOrderId))
 
         if(localStorage.getItem('userData')){
-            const udata = JSON.parse(localStorage.getItem('userData'))
+            const udata = DecryptData(localStorage.getItem('userData'))
 
             Axios.get(`${API_URL}/api/registration/GetUserProfile/${udata['regid']}`, {
                 headers: {

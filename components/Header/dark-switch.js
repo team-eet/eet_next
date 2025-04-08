@@ -10,7 +10,7 @@ const DarkSwitch = () => {
   const [isLightTheme, setLightTheme] = useState(true);
 
   useEffect(() => {
-    const themeType = localStorage.getItem("histudy-theme");
+    const themeType = localStorage.getItem("eet-theme");
     if (themeType === "dark") {
       setLightTheme(false);
       document.body.classList.add("active-dark-mode");
@@ -20,10 +20,10 @@ const DarkSwitch = () => {
   useEffect(() => {
     if (isLightTheme) {
       document.body.classList.remove("active-dark-mode");
-      localStorage.setItem("histudy-theme", "light");
+      localStorage.setItem("eet-theme", "light");
     } else {
       document.body.classList.add("active-dark-mode");
-      localStorage.setItem("histudy-theme", "dark");
+      localStorage.setItem("eet-theme", "dark");
     }
   }, [isLightTheme]);
 

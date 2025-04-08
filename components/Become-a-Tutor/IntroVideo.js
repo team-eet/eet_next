@@ -118,10 +118,10 @@ const IntroVideo = () => {
 
   useEffect(() => {
     if (localStorage.getItem('userData')) {
-      setregId(JSON.parse(localStorage.getItem('userData')).regid)
+      setregId(DecryptData(localStorage.getItem('userData')).regid)
 
 
-    Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+    Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }
@@ -145,7 +145,7 @@ const IntroVideo = () => {
           { ErrorDefaultAlert(err) }
         })
 
-    Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+    Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
       headers: {
         ApiKey: `${API_KEY}`
       }

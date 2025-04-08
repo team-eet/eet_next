@@ -7,6 +7,7 @@ import { useAppContext } from "@/context/Context";
 import localFont from "next/dist/compiled/@next/font/dist/local";
 import UserData from "@/data/user.json";
 import {useEffect, useState} from "react";
+import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 
 const HeaderRightTwo = ({ btnClass, btnText, userType }) => {
   const { mobile, setMobile, search, setSearch, cartToggle, setCart } =
@@ -22,9 +23,9 @@ const HeaderRightTwo = ({ btnClass, btnText, userType }) => {
     if(localStorage.getItem('userData')) {
       setShowLogin(false)
       // alert('hello')
-      const fname = JSON.parse(localStorage.getItem('userData')).fname
-      const lname = JSON.parse(localStorage.getItem('userData')).lname
-      const profile = JSON.parse(localStorage.getItem('userData')).profile
+      const fname = DecryptData(localStorage.getItem('userData')).fname
+      const lname = DecryptData(localStorage.getItem('userData')).lname
+      const profile = DecryptData(localStorage.getItem('userData')).profile
       const cartcount =  JSON.parse(localStorage.getItem('cart'))
       // console.log('cart', cartcount.length)
       // setcartcnt(cartcount.length)

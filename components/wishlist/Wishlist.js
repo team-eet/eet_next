@@ -27,7 +27,7 @@ const Wishlist = () => {
 
   useEffect(() => {
     dispatch({ type: "COUNT_CART_TOTALS" });
-    localStorage.setItem("hiStudy", JSON.stringify(cart));
+    localStorage.setItem("eetData", JSON.stringify(cart));
   }, [cart]);
 
   // const getProductForUpdateQty = cart.find(

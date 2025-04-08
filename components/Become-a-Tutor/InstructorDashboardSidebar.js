@@ -30,9 +30,9 @@ const InstructorDashboardSidebar = ({ url }) => {
     setpostID(currentPostId);
 
     if(localStorage.getItem('userData')) {
-      const fname = JSON.parse(localStorage.getItem('userData')).fname
+      const fname = DecryptData(localStorage.getItem('userData')).fname
       setfname(fname)
-      Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorBasics/GetTutorProfile/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }
@@ -45,7 +45,7 @@ const InstructorDashboardSidebar = ({ url }) => {
             { ErrorDefaultAlert(err) }
           })
 
-      Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${JSON.parse(localStorage.getItem('userData')).regid}`, {
+      Axios.get(`${API_URL}/api/TutorVerify/GetTutorVerify/${DecryptData(localStorage.getItem('userData')).regid}`, {
         headers: {
           ApiKey: `${API_KEY}`
         }

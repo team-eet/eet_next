@@ -19,7 +19,7 @@ const Profile = () => {
   const [uuid, setuuid] = useState('')
   useEffect(() => {
     if(localStorage.getItem('userData')){
-      const udata = JSON.parse(localStorage.getItem('userData'))
+      const udata = DecryptData(localStorage.getItem('userData'))
       Axios.get(`${API_URL}/api/registration/FillUserProfile/${udata['regid']}`, {
         headers: {
           ApiKey: `${API_KEY}`
@@ -35,7 +35,7 @@ const Profile = () => {
             { ErrorDefaultAlert(err) }
           })
 
-      setuuid(JSON.parse(localStorage.getItem('userData')).uuid)
+      setuuid(DecryptData(localStorage.getItem('userData')).uuid)
     }
   }, []);
 
