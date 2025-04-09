@@ -16,6 +16,7 @@ import CounterData from "@/data/elements/counter.json";
 import {API_URL, API_KEY} from "../../constants/constant";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import withReactContent from "sweetalert2-react-content";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import Swal from "sweetalert2";
 
 

@@ -11,6 +11,7 @@ import Separator from "@/components/Common/Separator";
 import FooterOne from "@/components/Footer/Footer-One";
 import CartBreadCrumb from "@/components/Common/Cart-BreadCrumb";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 
 const CartPageLayout = () => {
   return (
@@ -36,4 +37,4 @@ const CartPageLayout = () => {
   );
 };
 
-export default CartPageLayout;
+export default withAuth(CartPageLayout);

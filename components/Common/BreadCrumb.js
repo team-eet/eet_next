@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {useEffect, useState} from "react";
+import { EncryptData, DecryptData } from "@/components/Services/encrypt-decrypt";
 import Axios from "axios";
 import {API_URL, API_KEY} from "../../constants/constant";
 import {useRouter} from "next/router";

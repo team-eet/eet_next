@@ -11,6 +11,7 @@ import Axios from 'axios'
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import { useRouter } from "next/router";
 import img from "@/public/images/others/thumbnail-placeholder.svg";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 

@@ -14,6 +14,7 @@ import CartPage from "@/components/Cart/CartPage";
 import Separator from "@/components/Common/Separator";
 import FooterOne from "@/components/Footer/Footer-One";
 import Coursesuccessfile from "@/components/PaymentSuccess/coursesuccessfile";
+import WithAuth from "@/components/Utils/withAuth";
 
 const SuccessPage = () => {
 
@@ -40,4 +41,4 @@ const SuccessPage = () => {
     );
 };
 
-export default SuccessPage
+export default WithAuth(SuccessPage)

@@ -10,6 +10,7 @@ import * as Yup from "yup";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import Skeleton from "react-loading-skeleton";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import 'react-loading-skeleton/dist/skeleton.css'
 
 const MySwal = withReactContent(Swal)

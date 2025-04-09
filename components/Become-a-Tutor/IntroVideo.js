@@ -12,6 +12,7 @@ import {API_URL, API_KEY} from "../../constants/constant";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 import withReactContent from "sweetalert2-react-content";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import Swal from "sweetalert2";
 const MySwal = withReactContent(Swal)
 

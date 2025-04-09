@@ -50,6 +50,8 @@ const  Nav = () => {
           .catch(err => {
             { ErrorDefaultAlert(err) }
           })
+    }else{
+      setApiCall(1)
     }
 
 
@@ -58,132 +60,122 @@ const  Nav = () => {
   return (
     <nav className="mainmenu-nav">
       <ul className="mainmenu">
-
-        {/*{*/}
-        {/*  isApiCall === 1 ? <>*/}
-        {/*    <li>*/}
-        {/*      <a href="javascript:void(0)">*/}
-        {/*        <Skeleton width={80} height={20}/>*/}
-        {/*      </a>*/}
-        {/*    </li>*/}
-        {/*    <li>*/}
-        {/*      <a href="javascript:void(0)">*/}
-        {/*        <Skeleton width={90} height={20}/>*/}
-        {/*      </a>*/}
-        {/*    </li>*/}
-        {/*    <li>*/}
-        {/*      <a href="javascript:void(0)">*/}
-        {/*        <Skeleton width={90} height={20}/>*/}
-        {/*      </a>*/}
-        {/*    </li>*/}
-        {/*    <li>*/}
-        {/*      <a href="javascript:void(0)">*/}
-        {/*        <Skeleton width={70} height={20}/>*/}
-        {/*      </a>*/}
-        {/*    </li>*/}
-        {/*    <li>*/}
-        {/*      <a href="javascript:void(0)">*/}
-        {/*        <Skeleton width={80} height={20}/>*/}
-        {/*      </a>*/}
-        {/*    </li>*/}
-        {/*    <li>*/}
-        {/*      <a href="javascript:void(0)">*/}
-        {/*        <Skeleton width={100} height={20}/>*/}
-        {/*      </a>*/}
-        {/*    </li>*/}
-        {/*  </> : <>*/}
-
-        {/*    */}
-        {/*  </>*/}
-        {/*}*/}
-          <li className="">
-              <Link
-                  className={`${activeMenuItem === "home" ? "open" : ""}`}
-                  // onClick={() => toggleMenuItem("home")}
-                  href="/"
-              >
-                  Home
-
-              </Link>
-          </li>
-          <li className="">
-              <Link
-                  className={`${activeMenuItem === "courses" ? "open" : ""}`}
-                  // onClick={() => toggleMenuItem("home")}
-                  href="/all-course"
-              >
-                  Courses
-
-              </Link>
-          </li>
-
-          <li className="">
-              <Link
-                  className={`${activeMenuItem === "batches" ? "open" : ""}`}
-                  href="/all-batch"
-              >
-                  Batches
-              </Link>
-
-          </li>
-          <li className="">
-              {/*{console.log(verifySts)}*/}
-              {verifySts === 2 ? <>
-                  {/*<a*/}
-                  {/*    className={`${activeMenuItem === "tutor" ? "open" : ""}`}*/}
-                  {/*    href={`https://eet-frontend.azurewebsites.net/access/${token}`}*/}
-                  {/*    target={'_blank'}*/}
-                  {/*>*/}
-                  {/*  Tutor*/}
-                  {/*</a>*/}
-              </> : <>
+        {
+          isApiCall !== 1 ? <>
+            <li>
+              <a href="javascript:void(0)">
+                <Skeleton width={80} height={20}/>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)">
+                <Skeleton width={90} height={20}/>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)">
+                <Skeleton width={90} height={20}/>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)">
+                <Skeleton width={70} height={20}/>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)">
+                <Skeleton width={80} height={20}/>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:void(0)">
+                <Skeleton width={100} height={20}/>
+              </a>
+            </li>
+          </> : <>
+              <li className="">
                   <Link
-                      className={`${activeMenuItem === "tutor" ? "open" : ""}`}
-                      href="/become-a-teacher"
+                      className={`${activeMenuItem === "home" ? "open" : ""}`}
+                      // onClick={() => toggleMenuItem("home")}
+                      href="/"
                   >
-                      Become a Tutor
+                      Home
+
                   </Link>
-              </>}
+              </li>
+              <li className="">
+                  <Link
+                      className={`${activeMenuItem === "courses" ? "open" : ""}`}
+                      // onClick={() => toggleMenuItem("home")}
+                      href="/all-course"
+                  >
+                      Courses
 
-          </li>
-          <li className="">
-              <Link
-                  href="/blog-list"
-                  className={`${activeMenuItem === "blog" ? "open" : ""}`}
-              >
-                  Blogs
-              </Link>
-          </li>
-          <li className="">
-              <Link
-                  href="/pages/about-us-02"
-                  className={`${activeMenuItem === "about" ? "open" : ""}`}
-              >
-                  About
-              </Link>
-          </li>
-          {showDashboard ? <li className="">
-              <Link
-                  href="/student/student-dashboard"
-                  className={`${activeMenuItem === "about" ? "open" : ""}`}
-              >
-                  My Learning
-              </Link>
-          </li> : ''}
+                  </Link>
+              </li>
 
+              <li className="">
+                  <Link
+                      className={`${activeMenuItem === "batches" ? "open" : ""}`}
+                      href="/all-batch"
+                  >
+                      Batches
+                  </Link>
 
-          {
-              verifySts === 2 && (
-                  <li>
-                      <a
+              </li>
+              <li className="">
+                  {/*{console.log(verifySts)}*/}
+                  {verifySts !== 2 && (
+                      <Link
                           className={`${activeMenuItem === "tutor" ? "open" : ""}`}
-                          href={`https://eet-frontend.azurewebsites.net/access/${token}`}
-                          target={'_blank'}
+                          href="/become-a-teacher"
                       >
-                          Tutor dashboard
-                      </a>
-                  </li>
-              )}
+                          Become a Tutor
+                      </Link>
+                  )}
+
+
+              </li>
+              <li className="">
+                  <Link
+                      href="/blog-list"
+                      className={`${activeMenuItem === "blog" ? "open" : ""}`}
+                  >
+                      Blogs
+                  </Link>
+              </li>
+              <li className="">
+                  <Link
+                      href="/pages/about-us-02"
+                      className={`${activeMenuItem === "about" ? "open" : ""}`}
+                  >
+                      About
+                  </Link>
+              </li>
+              {showDashboard ? <li className="">
+                  <Link
+                      href="/student/student-dashboard"
+                      className={`${activeMenuItem === "about" ? "open" : ""}`}
+                  >
+                      My Learning
+                  </Link>
+              </li> : ''}
+
+
+              {
+                  verifySts === 2 && (
+                      <li>
+                          <a
+                              className={`${activeMenuItem === "tutor" ? "open" : ""}`}
+                              href={`https://eet-frontend.azurewebsites.net/access/${token}`}
+                              target={'_blank'}
+                          >
+                              Tutor dashboard
+                          </a>
+                      </li>
+                  )}
+          </>}
+
 
       </ul>
     </nav>

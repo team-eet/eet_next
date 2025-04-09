@@ -1,5 +1,10 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import {toast} from "react-toastify";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+const MySwal = withReactContent(Swal)
+
 
 const withAuth = (WrappedComponent) => {
     const AuthenticatedComponent = (props) => {
@@ -11,7 +16,25 @@ const withAuth = (WrappedComponent) => {
             const userData = typeof window !== 'undefined' ? localStorage.getItem('userData') : null;
 
             if (!userData) {
-                router.replace('/login'); // Redirect if not logged in
+                Swal.fire({
+                    title: 'Login',
+                    text: "Please login first",
+                    icon: 'info',
+                    showCancelButton: false,  // Hide the cancel button
+                    confirmButtonText: 'OK',
+                    closeOnConfirm: false, // Make sure the modal doesn't close immediately
+                    customClass: {
+                        confirmButton: 'btn btn-success', // Custom class for the OK button
+                    },
+                    buttonsStyling: false,  // Disable default SweetAlert2 button styling
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If OK is clicked, redirect to the login page
+                        router.replace('/login');
+                    }
+                });
+
+                // router.replace('/login');
             } else {
                 setIsAuthenticated(true);
             }

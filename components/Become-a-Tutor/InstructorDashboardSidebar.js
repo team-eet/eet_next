@@ -6,6 +6,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import {API_URL, API_KEY} from "../../constants/constant";
 
 const InstructorDashboardSidebar = ({ url }) => {

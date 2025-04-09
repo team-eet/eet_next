@@ -14,6 +14,7 @@ import FooterOne from "@/components/Footer/Footer-One";
 import BackToTop from "../backToTop";
 import Axios from "axios";
 import { ErrorDefaultAlert } from "@/components/Services/SweetAlert";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import {API_URL, API_KEY} from "../../constants/constant";
 
 const TeacherPage = () => {

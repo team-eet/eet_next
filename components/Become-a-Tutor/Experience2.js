@@ -6,12 +6,12 @@ import { useRouter } from "next/router";
 import { Formik, ErrorMessage, Form } from 'formik'
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import img from "@/public/images/others/thumbnail-placeholder.svg";
-import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import {Alert} from "reactstrap";
 import * as Yup from "yup";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 import withReactContent from "sweetalert2-react-content";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import Swal from "sweetalert2";
 const MySwal = withReactContent(Swal)
 
