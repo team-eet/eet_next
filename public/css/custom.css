@@ -3538,3 +3538,18 @@ div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{
     background: rgba(10, 83, 190, 0.4);
     backdrop-filter: blur(8px);
 }
+
+#invoice-content {
+    width: 794px;
+    min-height: 1123px;
+    padding: 20px;
+    margin: auto;
+    background: white;
+    color: black;
+    box-sizing: border-box;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    z-index: -1;
+    height: auto;
+}

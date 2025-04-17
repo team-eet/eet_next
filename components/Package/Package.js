@@ -124,18 +124,18 @@ const Package = ({ title, tag, col, position }) => {
 
                             //Get Promocode detail if applied for course
 
-                            Axios.get(`${REACT_APP.API_URL}/api/promocode/Get_promocode_detail_package/${cid}/${udata['regid']}/${EncryptData(getamt)}/${EncryptData(pkg)}`, {
+                            Axios.get(`${API_URL}/api/promocode/Get_promocode_detail_package/${cid}/${udata['regid']}/${EncryptData(getamt)}/${EncryptData(pkg)}`, {
                                 headers: {
-                                    ApiKey: `${REACT_APP.API_KEY}`
+                                    ApiKey: `${API_KEY}`
                                 }
                             })
                                 .then(res => {
                                     if (res.data) {
+                                        // alert("Hello World")
+                                        console.log("res.data",res.data)
                                         if (res.data.length !== 0) {
                                             console.log(res.data)
                                             const resData = JSON.parse(res.data)
-
-
 
                                             const insert_arr = {
                                                 nRegId: udata['regid'],
@@ -156,14 +156,16 @@ const Package = ({ title, tag, col, position }) => {
                                                 promocode: resData.promocode,
                                                 Discount: resData.discAmt
                                             }
+                                            console.log("insert_arr",insert_arr)
                                             if (insert_arr) {
                                                 console.log(insert_arr)
-                                                Axios.post(`${REACT_APP.API_URL}/api/cart/InsertCart`, insert_arr, {
+                                                Axios.post(`${API_URL}/api/cart/InsertCart`, insert_arr, {
                                                     headers: {
-                                                        ApiKey: `${REACT_APP.API_KEY}`
+                                                        ApiKey: `${API_KEY}`
                                                     }
                                                 }).then(res => {
                                                     const retData = JSON.parse(res.data)
+                                                    console.log("retData",retData)
                                                     if (retData.success === "1") {
                                                         //console.log('done')
 
@@ -209,6 +211,7 @@ const Package = ({ title, tag, col, position }) => {
                                 }
                             })
                                 .then(res => {
+                                    console.log("Get_promocode_detail_logout Enter")
                                     if (res.data) {
                                         if (res.data.length !== 0) {
                                             //console.log(res.data)
@@ -233,6 +236,7 @@ const Package = ({ title, tag, col, position }) => {
                                                 promocode: resData.promocode,
                                                 Discount: resData.discAmt
                                             }
+                                            console.log("cart_arr",cart_arr)
 
                                             if (!localStorage.getItem('cart')) {
                                                 const str_arr = JSON.stringify([cart_arr])
