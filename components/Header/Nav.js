@@ -44,6 +44,8 @@ const  Nav = () => {
             if (res.data.length !== 0) {
               setApiCall(1)
               setverifySts(res.data[0]['bVerifyStatus'])
+            }else {
+              setApiCall(1)
             }
 
           })
