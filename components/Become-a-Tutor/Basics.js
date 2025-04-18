@@ -9,7 +9,7 @@ import Axios from 'axios'
 import {ErrorDefaultAlert, InfoDefaultAlert} from "@/components/Services/SweetAlert";
 import { useRouter } from "next/router";
 import {Button, CardText, Alert} from 'reactstrap'
-import {DecryptData} from "@/components/Services/encrypt-decrypt";
+import {EncryptData,DecryptData} from "@/components/Services/encrypt-decrypt";
 import {RecaptchaVerifier, sendSignInLinkToEmail, signInWithPhoneNumber} from "firebase/auth";
 import {auth} from "@/context/firebase";
 import {toast} from "react-toastify";

@@ -70,15 +70,14 @@ const TeacherPage = () => {
             {/*</>}*/}
 
 
-          {verifysts === 1 ? <>
-          </> : <>
+          {verifysts === 1 || verifysts === 3? <>
               <div className="rbt-become-area bg-color-white rbt-section-gap">
                   <BecomeATeacher/>
               </div>
-          </>}
+          </> : null}
 
             <BackToTop/>
-            <Separator />
+            <Separator/>
             {verifysts === 1 ? <>
                 <FooterOne />
             </> : <>

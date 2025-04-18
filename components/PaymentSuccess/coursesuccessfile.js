@@ -28,6 +28,7 @@ const CourseSuccessFile = () => {
     const [getUserData, setUserData] = useState([])
     const [getServerError, setServerError] = useState(1)
     const [getPurchaseAmount, setPurchaseAmount] = useState(0)
+    const [loading, setLoading] = useState(false);
     let setCartAmount = 0;
     useEffect(() => {
 
@@ -103,6 +104,7 @@ const CourseSuccessFile = () => {
     },[])
 
     const downloadInvoice = () => {
+        setLoading(true);
         const invoiceContent = document.getElementById("invoice-content");
 
         html2canvas(invoiceContent, {
@@ -132,6 +134,7 @@ const CourseSuccessFile = () => {
             pdf.addImage(imgData, "PNG", 10, 10, pdfWidth, pdfHeight);
 
             pdf.save(`invoice_${paymentDetails.payment_id}.pdf`);
+            setLoading(false);
         });
     };
 
@@ -260,7 +263,7 @@ const CourseSuccessFile = () => {
                                                         Payment Method <span> {paymentDetails.payment_method}</span>
                                                     </p>
                                                     <p>
-                                                        Amount <span> {paymentDetails.txnAmount}</span>
+                                                        Amount <span> ₹{paymentDetails.txnAmount}</span>
                                                     </p>
                                                     {
                                                         paymentDetails.payment_status === 'captured' || paymentDetails.payment_status === 'created' || paymentDetails.payment_status === 'authorized' ?
@@ -274,13 +277,28 @@ const CourseSuccessFile = () => {
                                                                     {/*        className="feather-download"></i></span>*/}
                                                                     {/*    </button>*/}
                                                                     {/*</Link>*/}
-                                                                    <button onClick={downloadInvoice}
-                                                                            className="rbt-btn btn-gradient icon-hover w-100 text-center">
-                                                                    <span
-                                                                        className="btn-text">Download Invoice</span><span
-                                                                        className="btn-icon"><i
-                                                                        className="feather-download"></i></span>
-                                                                    </button>
+                                                                    {/*<button onClick={downloadInvoice}*/}
+                                                                    {/*        className="rbt-btn btn-gradient icon-hover w-100 text-center">*/}
+                                                                    {/*<span*/}
+                                                                    {/*    className="btn-text">Download Invoice</span><span*/}
+                                                                    {/*    className="btn-icon"><i*/}
+                                                                    {/*    className="feather-download"></i></span>*/}
+                                                                    {/*</button>*/}
+                                                                    <div
+                                                                        onClick={!loading ? downloadInvoice : null} // Click disabled when loading
+                                                                        className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${loading ? "disabled" : ""}`}
+                                                                        style={{
+                                                                            pointerEvents: loading ? "none" : "auto",
+                                                                            opacity: loading ? 0.7 : 1
+                                                                        }}
+                                                                    >
+                                                                        {loading ? (
+                                                                            <span data-text="Downloding..."><i
+                                                                                className="fa fa-spinner fa-spin p-0"></i> Downloding...</span>
+                                                                        ) : (
+                                                                            <span data-text="Download Invoice">Download Invoice</span>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             </div> : null
                                                     }
@@ -387,13 +405,6 @@ const CourseSuccessFile = () => {
                                                                 <div className="single-button">
                                                                     <button
                                                                         className="rbt-btn btn-gradient icon-hover w-100 text-center"
-                                                                        disabled>
-                                                                        <Skeleton width="100%" height="20px"/>
-                                                                    </button>
-                                                                </div>
-                                                                <div className="single-button mt--10">
-                                                                    <button
-                                                                        className="rbt-btn hover-icon-reverse btn-border-gradient w-100 text-center outlineBtnRadius"
                                                                         disabled>
                                                                         <Skeleton width="100%" height="20px"/>
                                                                     </button>
@@ -566,15 +577,15 @@ const CourseSuccessFile = () => {
                                                     )}
                                                     <tr>
                                                         <td colSpan={2} className={'text-end font-weight-500'}>Base Amount</td>
-                                                        <td>{(setCartAmount / (1+(18/100))).toFixed(2)}</td>
+                                                        <td>₹{(setCartAmount / (1+(18/100))).toFixed(2)}</td>
                                                     </tr>
                                                     <tr>
                                                         <td colSpan={2} className={'text-end font-weight-500'}>GST Amount (18%)</td>
-                                                        <td>{(setCartAmount - (setCartAmount / (1+(18/100))).toFixed(2)).toFixed(2)}</td>
+                                                        <td>₹{(setCartAmount - (setCartAmount / (1+(18/100))).toFixed(2)).toFixed(2)}</td>
                                                     </tr>
                                                     <tr>
                                                         <td colSpan={2} className={'text-end font-weight-500'}>Paid Amount</td>
-                                                        <td>{setCartAmount}</td>
+                                                        <td>₹{paymentDetails.txnAmount}</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>

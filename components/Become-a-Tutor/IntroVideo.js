@@ -36,13 +36,14 @@ const UserValidationSchema = Yup.object().shape({
     sIntroVideoUrl: Yup.string()
         .url('Must be a valid URL')
         .test(
-            'sIntroVideoUrlOrPath',
-            'You must provide either a video URL or a video file',
+            'is-valid-embed-url',
+            'Must be a valid YouTube embed URL like https://www.youtube.com/embed/VIDEO_ID',
             function (value) {
-                // Check if at least one is provided
-                return !!value || !!this.parent.sIntroVideoPath;
+                if (!value) return !!this.parent.sIntroVideoPath; // If not provided, file path must be there
+                const embedRegex = /^https:\/\/www\.youtube\.com\/embed\/[a-zA-Z0-9_-]{11}(\?.*)?$/;
+                return embedRegex.test(value);
             }
-        ),
+        )
 });
 
 const IntroVideo = () => {
@@ -354,7 +355,7 @@ const IntroVideo = () => {
                                                               {/*              className='field-error text-danger'/>*/}
                                                               {/*<span className="focus-border"></span>*/}
                                                           </div>
-                                                          <ErrorMessage name='sIntroVideoUrl' component='div'
+                                                          <ErrorMessage name='sIntroVideoPath' component='div'
                                                                         className='field-error text-danger'/>
                                                           <span className="focus-border"></span>
                                                       </> : null

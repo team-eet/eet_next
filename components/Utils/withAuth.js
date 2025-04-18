@@ -22,7 +22,8 @@ const withAuth = (WrappedComponent) => {
                     icon: 'info',
                     showCancelButton: false,  // Hide the cancel button
                     confirmButtonText: 'OK',
-                    closeOnConfirm: false, // Make sure the modal doesn't close immediately
+                    allowOutsideClick: false,  // Prevent clicking outside to close
+                    allowEscapeKey: false,
                     customClass: {
                         confirmButton: 'btn btn-success', // Custom class for the OK button
                     },
@@ -42,7 +43,12 @@ const withAuth = (WrappedComponent) => {
         }, []);
 
         if (loading) {
-            return <p>Loading...</p>;
+            return <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-light">
+                <div className="spinner-border text-primary" role="status" style={{width: "3rem", height: "3rem"}}>
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+                <p className="mt-3 fs-5 fw-semibold text-dark">Authenticate Checking...</p>
+            </div>;
         }
 
         if (!isAuthenticated) {
