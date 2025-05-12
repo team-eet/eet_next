@@ -45,7 +45,6 @@ const Cart = () => {
               })
                   .then(res => {
                     if (res.data) {
-                      // console.log(res.data)
                       if (res.data.length !== 0) {
                         const newcartlist = res.data.filter((v, i, a) => a.findIndex(t => ((t.cid === v.cid) && (t.pkgId === v.pkgId))) === i)
                         setcourseitem(newcartlist)
@@ -94,6 +93,7 @@ const Cart = () => {
       })
           .then(res => {
             if (res.data) {
+              console.log("res.data",res.data)
               if (res.data.length !== 0) {
                 const newcartlist = res.data.filter((v, i, a) => a.findIndex(t => ((t.cid === v.cid) && (t.pkgId === v.pkgId))) === i)
                 // console.log(newcartlist)
@@ -158,7 +158,14 @@ const Cart = () => {
                           //     ? parseInt(data.pay_price) - parseInt(data.discount)
                           //     : parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100);
                               // console.log(userPay, pay_amnt)
-                              const pay_amnt = parseInt(data.pay_price) - parseInt(data.user_pay)
+                          let pay_amnt;
+
+                          if (data.pkgId !== 0) {
+                            pay_amnt = parseInt(data.pkgprice) - parseInt(data.user_pay);
+                          } else {
+                            pay_amnt = parseInt(data.pay_price) - parseInt(data.user_pay);
+                          }
+
                               // console.log(pay_amnt)
                               checkoutAmount += pay_amnt
                               return (
@@ -186,10 +193,15 @@ const Cart = () => {
                                         </h6>
 
                                         <span className="quantity">
-                                          <span className={'me-2'}>₹{data.pay_price}</span>
+                                          {
+                                            data.pkgId !== 0 ?
+                                                <span className={'me-2'}>₹{data.pkgprice}</span> :
+                                                <span className={'me-2'}>₹{data.pay_price}</span>
+                                          }
+
                                           {
 
-                                              data.sDiscountType === "amount" && data.discount !== 0 && (
+                                          data.sDiscountType === "amount" && data.discount !== 0 && (
                                                   <span className="font-13 text-success m-0">
           - ₹ {data.discount} discount applied
         </span>

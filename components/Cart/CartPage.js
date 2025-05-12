@@ -66,7 +66,7 @@ const CartPage = () => {
                 if (res.data) {
                   console.log(res.data)
                   const retData = JSON.parse(res.data)
-                  if(retData.success === "1"){ 
+                  if(retData.success === "1"){
                     // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
                     // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
                     // router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
@@ -79,6 +79,7 @@ const CartPage = () => {
                       if (res.data) {
                         setLoading(false);
                         const retData = JSON.parse(res.data)
+                        alert(retData.payid)
                         if(retData.success === "1"){
                           // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
                           // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
@@ -413,13 +414,24 @@ const CartPage = () => {
                                   ? parseInt(item.pay_price) - parseInt(item.discount)
                                   : parseInt(item.pay_price) - (parseInt(item.pay_price) * parseInt(item.discount) / 100);
                               // console.log(userPay, pay_amnt)
-                              const pay_amnt = parseInt(item.pay_price) - parseInt(item.user_pay)
+                              let pay_amnt;
+                              if (item.pkgId !== 0) {
+                                pay_amnt = parseInt(item.pkgprice) - parseInt(item.user_pay);
+                              } else {
+                                pay_amnt = parseInt(item.pay_price) - parseInt(item.user_pay);
+                              }
                               console.log("User Pay And Pay Amount ", userPay, pay_amnt)
                               // console.log(pay_amnt)
                               checkoutAmount += pay_amnt
                               console.log("checkoutAmount", checkoutAmount)
                               originalPrice += parseInt(item.og_price)
-                              discountPrice += parseInt(item.pay_price)
+
+                              if (item.pkgId !== 0){
+                                discountPrice += parseInt(item.pkgprice)
+                              }else {
+                                discountPrice += parseInt(item.pay_price)
+                              }
+
                               // specialPrice += (parseInt(item.pay_price) * parseInt(item.discount) / 100)
                               specialPrice += item.sDiscountType === "amount"
                                   ? parseInt(item.discount)  // Amount type me direct discount add hoga

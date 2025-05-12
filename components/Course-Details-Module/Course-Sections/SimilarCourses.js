@@ -20,7 +20,7 @@ const SimilarCourses = ({ checkMatchCourses }) => {
     const url = window.location.href
     const parts = url.split("/");
     const courseId = parts[parts.length - 1];
-    Axios.get(`${API_URL}/api/coursemain/GetCoursesView/${courseId}`, {
+    Axios.get(`${API_URL}/api/coursemain/GetCoursesView/${courseId}/0`, {
       headers: {
         ApiKey: `${API_KEY}`
       }

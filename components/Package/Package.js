@@ -18,6 +18,9 @@ import emptycart from "@/public/images/emptyCart.png";
 import { Card, CardText, CardBody, CardHeader, CardTitle, Row, Col, Button, ListGroup, ListGroupItem, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledTooltip } from 'reactstrap'
 import Image from "next/image";
 import Skeleton from "react-loading-skeleton";
+import withReactContent from "sweetalert2-react-content";
+import Swal from "sweetalert2";
+const MySwal = withReactContent(Swal);
 
 
 const Package = ({ title, tag, col, position }) => {
@@ -44,6 +47,9 @@ const Package = ({ title, tag, col, position }) => {
     const [other_pkg_cnt, setother_pkg_cnt] = useState('')
     const [cartItem, setcartItem] = useState([])
     const [getApiCall, setApiCall] = useState([])
+    const [getnewpackagearray, setnewpackagearray] = useState([])
+    const [getenrolled, setenrolled] = useState('0')
+
     let regid = '0'
     const getPackage = () => {
         const url = window.location.href
@@ -65,24 +71,53 @@ const Package = ({ title, tag, col, position }) => {
         })
             .then(res => {
                 if (res.data) {
-                    console.log(res.data)
+                    console.log("Module Get Pack View",res.data)
                     if (res.data.length !== 0) {
-                        setApiCall(1)
-                        setpackagearray(res.data)
+                        let finalPackagesArray = [];
+                        let enrolledPkgId = null;
 
+                        for (let i = 0; i < res.data.length; i++) {
+                            if (res.data[i].enrolled === '1') {
+                                enrolledPkgId = res.data[i].nPkgId;
+                                setenrolled(res.data[i].nPkgId);
+                            }
+
+                            if (res.data[i].sPackage !== '') {
+                                let arrayData = JSON.parse(res.data[i].sPackage);
+
+                                arrayData.forEach(item => {
+                                    // primitive values only
+                                    if (typeof item !== 'object' && !finalPackagesArray.includes(item)) {
+                                        finalPackagesArray.push(item);
+                                    }
+                                });
+                            }
+                        }
+                        let arr = finalPackagesArray.filter(function (e) {
+                            return e !== (enrolledPkgId ? enrolledPkgId.toString() : '');
+                        });
+
+                        setnewpackagearray(arr);
                         // this.setState({ packagearray: res.data, isLoading: false })
+                        console.log("Enorrled",getenrolled)
+                        setpackagearray(res.data)
+                        setApiCall(1)
                     }else{
                         setApiCall(1)
                     }
                 }
             })
             .catch(err => {
+                console.log("Error Code",err)
                 { ErrorDefaultAlert(err) }
             })
     }
 
 
     const BuyPackage = (pkg, pname, pkgamt) => {
+        console.log("pkg "+pkg + "pname " + pname + "pkgamt " + pkgamt)
+        if (localStorage.getItem('userData')){
+
         //get cart item count
         let cartitemcnt = 0
         if (localStorage.getItem('cart')) {
@@ -123,6 +158,7 @@ const Package = ({ title, tag, col, position }) => {
                             const udata = DecryptData(localStorage.getItem('userData'))
 
                             //Get Promocode detail if applied for course
+                            console.log("Promocode",cid+" "+udata['regid'] +" " +EncryptData(getamt)+" "+EncryptData(pkg))
 
                             Axios.get(`${API_URL}/api/promocode/Get_promocode_detail_package/${cid}/${udata['regid']}/${EncryptData(getamt)}/${EncryptData(pkg)}`, {
                                 headers: {
@@ -138,15 +174,14 @@ const Package = ({ title, tag, col, position }) => {
                                             const resData = JSON.parse(res.data)
 
                                             const insert_arr = {
+                                                nCartId : EncryptData(0),
                                                 nRegId: udata['regid'],
                                                 cid: cid,
                                                 cname: coursename,
                                                 fname: sFName,
                                                 lname: sLName,
-                                                camt: nCourseAmount,
-                                                // cnewamt: this.state.dAmount,
+                                                camt: String((nCourseAmount) ? nCourseAmount : 0),
                                                 cnewamt: getamt,
-                                                // pkgprice: this.state.pkg_price,
                                                 pkgprice: getamt,
                                                 isaccosiatecourse: bIsAccosiateCourse,
                                                 cimg: sImagePath,
@@ -154,14 +189,16 @@ const Package = ({ title, tag, col, position }) => {
                                                 pkgname: pname,
                                                 PCId: resData.pcid,
                                                 promocode: resData.promocode,
-                                                Discount: resData.discAmt
+                                                dDiscount: resData.user_pay
                                             }
                                             console.log("insert_arr",insert_arr)
+                                            console.log("Bheja ja raha data:", JSON.stringify(insert_arr, null, 2));
                                             if (insert_arr) {
                                                 console.log(insert_arr)
-                                                Axios.post(`${API_URL}/api/cart/InsertCart`, insert_arr, {
+                                                Axios.post(`${API_URL}/api/cart/InsertCart`, JSON.stringify(insert_arr), {
                                                     headers: {
-                                                        ApiKey: `${API_KEY}`
+                                                        ApiKey: `${API_KEY}`,
+                                                        "Content-Type": "application/json",
                                                     }
                                                 }).then(res => {
                                                     const retData = JSON.parse(res.data)
@@ -279,6 +316,28 @@ const Package = ({ title, tag, col, position }) => {
             })
 
         //const getcart = localStorage.getItem('cart')
+        }else {
+            return MySwal.fire({
+                title: 'Login',
+                text: "Login to add course to cart",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Login',
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: false,
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-primary ms-1'
+                },
+                buttonsStyling: false
+            }).then(function (result) {
+                // window.location.href = retData.rlink
+                if (result.value) {
+                    router.push('/login')
+                }
+            })
+        }
     }
 
 
@@ -286,12 +345,13 @@ const Package = ({ title, tag, col, position }) => {
         const url = window.location.href
         const parts = url.split("/");
         const courseId = parts[parts.length - 1];
-        Axios.get(`${API_URL}/api/coursemain/GetCoursesView/${courseId}`, {
+        Axios.get(`${API_URL}/api/coursemain/GetCoursesView/${courseId}/0`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
         })
             .then(res => {
+                console.log("GetCoursesView",res.data)
                 if (res.data) {
                     if (res.data.length !== 0) {
                         //console.log(res.data)
@@ -329,6 +389,7 @@ const Package = ({ title, tag, col, position }) => {
                 .then(res => {
                     if (res.data) {
                         if (res.data.length !== 0) {
+                            console.log("Cart Item",res.data)
                             setcartItem(res.data)
                             // this.setState({
                             //     cartItem: res.data
@@ -361,6 +422,7 @@ const Package = ({ title, tag, col, position }) => {
 
     return (
         <>
+            {/*{getnewpackagearray}*/}
             <div className="container">
                 <div className={'row'}>
                     {
@@ -430,10 +492,21 @@ const Package = ({ title, tag, col, position }) => {
                                         </div>
                                     </div>
                                 </div>
-
                             </> :
                             packagearray.length > 0 ? <>
                                 {packagearray.map((item, index) => {
+
+                                    const anyPackageEnrolled = packagearray.some(pkg => pkg.enrolled === "1");
+
+                                    const matchedItem = cartItem.find(obj =>
+                                        obj.cid === item.nCId && obj.pkgId === item.nPkgId
+                                    );
+                                    const isInCart = isCartItem || matchedItem !== undefined;
+
+                                    console.log("cartItem",cartItem)
+                                    console.log("item.nCID",item.nCId)
+                                    console.log("item.nPkgId",item.nPkgId)
+                                    console.log("matchedItem",matchedItem)
                                     return (
                                         <>
                                             <div className={'col-lg-4'} key={index}>
@@ -443,96 +516,136 @@ const Package = ({ title, tag, col, position }) => {
                                                         <Col>
                                                             {/*<img src={icon} height={50} alt='pricing'/>*/}
                                                             <h3 className={'mb-0'}><b>{item.sPackageName}</b></h3>
-                                                            <span className="rbt-badge mb-3 p-1">{item.nPkgValidity} day
+                                                            <span className="badge customBadge mb--10">{item.nPkgValidity} day
                                                         validity</span>
                                                             <small
                                                                 className='pricing-duration text-body font-medium-1 font-weight-bold ml-25'> </small>
                                                         </Col>
                                                         <Col lg={7}>
                                                             {item.discount !== "" ? <>
-                                                                <div
-                                                                    className='plan-price'>
 
-                                                                    {localStorage.getItem('skin') === '"light"' ? <>
-                                                                        <h3 className='pricing-basic-value font-weight-bolder text-primary m-0'
-                                                                            style={{textAlign: 'end'}}>
-                                                                            <del>₹ {item.dAmount} INR</del>
+                                                                <div
+                                                                    className='plan-price text-end'>
+
+                                                                    {/*    {localStorage.getItem('skin') === "light" ? <>*/}
+                                                                    {/*        <h3 className='pricing-basic-value font-weight-bolder text-primary m-0'*/}
+                                                                    {/*            style={{textAlign: 'end'}}>*/}
+                                                                    {/*            <del>₹ {item.dAmount} INR1</del>*/}
+                                                                    {/*        </h3>*/}
+
+                                                                    {/*        {item.discountType === 'amount' ? <>*/}
+                                                                    {/*            <h5 className='pricing-basic-value m-0'*/}
+                                                                    {/*                style={{textAlign: 'end', color: '#db7093'}}>*/}
+                                                                    {/*            ₹ {item.dAmount - item.discount} INR*/}
+                                                                    {/*            /!*item.dAmount -*!/*/}
+                                                                    {/*        </h5>*/}
+                                                                    {/*        <p className={'text-success m-0'}*/}
+                                                                    {/*           style={{textAlign: 'end'}}>*/}
+                                                                    {/*            <b>₹ {item.discount} DISCOUNT*/}
+                                                                    {/*                APPLIED</b>*/}
+                                                                    {/*        </p>*/}
+                                                                    {/*    </> : <>*/}
+                                                                    {/*        <h5 className='pricing-basic-value m-0'*/}
+                                                                    {/*            style={{textAlign: 'end', color: '#db7093'}}>*/}
+                                                                    {/*            ₹ {(item.dAmount - item.discount)} INR*/}
+                                                                    {/*            /!*item.dAmount -*!/*/}
+                                                                    {/*        </h5>*/}
+                                                                    {/*        <p className={'text-success m-0'}*/}
+                                                                    {/*           style={{textAlign: 'end'}}>*/}
+                                                                    {/*            <b> {item.discount}%*/}
+                                                                    {/*                DISCOUNT*/}
+                                                                    {/*                APPLIED</b>*/}
+                                                                    {/*        </p>*/}
+                                                                    {/*    </>}*/}
+                                                                    {/*    <span className='pricing-duration text-body ml-25 float-right' style={{fontSize: '12px'}}>*/}
+                                                                    {/*    Valid till {item.discountEndDate}*/}
+                                                                    {/*</span>*/}
+
+                                                                    {/*</> : <>*/}
+                                                                    {/*    <h3 className='pricing-basic-value font-weight-bolder text-end' style={{ color: '#db7093' }}>*/}
+                                                                    {/*        ₹ {item.dAmount} INR*/}
+                                                                    {/*    </h3>*/}
+                                                                    {/*</>}*/}
+
+                                                                    {item.discountType === 'amount' ? <>
+                                                                        <h3 className='pricing-basic-value m-0'
+                                                                            style={{
+                                                                                textAlign: 'end',
+                                                                                color: '#db7093'
+                                                                            }}>
+                                                                            ₹ {item.userpay} INR
+                                                                            {/*item.dAmount -*/}
+                                                                        </h3>
+                                                                    </> : <>
+                                                                        <h3 className='pricing-basic-value m-0'
+                                                                            style={{
+                                                                                textAlign: 'end',
+                                                                                color: '#db7093'
+                                                                            }}>
+                                                                            ₹ {(item.userpay)} INR
+                                                                            {/*item.dAmount -*/}
                                                                         </h3>
 
-                                                                        {item.discountType === 'amount' ? <>
-                                                                            <h5 className='pricing-basic-value m-0'
-                                                                                style={{textAlign: 'end', color: '#db7093'}}>
-                                                                            ₹ {item.dAmount - item.discount} INR
-                                                                            {/*item.dAmount -*/}
-                                                                        </h5>
-                                                                        <p className={'text-success m-0'}
-                                                                           style={{textAlign: 'end'}}>
-                                                                            <b>₹ {item.discount} DISCOUNT
-                                                                                APPLIED</b>
-                                                                        </p>
-                                                                    </> : <>
-                                                                        <h5 className='pricing-basic-value m-0'
-                                                                            style={{textAlign: 'end', color: '#db7093'}}>
-                                                                            ₹ {(item.dAmount - item.discount)} INR
-                                                                            {/*item.dAmount -*/}
-                                                                        </h5>
-                                                                        <p className={'text-success m-0'}
-                                                                           style={{textAlign: 'end'}}>
-                                                                            <b> {item.discount}%
-                                                                                DISCOUNT
-                                                                                APPLIED</b>
-                                                                        </p>
                                                                     </>}
-                                                                    <span className='pricing-duration text-body ml-25 float-right' style={{fontSize: '12px'}}>
+
+                                                                    <h5 className='pricing-basic-value font-weight-bolder text-primary m-0'
+                                                                        style={{textAlign: 'end'}}>
+                                                                        <del>₹ {item.dAmount} INR</del>
+                                                                    </h5>
+                                                                    {
+                                                                        item.discountType === 'amount' ?
+                                                                            <p className={'text-success m-0 font-12'}
+                                                                               style={{textAlign: 'end'}}>
+                                                                                <b>₹ {item.discount} DISCOUNT
+                                                                                    APPLIED</b>
+                                                                            </p> :
+                                                                            <p className={'text-success m-0 font-12'}
+                                                                               style={{textAlign: 'end'}}>
+                                                                                <b> {item.discount}%
+                                                                                    DISCOUNT
+                                                                                    APPLIED</b>
+                                                                            </p>
+                                                                    }
+                                                                    <span
+                                                                        className='pricing-duration text-body ml-25 float-right'
+                                                                        style={{fontSize: '12px'}}>
                                                                     Valid till {item.discountEndDate}
                                                                 </span>
-
-                                                                </> : <>
-                                                                    <h3 className='pricing-basic-value font-weight-bolder text-end' style={{ color: '#db7093' }}>
-                                                                        ₹ {item.dAmount} INR
+                                                                </div>
+                                                            </> : <>
+                                                                <div
+                                                                    className='plan-price mt-2 float-right text-end'>
+                                                                    <h3 className='font-medium-1 font-weight-bold text-primary'>
+                                                                        <h3 className='pricing-basic-value text-end font-weight-bolder'
+                                                                            style={{color: '#db7093'}}>
+                                                                            ₹ {item.dAmount} INR
+                                                                        </h3>
                                                                     </h3>
-                                                                </>}
-                                                            </div>
-                                                        </> : <>
-                                                            <div
-                                                                className='plan-price mt-2 float-right'>
-                                                                <h3 className='font-medium-1 font-weight-bold text-primary'>
-                                                                    {localStorage.getItem('skin') === '"light"' ? <>
-                                                                        <h3 className='pricing-basic-value text-end font-weight-bolder' style={{ color: '#db7093' }}>
-                                                                            ₹ {item.dAmount} INR
-                                                                        </h3>
-                                                                    </> : <>
-                                                                        <h3
-                                                                            className='pricing-basic-value font-weight-bolder text-end' style={{ color: '#db7093' }}>
-                                                                            ₹ {item.dAmount} INR
-                                                                        </h3>
-                                                                    </>}
-                                                                </h3>
-                                                            </div>
-                                                        </>}
+                                                                </div>
+                                                            </>}
 
-                                                    </Col>
-                                                </Row>
-                                                {item.sDescription ? <>
+                                                        </Col>
+                                                    </Row>
+                                                    {item.sDescription ? <>
                                                     <hr/>
-                                                    <h6>
-                                                        <b>{item.sDescription} </b>
-                                                    </h6>
-                                                </> : <></>}
-                                                {item.sSubDescription ? <>
-                                                    <hr/>
-                                                    <h6 >
-                                                        {item.sSubDescription}
-                                                    </h6>
-                                                </> : <></>}
+                                                        <h6>
+                                                            <b>{item.sDescription} </b>
+                                                        </h6>
+                                                    </> : <></>}
+                                                    {item.sSubDescription ? <>
+                                                        <hr/>
+                                                        <h6>
+                                                            {item.sSubDescription}
+                                                        </h6>
+                                                    </> : <></>}
 
-                                                <div className="row">
-                                                    <div className="col-md-12">
-                                                        <div className='basic-pricing mb-0'>
-                                                            <hr/>
-                                                            <div className=''>
-                                                                <ul className='text-left list-style-icons font-weight-bold'
-                                                                    style={{ listStyle: 'none' }}
+                                                    <div className="row">
+                                                        <div className="col-md-12">
+                                                            <div className='basic-pricing mb-0'>
+                                                                <hr/>
+                                                                <div className=''>
+                                                                    <ul className='text-left list-style-icons font-weight-bold'
+                                                                        style={{ listStyle: 'none' }}
                                                                     key={`${index}_ru`}>
                                                                     {/*{console.log(JSON.parse(item.packageFeatureData))}*/}
                                                                     {(item.sPackageSubfeature) ? JSON.parse(item.sPackageSubfeature).map((pitem, pindex) => (
@@ -574,32 +687,182 @@ const Package = ({ title, tag, col, position }) => {
                                                     </div>
                                                 </div>
                                                 {/*{console.log(item)}*/}
-                                                {(isHideButton) ? ((item.pkgCheckTbl.length > 2) ? ((JSON.parse(item.pkgCheckTbl).map((pitem, pindex) => ((pitem.nPkgId === item.nPkgId) ? <button type="button" key={pindex + 1} className="w-100 btn-lg btn btn-outline-success btn-block" disabled={true}>Purchased</button> : (((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ? (<Link href='/cart'><button className='btn btn-primary btn-block w-100' style={{ padding: '10px', fontSize: '15px' }}>
-                                                    <span className='align-middle'>Go to cart</span>
-                                                </button></Link>) : (<button type="button" className="w-100 btn-lg btn btn-outline-success btn-block" style={{ padding: '10px', fontSize: '15px' }} onClick={() => BuyPackage(item.nPkgId, item.sPackageName, item.dAmount)}>Add to cart</button>)))))) : (((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ? <Link href='/cart'><button style={{ padding: '10px', fontSize: '15px' }} className='btn w-100 btn-lg btn-primary btn-block p-1'>
-                                                    <span className='align-middle'>Go to cart</span>
-                                                </button></Link> : <button style={{ padding: '10px', fontSize: '15px' }} type="button" className="w-100 btn-lg btn btn-outline-success btn-block" onClick={() => BuyPackage(item.nPkgId, item.sPackageName, item.dAmount)}>Add to cart</button>)) : ''}
+                                                {/*{(isHideButton) ? ((item.pkgCheckTbl.length > 2) ?*/}
+                                                {/*    ((JSON.parse(item.pkgCheckTbl).map((pitem, pindex) => ((pitem.nPkgId === item.nPkgId) ?*/}
+                                                {/*        <button type="button" key={pindex + 1} className="w-100 btn-lg btn btn-outline-success btn-block packageCus" disabled={true}>Purchased</button> :*/}
+                                                {/*        (*/}
+                                                {/*            ((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ?*/}
+                                                {/*                (<Link href='/cart'><button className='btn btn-primary btn-block w-100 packageCus'><span className='align-middle'>Go to cart</span></button></Link>) :*/}
+                                                {/*                (<button type="button" className="w-100 btn-lg btn btn-outline-success btn-block packageCus" onClick={() => BuyPackage(item.nPkgId, item.sPackageName, item.dAmount)}>Add to cart</button>)*/}
+                                                {/*        ))*/}
+                                                {/*    ))) :*/}
+                                                {/*    (((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ?*/}
+                                                {/*        <Link href='/cart'><button className='btn w-100 btn-lg btn-primary btn-block packageCus'><span className='align-middle'>Go to cart</span></button></Link> :*/}
+                                                {/*        <button type="button" className="w-100 btn-lg btn btn-outline-success btn-block packageCus" onClick={() => BuyPackage(item.nPkgId, item.sPackageName, item.dAmount)}>Add to cart</button>)) :*/}
+                                                {/*    ''*/}
+                                                {/*}*/}
 
-                                                {((isCartItem) && (pid === item.nPkgId)) ? (<Link href='/cart'><button className='btn-lg w-100 btn btn-primary btn-block p-1'>
-                                                    <span className='align-middle'>Go to cart</span>
-                                                </button></Link>) : ((isCartItem) ? ((item.pkgCheckTbl.length > 2) ? ((JSON.parse(item.pkgCheckTbl).map((pitem, pindex) => ((pitem.nPkgId === item.nPkgId) ? <button type="button" key={pindex + 1} className=" btn-lgw-100 btn btn-outline-success btn-block" disabled={true}>Purchased</button> : (((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ? (<Link to='/cart'><button className='btn-lg w-100 btn btn-primary btn-block p-1'>
-                                                    <span className='align-middle'>Go to cart</span>
-                                                </button></Link>) : (<button type="button" className="btn btn-lg w-100 btn-outline-success btn-block" onClick={() => BuyPackage(item.nPkgId, item.sPackageName)}>Add to cart</button>)))))) : (((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ? <Link href='/cart'><button className='w-100 btn btn-primary btn-block p-1'>
-                                                    <span className='align-middle'>Go to cart</span>
-                                                </button></Link> : <button type="button" className="w-100 btn-lg btn btn-outline-success btn-block" onClick={() => BuyPackage(item.nPkgId, item.sPackageName)}>Add to cart</button>)) : '')}
+                                                {/*{((isCartItem) && (pid === item.nPkgId)) ? (*/}
+                                                {/*    <Link href='/cart'>*/}
+                                                {/*        <button className='btn-lg w-100 btn btn-primary btn-block p-1 packageCus'>*/}
+                                                {/*            <span className='align-middle'>Go to cart</span>*/}
+                                                {/*        </button>*/}
+                                                {/*    </Link>*/}
+                                                {/*) : ((isCartItem) ? ((item.pkgCheckTbl.length > 2) ? ((JSON.parse(item.pkgCheckTbl).map((pitem, pindex) => ((pitem.nPkgId === item.nPkgId) ?*/}
+                                                {/*    <button type="button" key={pindex + 1} className=" btn-lgw-100 btn btn-outline-success btn-block packageCus" disabled={true}>Purchased</button> :*/}
+                                                {/*    (((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ?*/}
+                                                {/*        (<Link to='/cart'>*/}
+                                                {/*            <button className='btn-lg w-100 btn btn-primary btn-block packageCus'>*/}
+                                                {/*                <span className='align-middle'>Go to cart</span>*/}
+                                                {/*            </button>*/}
+                                                {/*        </Link>) :*/}
+                                                {/*        (*/}
+                                                {/*            <button type="button" className="btn btn-lg w-100 btn-outline-success btn-block packageCus" onClick={() => BuyPackage(item.nPkgId, item.sPackageName)}>Add to cart</button>*/}
+                                                {/*        )))))) : (((cartItem).find(obj => (obj.cid === item.nCId && obj.pkgId === item.nPkgId)) !== undefined) ?*/}
+                                                {/*    <Link href='/cart'>*/}
+                                                {/*        <button className='w-100 btn btn-primary btn-block packageCus'>*/}
+                                                {/*            <span className='align-middle'>Go to cart</span>*/}
+                                                {/*        </button>*/}
+                                                {/*    </Link> :*/}
+                                                {/*    <button type="button" className="w-100 btn-lg btn btn-outline-success btn-block packageCus" onClick={() => BuyPackage(item.nPkgId, item.sPackageName)}>Add to cart</button>)) : '')}*/}
+
+                                                {/* New Code */}
+
+                                                    {/*{*/}
+                                                    {/*    cartItem.length > 0 ? (*/}
+                                                    {/*            matchedItem !== undefined ? (*/}
+                                                    {/*                <Link href='/cart'>*/}
+                                                    {/*                    <button*/}
+                                                    {/*                        className='w-100 btn btn-primary btn-block packageCus'>*/}
+                                                    {/*                        <span className='align-middle'>Go to cart</span>*/}
+                                                    {/*                    </button>*/}
+                                                    {/*                </Link>*/}
+                                                    {/*            ) : (*/}
+                                                    {/*                <>*/}
+                                                    {/*                    <button*/}
+                                                    {/*                        type="button"*/}
+                                                    {/*                        className="w-100 btn-lg btn btn-outline-success btn-block packageCus"*/}
+                                                    {/*                        onClick={() => BuyPackage(item.nPkgId, item.sPackageName)}*/}
+                                                    {/*                    >*/}
+                                                    {/*                        Add to cart*/}
+                                                    {/*                    </button>*/}
+                                                    {/*                </>*/}
+                                                    {/*            )*/}
+                                                    {/*        ) :*/}
+                                                    {/*        <button*/}
+                                                    {/*            type="button"*/}
+                                                    {/*            className="w-100 btn-lg btn btn-outline-success btn-block packageCus"*/}
+                                                    {/*            onClick={() => BuyPackage(item.nPkgId, item.sPackageName)}*/}
+                                                    {/*        >*/}
+                                                    {/*            Add to cart*/}
+                                                    {/*        </button>*/}
+                                                    {/*}*/}
+
+                                                    {
+                                                        anyPackageEnrolled ?
+                                                        getnewpackagearray.includes(String(item.nPkgId)) ? (
+                                                            <button
+                                                                type="button"
+                                                                className="w-100 btn-lg btn btn-secondary btn-block packageCus"
+                                                                disabled
+                                                            >
+                                                                Not Available
+                                                            </button>
+                                                        ) : item.enrolled === "1" ? (
+                                                            <button
+                                                                type="button"
+                                                                className="w-100 btn-lg btn btn-success btn-block packageCus"
+                                                                disabled
+                                                            >
+                                                                Activated
+                                                            </button>
+                                                        ) : (
+                                                            (() => {
+                                                                const enrolledPackageIds = packagearray
+                                                                    .filter(pkg => pkg.enrolled === "1")
+                                                                    .map(pkg => String(pkg.nPkgId));
+
+                                                                let parsedSpackage = [];
+                                                                try {
+                                                                    parsedSpackage = item.sPackage ? JSON.parse(item.sPackage) : [];
+                                                                } catch (err) {
+                                                                    parsedSpackage = [];
+                                                                }
+
+                                                                const isUpgradeAvailable = parsedSpackage.some(pkgId =>
+                                                                    enrolledPackageIds.includes(String(pkgId))
+                                                                );
+
+
+                                                                return isUpgradeAvailable ? (
+                                                                    isInCart ? (
+                                                                        <Link href='/cart'>
+                                                                            <button className="w-100 btn btn-primary btn-block packageCus">
+                                                                                Go to cart
+                                                                            </button>
+                                                                        </Link>
+                                                                    ) : (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="w-100 btn-lg btn btn-warning btn-block packageCus"
+                                                                            onClick={() => BuyPackage(item.nPkgId, item.sPackageName, item.dAmount)}
+                                                                        >
+                                                                            Upgrade
+                                                                        </button>
+                                                                    )
+                                                                ) : (
+                                                                    isInCart ? (
+                                                                        <Link href='/cart'>
+                                                                            <button className="w-100 btn btn-primary btn-block packageCus">
+                                                                                <span className='align-middle'>Go to cart</span>
+                                                                            </button>
+                                                                        </Link>
+                                                                    ) : (
+                                                                        <button
+                                                                            type="button"
+                                                                            className="w-100 btn-lg btn btn-outline-success btn-block packageCus"
+                                                                            onClick={() => BuyPackage(item.nPkgId, item.sPackageName, item.dAmount)}
+                                                                        >
+                                                                            Add to cart
+                                                                        </button>
+                                                                    )
+                                                                );
+                                                            })()
+                                                        )
+                                                            :
+                                                            isInCart ? (
+                                                                <Link href='/cart'>
+                                                                    <button className="w-100 btn btn-primary btn-block packageCus">
+                                                                        <span className='align-middle'>Go to cart</span>
+                                                                    </button>
+                                                                </Link>
+                                                            ) : (
+                                                                <button
+                                                                    type="button"
+                                                                    className="w-100 btn-lg btn btn-outline-success btn-block packageCus"
+                                                                    onClick={() => BuyPackage(item.nPkgId, item.sPackageName, item.dAmount)}
+                                                                >
+                                                                    Add to cart
+                                                                </button>
+                                                            )
+                                                    }
+
+
+
+
+                                                </div>
                                             </div>
-                                        </div>
-                                    </>
-                                )
-                            })}
-                        </> : <>
-                            <div className="emptyImage w-25 m-auto">
-                                <Image
-                                    src={emptycart}
-                                    width={372}
-                                    height={396}
-                                    alt="Cart Empty"
-                                    className={'w-100'}
+                                        </>
+                                    )
+                                })}
+                            </> : <>
+                                <div className="emptyImage w-25 m-auto">
+                                    <Image
+                                        src={emptycart}
+                                        width={372}
+                                        height={396}
+                                        alt="Cart Empty"
+                                        className={'w-100'}
                                 />
                                 {/*<img src="assets/images/client/avatar-02.png"*!/*/}
                                 {/*/!*             alt="Sophia Jaymes"/>*!/*/}

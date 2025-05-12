@@ -3553,3 +3553,8 @@ div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{
     z-index: -1;
     height: auto;
 }
+
+.packageCus{
+    padding: 10px;
+    font-size: 15px;
+}

@@ -60,8 +60,35 @@ const CourseSuccessFile = () => {
                           txnAmount: res.data?.[0]?.txnAmount || "",
                           purchaseDate: res.data?.[0]?.dCreatedDate2 || "",
                       });
+                      alert(res.data?.[0]?.payment_id)
+                      // New Code
+                      Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${res.data?.[0]?.payment_id}/${udata['regid']}`, {
+                          headers: {
+                              ApiKey: `${API_KEY}`
+                          }
+                      })
+                          .then(res => {
+                              console.log("CheckPayment Data",res.data)
+                              if(res.data.length !== 0){
+
+                                  // setPaymentDetails({
+                                  //     payment_status: res.data.status || "",
+                                  //     error_description : res.data.error_description || ""
+                                  // });
+                                  // setApiCall(1)
+                                  // setServerError(1)
+                              }
+                          })
+                          .catch(err => {
+                              {
+                                  // ErrorDefaultAlert(err)
+                                  // setServerError(0)
+                              }
+                          })
+                      // Close New Code
                       setApiCall(1)
                       setServerError(1)
+
                   }else {
                       // Payment Failed And Refueled
                       Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${DecryptData(payId)}/${udata['regid']}`, {
@@ -83,14 +110,15 @@ const CourseSuccessFile = () => {
                           })
                           .catch(err => {
                               {
-                                  ErrorDefaultAlert(err)
+                                  // ErrorDefaultAlert(err)
                                   setServerError(0)
                               }
                           })
                   }
                 })
                 .catch(err => {
-                  { ErrorDefaultAlert(err)
+                  {
+                      // ErrorDefaultAlert(err)
                       setServerError(0)
                   }
                 })
@@ -137,6 +165,7 @@ const CourseSuccessFile = () => {
             setLoading(false);
         });
     };
+    let finalPrice;
 
     return (
         <>
@@ -207,7 +236,10 @@ const CourseSuccessFile = () => {
                                                     <tbody>
                                                     {courseitem.length > 0 ? (
                                                         courseitem.map((item, index) => {
-                                                            const finalPrice = parseInt(item.cnewamt || "0") - parseInt(item.dDiscount || "0");
+                                                            {
+                                                                finalPrice = item.pcId !== 0 ? parseInt(item.dDiscount || "0") : parseInt(item.cnewamt || "0")
+                                                            }
+                                                            // const finalPrice = parseInt(item.cnewamt || "0") - parseInt(item.dDiscount || "0");
 
                                                             return (  // ✅ Return statement added
                                                                 <tr key={index}>
@@ -553,8 +585,9 @@ const CourseSuccessFile = () => {
                                                     {courseitem.length > 0 ? (
 
                                                         courseitem.map((item, index) => {
-                                                            const finalPrice =
-                                                                parseInt(item.cnewamt || "0") - parseInt(item.dDiscount || "0");
+                                                            {
+                                                                finalPrice = item.pcId !== 0 ? parseInt(item.dDiscount || "0") : parseInt(item.cnewamt || "0")
+                                                            }
                                                             setCartAmount += finalPrice;
                                                             return (
                                                                 <tr key={index}>

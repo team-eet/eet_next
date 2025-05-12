@@ -249,10 +249,23 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
           </td>
           <td className="pro-title">
               {product.cname}
+              {
+                  product.pkgId !== 0 && (
+                      <span className={'d-block'}> <b>Package</b> : {product.pkgname}</span>
+                  )
+
+              }
+
           </td>
           <td className={"pro-price"}>
-              <span className={'text-primary'} style={{fontSize: "large"}}>₹{product.pay_price}</span>
-              <span className={'text-decoration-line-through'} style={{fontSize: '13px'}}>₹{product.og_price}</span>
+              {
+                  product.pkgId !== 0 ? <>
+                          <span className={'text-primary'} style={{fontSize: "large"}}>₹{product.pkgprice}</span>
+                      </> : <>
+                          <span className={'text-primary'} style={{fontSize: "large"}}>₹{product.pay_price}</span>
+                          <span className={'text-decoration-line-through'} style={{fontSize: '13px'}}>₹{product.og_price}</span>
+                      </>
+              }
           </td>
           {/*<td className="pro-price">*/}
           {/*    <span className={'text-primary'} style={{fontSize: "large"}}>₹{(parseInt(product.pay_price) - (parseInt(product.pay_price) * parseInt(product.discount) / 100))} {product.discount !== 0 && <i className='fa fa-tag' title={product.promocode}></i>}</span>*/}
@@ -274,8 +287,11 @@ const CartItems = ({ id, product, amount, checkoutAmount, index, cartitem }) => 
           {/*    /!*</div> : ''}*!/*/}
           {/*</td>*/}
           <td className="pro-price">
-    <span className={'text-primary'} style={{fontSize: "large"}}>
-       {parseInt(product.pay_price) - parseInt(product.user_pay)}
+    <span className={'text-primary'} style={{fontSize: "large"}}>₹
+        {
+            product.pkgId !== 0 ? parseInt(product.pkgprice) - parseInt(product.user_pay) : parseInt(product.pay_price) - parseInt(product.user_pay)
+        }
+       {}
         {product.discount !== "0" && <i className='fa fa-tag ml--5' title={product.promocode}></i>}
     </span>
 

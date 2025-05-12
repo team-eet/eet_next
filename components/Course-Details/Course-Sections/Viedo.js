@@ -10,7 +10,7 @@ import { API_URL, API_KEY } from "../../../constants/constant";
 import {useRouter} from "next/router";
 import Axios from "axios";
 import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
-import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
+import {ErrorAlert, ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 
@@ -39,7 +39,7 @@ const Viedo = ({ checkMatchCourses }) => {
   const [cid, setcid] = useState('')
   const [getvideoOpenData,setvideoOpenData] = useState('')
   const [getPromoCodeData,setPromoCodeData] = useState({})
-
+  const { cartToggle, setCart } = useAppContext();
 
   const getFeatureCount = (crsid) => {
     // console.log(checkMatchCourses.nCId)
@@ -193,12 +193,13 @@ const Viedo = ({ checkMatchCourses }) => {
             console.log("Ankit Cart Data isCartItem");
             console.log("Ankit Cart Data isCartItem 1", res.data);
 
+
             // Check if res.data exists and is an array
             if (res.data && Array.isArray(res.data)) {
               console.log("Ankit Get Cart Video.js", res.data);
 
               // Cart New Code
-              if (!isCartItem) {
+              // if (!isCartItem) {
                 if (res.data.length > 0 && EncryptData(res.data[0].cid) === courseId) {
                   setisCartItem(true);
                   setisCartId(EncryptData(res.data[0].nCartId));
@@ -208,10 +209,10 @@ const Viedo = ({ checkMatchCourses }) => {
               } else {
                 console.log("Ankit Cart Data Blank");
               }
-            } else {
-              console.log("API response is not an array or is undefined:", res.data);
-              setisCartId(EncryptData(0));
-            }
+            // } else {
+            //   console.log("API response is not an array or is undefined:", res.data);
+            //   setisCartId(EncryptData(0));
+            // }
           })
           .catch(err => {
             ErrorDefaultAlert(err);
@@ -285,10 +286,12 @@ const Viedo = ({ checkMatchCourses }) => {
     // Close Promocode
 
   }, [])
+
   // console.log(checkMatchCourses)
-  const { cartToggle, setCart } = useAppContext();
+
   const [toggle, setToggle] = useState(false);
   const [hideOnScroll, setHideOnScroll] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // =====> Start ADD-To-Cart
   const dispatch = useDispatch();
@@ -303,6 +306,7 @@ const Viedo = ({ checkMatchCourses }) => {
 
   }, [Razorpay]);
   const addToCartFun = (id, amount, product) => {
+    setIsLoading(true)
     //alert('hellooooooooo'+ id + amount + product)
     //console.log('hellooooooooo'+ id + amount + product)
     if(localStorage.getItem('userData')) {
@@ -449,7 +453,7 @@ const Viedo = ({ checkMatchCourses }) => {
                             }
                             else{
                               const update_arr = {
-                                nCartId : parseInt(isCartId),
+                                nCartId : isCartId,
                                 nRegId: udata['regid'],
                                 cid: courseId,
                                 cname: checkMatchCourses.sCourseTitle,
@@ -561,6 +565,12 @@ const Viedo = ({ checkMatchCourses }) => {
   // }
 
 
+  useEffect(() => {
+    if (!cartToggle) {
+      setIsLoading(false);
+    }
+  }, [cartToggle]);
+
   const formatDate = (dateTimeString) => {
     const date = new Date(dateTimeString); // Create a Date object from the dateTimeString
     const day = date.getDate(); // Get the day of the month (1-31)
@@ -670,42 +680,83 @@ const Viedo = ({ checkMatchCourses }) => {
                 </span>
               </Link>
             </> : <>
-              <button
-                  className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
-                  onClick={() =>
-                      addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)
-                  }
-              >
-                <span className="btn-text">Add to Cart</span>
-                <span className="btn-icon">
-              <i className="feather-arrow-right"></i>
-            </span>
+              {/*  <button*/}
+              {/*      className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"*/}
+              {/*      onClick={() =>*/}
+              {/*          addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)*/}
+              {/*      }*/}
+              {/*  >*/}
+              {/*    <span className="btn-text">{cartToggle ? 'Add to Cart' : 'Loading'}</span>*/}
+              {/*    <span className="btn-icon">*/}
+              {/*  <i className="feather-arrow-right"></i>*/}
+              {/*</span>*/}
+              {/*  </button>*/}
+
+              <button className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${isLoading ? "disabled" : ""}`}
+                      color='primary'
+                      onClick={() =>
+                          addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)
+                      }
+                      style={{
+                        pointerEvents: isLoading ? "none" : "auto",
+                        opacity: isLoading ? 0.7 : 1
+                      }}>
+                {isLoading ? (
+
+                    <span data-text="Loading..."><i
+                        className="fa fa-spinner fa-spin p-0"></i> Loading...</span>
+                ) : (
+
+                  <span data-text="Add to Cart">Add to Cart</span>
+                )}
               </button>
             </> : <>
-              {
-                isCartId !== '' ? <button
+            {
+              isCartId !== '' ?
+                  //                 <button
+                  //                     className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
+                  //                     onClick={() => addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)}
+                  //                 >
+                  //                   <span className="btn-text">{cartToggle ? 'Go to Cart' : 'Loading'}</span>
+                  //                   <span className="btn-icon">
+                  //   <i className="feather-arrow-right"></i>
+                  // </span>
+                  //                 </button>
+                  <button
+                      className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${isLoading ? "disabled" : ""}`}
+                      color='primary'
+                      onClick={() =>
+                          addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)
+                      }
+                      style={{
+                        pointerEvents: isLoading ? "none" : "auto",
+                        opacity: isLoading ? 0.7 : 1
+                      }}>
+                    {isLoading ? (
+
+                        <span data-text="Loading..."><i
+                            className="fa fa-spinner fa-spin p-0"></i> Loading...</span>
+                    ) : (
+
+                        <span data-text="Go to Cart">Go to Cart</span>
+                    )}
+                  </button>
+                  :
+                  <Link href={'/cart'}
                         className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
-                        onClick={() => addToCartFun(cid, checkMatchCourses.dAmount, checkMatchCourses)}
-                    >
-                      <span className="btn-text">Go to Cart</span>
-                      <span className="btn-icon">
-    <i className="feather-arrow-right"></i>
-  </span>
-                    </button> :
-                    <Link href={'/cart'}
-                          className="rbt-btn btn-gradient icon-hover w-100 d-block text-center"
-                    >
-                      <span className="btn-text">Go to Cart</span>
-                      <span className="btn-icon">
+                  >
+                    <span className="btn-text">Go to Cart</span>
+                    <span className="btn-icon">
                 <i className="feather-arrow-right"></i>
               </span>
-                    </Link>
-              }
+                  </Link>
+            }
 
 
             </>}
 
-          </>}
+          </>
+          }
 
           {/*<button onClick={handlePayment}>Pay Now</button>*/}
 

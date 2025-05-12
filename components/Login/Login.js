@@ -279,22 +279,17 @@ const Login = () => {
                         </div>
                       </div>
                       <FormGroup>
-                        <button className="rbt-btn btn-md btn-gradient hover-icon-reverse w-100" color='primary'
-                                type='submit' disabled={isLoading}>
-                          {isLoading ? <div>
-                            <div role="status" className="spinner-border-sm spinner-border"><span
-                                className="sr-only">Loading...</span></div>
-                            <span className="ml-50">Loading...</span></div> : <>
-                            <span className="icon-reverse-wrapper">
-                                <span className="btn-text">Log In</span>
-                                <span className="btn-icon">
-                                  <i className="feather-arrow-right"></i>
-                                </span>
-                                <span className="btn-icon">
-                                  <i className="feather-arrow-right"></i>
-                                </span>
-                              </span>
-                          </>}
+                        <button className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${isLoading ? "disabled" : ""}`} color='primary'
+                                type='submit' style={{
+                          pointerEvents: isLoading ? "none" : "auto",
+                          opacity: isLoading ? 0.7 : 1
+                        }}>
+                          {isLoading ? (
+                              <span data-text="Loading..."><i
+                                  className="fa fa-spinner fa-spin p-0"></i> Loading...</span>
+                          ) : (
+                              <span data-text="Log In">Log In</span>
+                          )}
                         </button>
                       </FormGroup>
                       <p className={'text-center'}>
@@ -314,15 +309,15 @@ const Login = () => {
                       {/*>*/}
                       {/*<span className="icon-reverse-wrapper">*/}
                       {/*  <span className="btn-text">Log In</span>*/}
-                        {/*  <span className="btn-icon">*/}
-                        {/*    <i className="feather-arrow-right"></i>*/}
-                        {/*  </span>*/}
-                        {/*  <span className="btn-icon">*/}
-                        {/*    <i className="feather-arrow-right"></i>*/}
-                        {/*  </span>*/}
-                        {/*</span>*/}
-                        {/*</button>*/}
-                      </div>
+                      {/*  <span className="btn-icon">*/}
+                      {/*    <i className="feather-arrow-right"></i>*/}
+                      {/*  </span>*/}
+                      {/*  <span className="btn-icon">*/}
+                      {/*    <i className="feather-arrow-right"></i>*/}
+                      {/*  </span>*/}
+                      {/*</span>*/}
+                      {/*</button>*/}
+                    </div>
                     {/*</Form>*/}
                   </div>
 
