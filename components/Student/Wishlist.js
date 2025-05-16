@@ -5,7 +5,7 @@ import Axios from "axios";
 import {API_URL, API_KEY} from '../../constants/constant'
 import { ErrorDefaultAlert, ErrorAlert } from "@/components/Services/SweetAlert";
 import Link from "next/link";
-import { EncryptData } from "@/components/Services/encrypt-decrypt";
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 
 const Wishlist = () => {
 

@@ -103,6 +103,44 @@ const SingleCourse = () => {
 
   const courseContentMatch = getsectionItems.length !== 0 ? getsectionItems : ''
 
+    useEffect(() => {
+        const modal = document.getElementById("videoOpenModal");
+
+        const handleClose = () => {
+            const iframe = modal.querySelector("iframe");
+            if (iframe) {
+                const src = iframe.src;
+                iframe.src = "";
+                iframe.src = src;
+            }
+
+            const video = modal.querySelector("video");
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+            }
+        };
+
+        const handleOpen = () => {
+            const video = modal.querySelector("video");
+            if (video) {
+                video.currentTime = 0;
+                video.play(); // ✅ play on open
+            }
+        };
+
+        if (modal) {
+            modal.addEventListener("hidden.bs.modal", handleClose);
+            modal.addEventListener("shown.bs.modal", handleOpen);
+        }
+
+        return () => {
+            if (modal) {
+                modal.removeEventListener("hidden.bs.modal", handleClose);
+                modal.removeEventListener("shown.bs.modal", handleOpen);
+            }
+        };
+    }, []);
 
   useEffect(() => {
       getCourse();
@@ -168,7 +206,7 @@ const SingleCourse = () => {
                                           allowFullScreen>
                                       </iframe>
                                   ) : (
-                                      <video width="100%" height="100%" style={{minHeight: "90vh"}} controls>
+                                      <video width="100%" height="100%" style={{minHeight: "90vh"}} controls controlsList="nodownload noplaybackrate"  disablePictureInPicture>
                                           <source src={getvideoOpenModal} type="video/mp4"/>
                                           Your browser does not support the video tag.
                                       </video>

@@ -65,40 +65,43 @@ const CourseWidget = ({
             <>
               <div className="rbt-card-top">
                 <div className="rbt-review">
-                  <span className="rating-count">({data.user_rate_cnt} Reviews)</span>
-                </div>
-                <div className="rbt-bookmark-btn">
-                  <Link className="rbt-round-btn" title="Bookmark" href="#">
-                    <i className="feather-bookmark" />
-                  </Link>
+                  <div className="rating">
+                    <i className="fas fa-star"></i>
+                    <i className="fas fa-star"></i>
+                    <i className="fas fa-star"></i>
+                    <i className="fas fa-star"></i>
+                    <i className="fas fa-star"></i>
+                  </div>
+                  ({data.user_rate_cnt} Reviews)
                 </div>
               </div>
               <h4 className="rbt-card-title">
-                <Link href={`/courselesson/${EncryptData(data.nACId)}/${EncryptData(data.nMId)}/${EncryptData(data.nCLId)}/${EncryptData('N')}/${EncryptData((data.nCId))}`}>{data.sCourseTitle}</Link>
+                <Link
+                    href={`/courselesson/${EncryptData(data.nACId)}/${EncryptData(data.nMId)}/${EncryptData(data.nCLId)}/${EncryptData('N')}/${EncryptData((data.nCId))}`}>{data.sCourseTitle}</Link>
               </h4>
             </>
           )}
           <ul className="rbt-meta">
             <li>
-              <i className="feather-book" />
+              <i className="feather-book"/>
               {data.lesson_cnt} Lessons
             </li>
             <li>
-              <i className="feather-users" />
-              {data.enroll_cnt} Students
+              <i className="feather-book"/>
+              {data.section_cnt} Students
             </li>
           </ul>
 
           {isProgress ? (
-            <>
-              <div className="rbt-progress-style-1 mb--20 mt--10">
-                <div className="single-progress">
-                  <h6 className="rbt-title-style-2 mb--10">Complete</h6>
-                  {isCompleted ? (
-                    <div className="progress">
-                      <div
-                        className="progress-bar wow fadeInLeft bar-color-success"
-                        data-wow-duration="0.5s"
+              <>
+                <div className="rbt-progress-style-1 mb--20 mt--10">
+                  <div className="single-progress">
+                    <h6 className="rbt-title-style-2 mb--10">Complete</h6>
+                    {isCompleted ? (
+                        <div className="progress">
+                          <div
+                              className="progress-bar wow fadeInLeft bar-color-success"
+                              data-wow-duration="0.5s"
                         data-wow-delay=".3s"
                         role="progressbar"
                         style={{ width: `100%` }}

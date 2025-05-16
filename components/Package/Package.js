@@ -502,7 +502,7 @@ const Package = ({ title, tag, col, position }) => {
                                         obj.cid === item.nCId && obj.pkgId === item.nPkgId
                                     );
                                     const isInCart = isCartItem || matchedItem !== undefined;
-
+                                    console.log("isInCart",isInCart)
                                     console.log("cartItem",cartItem)
                                     console.log("item.nCID",item.nCId)
                                     console.log("item.nPkgId",item.nPkgId)
@@ -830,7 +830,7 @@ const Package = ({ title, tag, col, position }) => {
                                                             })()
                                                         )
                                                             :
-                                                            isInCart ? (
+                                                            ((pid === item.nPkgId && isCartItem) || matchedItem) ? (
                                                                 <Link href='/cart'>
                                                                     <button className="w-100 btn btn-primary btn-block packageCus">
                                                                         <span className='align-middle'>Go to cart</span>

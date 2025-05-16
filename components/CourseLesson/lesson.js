@@ -58,6 +58,7 @@ const CourseLesson = () => {
                 }
             })
             .catch(err => {
+                alert("hello")
                 { ErrorDefaultAlert(err) }
             })
     }
@@ -91,8 +92,9 @@ const CourseLesson = () => {
         if (localStorage.getItem('userData')) {
             const udata = DecryptData(localStorage.getItem('userData'))
             setRegid(udata)
-        // console.log(cid)
-        Axios.get(`${API_URL}/api/section/GetSectionLessionData/${acid}/${mid}`, {
+            console.log("acid",cid)
+        console.log("mid",mid)
+        Axios.get(`${API_URL}/api/section/GetSectionLessionData/${cid}/${mid}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
@@ -130,6 +132,7 @@ const CourseLesson = () => {
                         })
                         .catch(err => {
                             {
+                                alert("World")
                                 ErrorDefaultAlert(err)
                             }
                         })

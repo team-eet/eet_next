@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {useEffect, useState} from "react";
 import Axios from 'axios'
+import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import {API_URL, API_KEY} from '../../constants/constant'
 import { ErrorDefaultAlert } from "@/components/Services/SweetAlert";
 

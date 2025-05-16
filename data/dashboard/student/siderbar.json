@@ -12,7 +12,12 @@
     },
     {
       "link": "/student/student-enrolled-course",
-      "text": "Enrolled",
+      "text": "Enrolled Courses",
+      "icon": "feather-book-open"
+    },
+    {
+      "link": "/student/student-enrolled-batch",
+      "text": "Enrolled Batches",
       "icon": "feather-book-open"
     },
     {

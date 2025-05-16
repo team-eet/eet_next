@@ -79,7 +79,7 @@ const CartPage = () => {
                       if (res.data) {
                         setLoading(false);
                         const retData = JSON.parse(res.data)
-                        alert(retData.payid)
+                        // alert(retData.payid)
                         if(retData.success === "1"){
                           // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
                           // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
@@ -505,7 +505,12 @@ const CartPage = () => {
 
                             </Row>
                             <p>
-                              Original Price <span> <del>₹ {originalPrice} </del> <span className={'ml--10'}> ₹ {discountPrice}</span></span>
+                              Original Price <span>
+                              {originalPrice !==0 && (
+                                  <del>₹ {originalPrice} </del>
+                              )}
+
+                              <span className={'ml--10'}> ₹ {discountPrice}</span></span>
                             </p>
                             {/*<p>*/}
                             {/*  Discounted Price <span>₹ {discountPrice}</span>*/}

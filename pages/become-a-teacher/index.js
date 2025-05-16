@@ -30,9 +30,11 @@ const TeacherPage = () => {
               }
           })
               .then(res => {
-                  // console.log(res.data)
+                  console.log("GetTutorDetails",res.data)
                   if(res.data.length !== 0) {
                       setverifySts(res.data[0].bVerifyStatus)
+                  }else{
+                      setverifySts(0)
                   }
 
               })
@@ -70,7 +72,7 @@ const TeacherPage = () => {
             {/*</>}*/}
 
 
-          {verifysts === 1 || verifysts === 3? <>
+          {verifysts === 1 || verifysts === 3 || verifysts === 0 ? <>
               <div className="rbt-become-area bg-color-white rbt-section-gap">
                   <BecomeATeacher/>
               </div>

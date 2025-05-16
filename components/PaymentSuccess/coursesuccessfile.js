@@ -60,7 +60,7 @@ const CourseSuccessFile = () => {
                           txnAmount: res.data?.[0]?.txnAmount || "",
                           purchaseDate: res.data?.[0]?.dCreatedDate2 || "",
                       });
-                      alert(res.data?.[0]?.payment_id)
+                      // alert(res.data?.[0]?.payment_id)
                       // New Code
                       Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${res.data?.[0]?.payment_id}/${udata['regid']}`, {
                           headers: {
