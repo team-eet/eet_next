@@ -39,7 +39,8 @@ const CourseLesson = () => {
     const tabSequence = ['overview', 'content', 'activity', 'practice'];
     const [isLastTab, setIsLastTab] = useState(false);
     const [getPDFData, setPDFData] = useState({ path: '', name: '' });
-
+    const [isPDFLoading, setIsPDFLoading] = useState(true);
+    const [isActivityLoading, setIsActivityLoading] = useState(true);
     let getcid = '0';
 
     const handleSepActivityPage = (aqid) => {
@@ -77,6 +78,7 @@ const CourseLesson = () => {
     const viewActivity = (nAQId,act_first,questionNo,y,nCId,userRegId,sActivityName,nSQId) => {
         // alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
+        setIsActivityLoading(true);
         setShowModal(true)
         setActivityName(sActivityName)
         switch (nSQId){
@@ -111,6 +113,7 @@ const CourseLesson = () => {
             path : `https://docs.google.com/gview?url=${pdfPath}&embedded=true`,
             name : pdfName
         })
+        setIsPDFLoading(true);
         setPDFModal(true)
     }
 
@@ -404,6 +407,19 @@ const CourseLesson = () => {
 
                                     <div className="modal-body p-0"
                                          style={{height: 'calc(100vh - 120px)', overflow: 'hidden'}}>
+                                        {isActivityLoading && (
+                                            <div className="d-flex justify-content-center align-items-center"
+                                                 style={{
+                                                     position: 'absolute',
+                                                     top: 0, left: 0, right: 0, bottom: 0,
+                                                     backgroundColor: '#fff',
+                                                     zIndex: 10
+                                                 }}>
+                                                <div className="spinner-border text-primary" role="status">
+                                                    <span className="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        )}
                                         <iframe
                                             // src="https://eet-frontend.azurewebsites.net/mcqsingleact/pmgn0o-jhTq6ak1pUFrLsQ==/ZygH-gMr7Uo80oqGuiTzOg==/38reo1P9MPCaRV66Hrtl_g==/n/d1EwY7e7aY_66OTtQuHb1w==/LWnmhbJglu1Bt2SwI2JsFg=="
                                             src={getUrlIFrame}
@@ -411,6 +427,7 @@ const CourseLesson = () => {
                                             height="100%"
                                             title="Preview"
                                             style={{border: 'none', overflow: 'hidden'}}
+                                            onLoad={() => setIsActivityLoading(false)}
                                         ></iframe>
                                     </div>
 
@@ -447,17 +464,29 @@ const CourseLesson = () => {
 
                                         <div className="modal-body p-0"
                                              style={{height: 'calc(100vh - 120px)', overflow: 'hidden'}}>
-                                            <div className="modal-body p-0"
-                                                 style={{height: 'calc(100vh - 120px)', overflow: 'hidden'}}>
-                                                <iframe
-                                                    // src="https://eet-frontend.azurewebsites.net/mcqsingleact/pmgn0o-jhTq6ak1pUFrLsQ==/ZygH-gMr7Uo80oqGuiTzOg==/38reo1P9MPCaRV66Hrtl_g==/n/d1EwY7e7aY_66OTtQuHb1w==/LWnmhbJglu1Bt2SwI2JsFg=="
-                                                    src={getPDFData.path}
-                                                    width="100%"
-                                                    height="100%"
-                                                    title="Preview"
-                                                    style={{border: 'none', overflow: 'hidden'}}
-                                                ></iframe>
-                                            </div>
+                                            {isPDFLoading && (
+                                                <div className="d-flex justify-content-center align-items-center"
+                                                     style={{
+                                                         position: 'absolute',
+                                                         top: 0, left: 0, right: 0, bottom: 0,
+                                                         backgroundColor: '#fff',
+                                                         zIndex: 10
+                                                     }}>
+                                                    <div className="spinner-border text-primary" role="status">
+                                                        <span className="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <iframe
+                                                // src="https://eet-frontend.azurewebsites.net/mcqsingleact/pmgn0o-jhTq6ak1pUFrLsQ==/ZygH-gMr7Uo80oqGuiTzOg==/38reo1P9MPCaRV66Hrtl_g==/n/d1EwY7e7aY_66OTtQuHb1w==/LWnmhbJglu1Bt2SwI2JsFg=="
+                                                src={getPDFData.path}
+                                                width="100%"
+                                                height="100%"
+                                                title="Preview"
+                                                style={{border: 'none', overflow: 'hidden'}}
+                                                onLoad={() => setIsPDFLoading(false)}
+                                            ></iframe>
                                         </div>
 
                                         <div className="modal-footer">

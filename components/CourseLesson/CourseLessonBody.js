@@ -83,11 +83,11 @@ const CourseLessonBody = ({
                                                 {/*    <Icon.Eye size={12} className="cursor-pointer"/>*/}
                                                 {/*</a>*/}
                                                 <button onClick={() => pdfViewer(pdf.sFilePath,pdf.sFileName)}
-                                                   className="btn btn-outline-warning icon-b-sm me-2">
+                                                   className="btn btn-primary icon-b-sm me-2">
                                                     <Icon.Eye size={12} className="cursor-pointer"/>
                                                 </button>
                                                 <a href={pdf.sFilePath} target="_blank"
-                                                   className="btn btn-outline-warning icon-b-sm">
+                                                   className="btn btn-success icon-b-sm">
                                                     <Icon.Download size={12} className="cursor-pointer"/>
                                                 </a>
                                             </div>
