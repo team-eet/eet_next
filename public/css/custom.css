@@ -3558,3 +3558,69 @@ div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{
     padding: 10px;
     font-size: 15px;
 }
+
+/* Set full height on parent wrapper */
+.rbt-lesson-area {
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
+/* Make main content a flex container */
+.rbt-lesson-content-wrapper {
+    display: flex !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Sidebar scrolls independently */
+.rbt-lesson-leftsidebar {
+    width: 300px !important; /* or any fixed width */
+    overflow-y: auto !important;
+    height: 100% !important;
+}
+
+/* Right sidebar is also a column layout */
+.rbt-lesson-rightsidebar {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+/* Top bar stays at top */
+.lesson-top-bar {
+    flex-shrink: 0 !important;
+}
+
+/* Content grows and scrolls if needed */
+.inner.content {
+    flex: 1 1 auto !important;
+    overflow-y: auto;
+    overflow-x: hidden !important; /* Hide horizontal scroll */
+}
+
+/* Sticky footer */
+.footerBar {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 10!important;
+}
+
+.liststyle li.active span, .liststyle li.active i {
+    color: #2f57ef !important;
+}
+
+.rbt-course-main-content li {
+    cursor: pointer !important;
+    transition: color 0.3s ease !important;
+}
+
+.rbt-course-main-content li:hover {
+    color: #cc0000 !important;
+}
+
+.rbt-lesson-rightsidebar .content{
+    padding: 40px 50px !important;
+    width: 100%;
+}

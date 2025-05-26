@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 
 const StudentCourse = () => {
   return (
@@ -57,4 +58,4 @@ const StudentCourse = () => {
   );
 };
 
-export default StudentCourse;
+export default withAuth(StudentCourse);

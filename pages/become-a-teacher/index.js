@@ -21,9 +21,11 @@ const TeacherPage = () => {
   const REACT_APP = API_URL
 
   const [verifysts, setverifySts] = useState([])
+  const [getUserData, setUserData] = useState(0)
 
   useEffect(() => {
       if(localStorage.getItem('userData')){
+          setUserData(1)
           Axios.get(`${API_URL}/api/TutorBasics/GetTutorDetails/${DecryptData(localStorage.getItem('userData')).regid}`, {
               headers: {
                   ApiKey: `${API_KEY}`
@@ -41,6 +43,8 @@ const TeacherPage = () => {
               .catch(err => {
                   { ErrorDefaultAlert(err) }
               })
+      }else{
+          setUserData(0)
       }
 
   }, [])
@@ -70,18 +74,23 @@ const TeacherPage = () => {
             {/*</> : <>*/}
 
             {/*</>}*/}
+            {
+                getUserData === 1 ?
+                    verifysts === 1 || verifysts === 3 || verifysts === 0 ? <>
+                        <div className="rbt-become-area bg-color-white rbt-section-gap">
+                            <BecomeATeacher/>
+                        </div>
+                    </> : null
+                    : <div className="rbt-become-area bg-color-white rbt-section-gap">
+                        <BecomeATeacher/>
+                    </div>
+            }
 
-
-          {verifysts === 1 || verifysts === 3 || verifysts === 0 ? <>
-              <div className="rbt-become-area bg-color-white rbt-section-gap">
-                  <BecomeATeacher/>
-              </div>
-          </> : null}
 
             <BackToTop/>
             <Separator/>
             {verifysts === 1 ? <>
-                <FooterOne />
+                <FooterOne/>
             </> : <>
                 <FooterOne />
             </>}

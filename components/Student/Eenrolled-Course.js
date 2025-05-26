@@ -16,6 +16,7 @@ import {
 } from "@/components/Services/SweetAlert";
 import DatePicker from "react-datepicker";
 import {FormGroup, Label} from "reactstrap";
+import Skeleton from "react-loading-skeleton";
 
 const EnrolledCourses = () => {
   const [crscnt, setcrscnt] = useState('')
@@ -160,28 +161,77 @@ const EnrolledCourses = () => {
                 aria-labelledby="course-tab"
             >
               <div className="row g-5">
-                {getCourse.length !== 0 ? (
-                    <>
-                      {getCourse.map((slide, index) => (
+                {
+                  getApiCall === 1 ?
+                      getCourse.length !== 0 ? (
+                          <>
+                            {getCourse.map((slide, index) => (
+                                <div
+                                    className="col-lg-4 col-md-6 col-12"
+                                    key={`course-enrolled-${index}`}
+                                >
+                                  <CourseWidgets
+                                      data={slide}
+                                      courseStyle="two"
+                                      isProgress={true}
+                                      isCompleted={false}
+                                      isEdit={false}
+                                      showDescription={false}
+                                      showAuthor={false}
+                                  />
+                                </div>
+                            ))}
+                          </>
+                      ) : (
+                          <p className={'text-center'}>No Enrolled Courses!</p>
+                      ) :
+                      Array.from({length:3}).map((_,index) => (
                           <div
                               className="col-lg-4 col-md-6 col-12"
-                              key={`course-enrolled-${index}`}
                           >
-                            <CourseWidgets
-                                data={slide}
-                                courseStyle="two"
-                                isProgress={true}
-                                isCompleted={false}
-                                isEdit={false}
-                                showDescription={false}
-                                showAuthor={false}
-                            />
+
+                            <div className="rbt-card variation-01 rbt-hover">
+                              <div className="rbt-card-img">
+                                <Skeleton height={200}/>
+                              </div>
+
+                              <div className="rbt-card-body">
+                                <div className="rbt-card-top d-flex justify-content-between align-items-center">
+                                  <div className="rbt-review">
+                                    <Skeleton width={80} height={20}/>
+                                  </div>
+                                </div>
+
+                                <h4 className="rbt-card-title mt-2">
+                                  <Skeleton width={`80%`} height={24}/>
+                                </h4>
+
+                                <ul className="rbt-meta d-flex gap-3 mt-2">
+                                  <li><Skeleton width={80} height={16}/></li>
+                                  <li><Skeleton width={80} height={16}/></li>
+                                </ul>
+
+                                <div className="rbt-progress-style-1 mb--20 mt--10">
+                                  <div className="single-progress">
+                                    <h6 className="rbt-title-style-2 mb--10">
+                                      <Skeleton width={100} height={16}/>
+                                    </h6>
+                                    <div className="progress">
+                                      <Skeleton height={10} width={`100%`}/>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="">
+                                  <Skeleton height='45px' width={`100%`}/>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                      ))}
-                    </>
-                ) : (
-                    <p className={'text-center'}>No Enrolled Courses!</p>
-                )}
+                      ))
+
+                }
+
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import PageHead from "../../../../../../Head";
+import PageHead from "../../Head";
 
 import Context from "@/context/Context";
 import { Provider } from "react-redux";

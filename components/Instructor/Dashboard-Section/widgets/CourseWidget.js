@@ -15,6 +15,7 @@ const CourseWidget = ({
   const [discountPercentage, setDiscountPercentage] = useState("");
   const [totalReviews, setTotalReviews] = useState("");
   const [rating, setRating] = useState("");
+  const [getIdArray, setIdArray] = useState([]);
 
   const getDiscountPercentage = () => {
     let discount = data.coursePrice * ((100 - data.offerPrice) / 100);
@@ -40,6 +41,15 @@ const CourseWidget = ({
     getDiscountPercentage();
     getTotalReviews();
     getTotalRating();
+    const courseInfo = {
+      nACId: data.nACId,
+      nMId: data.nMId,
+      nCLId: data.nCLId,
+      mode: EncryptData('N'),
+      nCId: data.nCId,
+    };
+    setIdArray(EncryptData(courseInfo))
+
   });
 
   return (
@@ -47,7 +57,7 @@ const CourseWidget = ({
       {}
       <div className="rbt-card variation-01 rbt-hover">
         <div className="rbt-card-img">
-          <Link href={`/courselesson/${EncryptData(data.nCId)}/${EncryptData(data.nMId)}/${EncryptData(data.nCLId)}`}>
+          {/*<Link href={`/courselesson/${EncryptData(data.nCId)}/${EncryptData(data.nMId)}/${EncryptData(data.nCLId)}`}>*/}
             <img
               width={330}
               height={227}
@@ -58,7 +68,6 @@ const CourseWidget = ({
             {/*  <span>{`-${discountPercentage}%`}</span>*/}
             {/*  <span>Off</span>*/}
             {/*</div>*/}
-          </Link>
         </div>
         <div className="rbt-card-body">
           {courseStyle === "two" && (
@@ -76,8 +85,9 @@ const CourseWidget = ({
                 </div>
               </div>
               <h4 className="rbt-card-title">
-                <Link
-                    href={`/courselesson/${EncryptData(data.nACId)}/${EncryptData(data.nMId)}/${EncryptData(data.nCLId)}/${EncryptData('N')}/${EncryptData((data.nCId))}`}>{data.sCourseTitle}</Link>
+                {/*<Link*/}
+                {/*    href={`/courselesson/${EncryptData(data.nACId)}/${EncryptData(data.nMId)}/${EncryptData(data.nCLId)}/${EncryptData('N')}/${EncryptData((data.nCId))}`}>{data.sCourseTitle}</Link>*/}
+                {data.sCourseTitle}
               </h4>
             </>
           )}
@@ -136,7 +146,7 @@ const CourseWidget = ({
               <div className="rbt-card-bottom">
                 <Link
                   className="rbt-btn btn-sm bg-primary-opacity w-100 text-center"
-                  href={`/courselesson/${EncryptData(data.nACId)}/${EncryptData(data.nMId)}/${EncryptData(data.nCLId)}/${EncryptData('N')}/${EncryptData((data.nCId))}`}
+                  href={`/courselesson/${getIdArray}`}
                 >
                   View Course
                 </Link>
