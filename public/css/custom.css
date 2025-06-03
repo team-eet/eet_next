@@ -3621,6 +3621,66 @@ div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line]{
 }
 
 .rbt-lesson-rightsidebar .content{
-    padding: 40px 50px !important;
+    padding: 40px 30px !important;
     width: 100%;
+}
+
+/* New Code */
+@media only screen and (max-width: 991px) {
+    .rbt-lesson-content-wrapper .rbt-lesson-leftsidebar {
+        position: absolute;
+        z-index: 100;
+    }
+
+    .rbt-lesson-content-wrapper .rbt-lesson-leftsidebar .rbt-toggle-css {
+        display: block !important;
+    }
+}
+
+.section-title-with-toggle{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10px;
+    border-bottom: 2px solid var(--color-border-2);
+}
+
+.sidebar-lesson{
+    padding: 0;
+    border: 0 none;
+    background: #4b6ef2;
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    color: #fff;
+    font-size: 16px;
+    line-height: 37px;
+    filter: drop-shadow(1px 1px 3px #2f57ef);
+}
+
+.cardDesignEET {
+    position: relative;
+    transition: all 0.4s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cardDesignEET::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(14, 111, 253, 0.3), transparent);
+    transition: all 0.5s ease;
+}
+
+.cardDesignEET:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.cardDesignEET:hover::before {
+    left: 100%;
 }

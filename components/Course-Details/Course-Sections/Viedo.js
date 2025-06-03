@@ -285,7 +285,7 @@ const Viedo = ({ checkMatchCourses }) => {
     getPromocodeDetails()
     // Close Promocode
 
-  }, [])
+  }, [courseId])
 
   // console.log(checkMatchCourses)
 

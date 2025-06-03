@@ -18,6 +18,8 @@ const CourseDetailsOne = ({ checkMatchCourses }) => {
   useEffect(() => {
     if (checkMatchCourses.length !== 0) {
       setisLoading(false);
+    }else{
+      setisLoading(true)
     }
   }, [checkMatchCourses]);
   // console.log(checkMatchCourses)

@@ -48,6 +48,7 @@ const CourseWidget = ({
       mode: EncryptData('N'),
       nCId: data.nCId,
     };
+    console.log("courseInfo",courseInfo)
     setIdArray(EncryptData(courseInfo))
 
   });

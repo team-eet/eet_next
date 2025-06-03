@@ -33,15 +33,17 @@ const SingleCourse = () => {
     const REACT_APP = API_URL
     const [isLoading, setisLoading] = useState(true)
     const [getvideoOpenModal,setvideoOpenModal] = useState('')
+    const courseIds = router.asPath.split("/").pop();
 
 
     // let getCourse;
 
-  const getCourse = () => {
-    const url = window.location.href
-    const parts = url.split("/");
-    const courseId = parts[parts.length - 1];
-    console.log("Course Id",DecryptData(courseId))
+  const getCourse = (courseId) => {
+    // const url = window.location.href
+    // const parts = url.split("/");
+    // const courseId = parts[parts.length - 1];
+    // console.log("Course Id",DecryptData(courseId))
+      setcourseData([])
     Axios.get(`${API_URL}/api/coursemain/GetCoursesView/${courseId}/0`, {
       headers: {
         ApiKey: `${API_KEY}`
@@ -143,10 +145,13 @@ const SingleCourse = () => {
     }, []);
 
   useEffect(() => {
-      getCourse();
+      if (courseIds && courseIds !== "[courseId]") {
+          getCourse(courseIds);
+      }
+
       // console.log(getcourseData)
     //
-  }, []);
+  }, [router.asPath]);
 
   return (
     <>
@@ -185,7 +190,7 @@ const SingleCourse = () => {
                    aria-hidden="true">
                   <div className="modal-dialog modal-fullscreen">
                       <div className="modal-content">
-                          <div className="modal-header">
+                          <div className="modal-header d-flex justify-content-between">
                               <h1 className="modal-title fs-3" id="exampleModalToggleLabel">{checkMatch.sCourseTitle}</h1>
                               {/*<button type="button" className="btn-close" data-bs-dismiss="modal"*/}
                               {/*        aria-label="Close"></button>*/}

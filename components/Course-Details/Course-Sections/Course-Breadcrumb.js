@@ -17,6 +17,8 @@ const CourseBreadcrumb = ({ getMatchCourse, CourseTag, Tag }) => {
   useEffect(() => {
     if (getMatchCourse.length !== 0) {
       setisLoading(false);
+    }else{
+      setisLoading(true)
     }
   }, [getMatchCourse]);
 

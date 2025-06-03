@@ -56,20 +56,18 @@ const CourseLessonBody = ({
             <div className="inner content">
                 {activeTab.tab === 'overview' && (
                     <div>
-                        <div className="section-title pt-5 pb-2">
-                            <h4>Introduction</h4>
-                        </div>
+                        <h5 className="pb-2">Introduction</h5>
                         <div>{parse(sContent)}</div>
                     </div>
                 )}
 
                 {activeTab.tab === 'content' && (
                     <div>
-                        <h5 className="pb-2">PDF Content</h5>
+                        <h5 className="pb-2 m-0">PDF Content</h5>
                         <div className="row" style={{marginBottom: '100px'}}>
                             {tutresourcearray.map((pdf, index) => (
-                                <div className="col-lg-4 h-100 mt-3" key={index}>
-                                    <div className="card boxShadow border-primary p-3 h-100">
+                                <div className="col-lg-4 h-100 mt-4" key={index}>
+                                    <div className="card boxShadow border-primary cardDesignEET p-3 h-100">
                                         <p style={{fontSize: '16px'}}>
                                             {pdf.sFileName.length > 33 ? `${pdf.sFileName.substr(0, 33)}...` : pdf.sFileName}
                                         </p>
@@ -102,7 +100,7 @@ const CourseLessonBody = ({
                 {activeTab.tab === 'activity' && (
                     <>
                         {SepActivitylist && (
-                            <h5 className="pb-2">Activity</h5>
+                            <h5 className="pb-2 m-0">Activity</h5>
                         )}
 
                         <div className="row mt-3" id="Activity" style={{ marginBottom: '100px' }}>
@@ -112,7 +110,7 @@ const CourseLessonBody = ({
                                         <div className="col-lg-6 mt-4">
                                             <Link href="#" onClick={() => handleSepActivityPage(item.nAQId)}>
                                                 {SepActivitylist && (
-                                                    <Card className="border-primary activity-card">
+                                                    <Card className="border-primary activity-card cardDesignEET">
                                                         <CardBody className="card-mobile-view p-4">
                                                             <Row>
                                                                 <Col lg={10}>
@@ -160,7 +158,7 @@ const CourseLessonBody = ({
                                     ) : (
                                         singleActivityPage && (
                                             <div className="col-lg-6 mt-4">
-                                                <Card className="border-primary activity-card">
+                                                <Card className="border-primary activity-card cardDesignEET">
                                                     <CardBody className="card-mobile-view p-4">
                                                         <Row>
                                                             <Col lg={12}>

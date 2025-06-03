@@ -76,7 +76,7 @@ const CourseLesson = () => {
     // };
 
     const viewActivity = (nAQId,act_first,questionNo,y,nCId,userRegId,sActivityName,nSQId) => {
-        // alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
+        alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
         setShowModal(true)
@@ -352,6 +352,7 @@ const CourseLesson = () => {
                         TestATId={TestATId}
                         IdArray={getEncodedId}
                         sidebar={sidebar}
+                        setSidebar={() => setSidebar(!sidebar)}
                         setActiveTab={setActiveTab}
                     />
                     {

@@ -17,12 +17,14 @@ const Content = ({ checkMatchCourses }) => {
   // console.log(checkMatchCourses)
   const [getsectionItems, setsectionItems] = useState([])
   const [getNumberCount, setNumberCount] = useState({})
+    const courseIds = router.asPath.split("/").pop();
 
-  const getcourseContent = () => {
-    const url = window.location.href
-    const parts = url.split("/");
-    const courseId = parts[parts.length - 1]; // Gets the last part of the URL
-    console.log(DecryptData('mcFGoepMtDnWOC38Dn11sg=='), EncryptData(0))
+  const getcourseContent = (courseId) => {
+    // const url = window.location.href
+    // const parts = url.split("/");
+    // const courseId = parts[parts.length - 1]; // Gets the last part of the URL
+    // console.log(DecryptData('mcFGoepMtDnWOC38Dn11sg=='), EncryptData(0))
+      setIsApiCall(0)
     Axios.get(`${API_URL}/api/section/GetCourseSummaryAll/${courseId}/${EncryptData(0)}`, {
       headers: {
         ApiKey: `${API_KEY}`
@@ -66,9 +68,10 @@ const Content = ({ checkMatchCourses }) => {
   }
 
   useEffect(() => {
-    getcourseContent();
-
-  }, []);
+      if (courseIds && courseIds !== "[courseId]") {
+          getcourseContent(courseIds);
+      }
+  }, [router.asPath]);
   // },[])
   return (
     <>

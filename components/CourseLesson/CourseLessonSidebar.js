@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 
-const CourseLessonSidebar = ({ isBatch, LessonData, activeTab, handleTabClick, TutorialATId, ActivityATId, PracticeATId, TestATId ,IdArray,sidebar,setActiveTab }) => {
+const CourseLessonSidebar = ({ isBatch, LessonData, activeTab, handleTabClick, TutorialATId, ActivityATId, PracticeATId, TestATId ,IdArray,sidebar,setActiveTab,setSidebar }) => {
     // 🟢 State for search query
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -27,10 +27,22 @@ const CourseLessonSidebar = ({ isBatch, LessonData, activeTab, handleTabClick, T
             }`}
         >
             <div className="rbt-course-feature-inner rbt-search-activation">
-                <div className="section-title">
-                    <h4 className="rbt-title-style-3">
+                <div className="section-title section-title-with-toggle">
+                    <h4 className="rbt-title-style-3 border-0 m-0">
                         {isBatch.bIsWithBatch === "yes" ? "Batch Content" : "Course Content"}
                     </h4>
+
+                    <div className="rbt-lesson-toggle rbt-toggle-css d-none">
+                        <button
+                            className={`lesson-toggle-active btn-round-white-opacity sidebar-lesson ${
+                                !sidebar ? "sidebar-hide" : ""
+                            }`}
+                            title="Toggle Sidebar"
+                            onClick={setSidebar}
+                        >
+                            <i className="feather-menu"></i>
+                        </button>
+                    </div>
                 </div>
                 <div className="lesson-search-wrapper">
                     <form className="rbt-search-style-1">
