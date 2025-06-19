@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 
 const SettingPage = () => {
   return (
@@ -56,4 +57,4 @@ const SettingPage = () => {
   );
 };
 
-export default SettingPage;
+export default withAuth(SettingPage);

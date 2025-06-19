@@ -53,9 +53,7 @@ const InstructorDashboardSidebar = ({ url }) => {
       })
           .then(res => {
             if(res.data.length !== 0) {
-              console.log(res.data[0])
               let res_data = res.data[0];
-              console.log("res_data",res_data)
               for (let key in res_data) {
                 if (res_data[key] === null) {
                   res_data[key] = 0;
@@ -67,13 +65,10 @@ const InstructorDashboardSidebar = ({ url }) => {
               const verify_cover2 = res.data[0].sCoverPhotoCenter_verify
               const verify_cover3 = res.data[0].sCoverPhotoRight_verify
               if(verify_cover1 === 3 || verify_cover2 === 3 || verify_cover3 === 3){
-                // console.log('3')
                 setcover_verify(3)
               } else if(verify_cover1 === 1 || verify_cover2 === 1 || verify_cover3 === 1){
-                // console.log('1')
                 setcover_verify(1)
               } else if(verify_cover1 === 2 || verify_cover2 === 2 || verify_cover3 === 2) {
-                // console.log('2')
                 setcover_verify(2)
               } else {
                 setcover_verify(0)
@@ -195,7 +190,6 @@ const InstructorDashboardSidebar = ({ url }) => {
                         const verificationStatus = options.find(
                             (item) => item.sectionName === data.text
                         )
-                        // console.log('verificationStatus', verificationStatus)
                         if (!verificationStatus) return null; // Handle if no status found
 
                         const { status } = verificationStatus;

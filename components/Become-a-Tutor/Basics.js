@@ -132,7 +132,6 @@ const Basics = () => {
       }
     })
         .then(res => {
-          // console.log(res.data)
           if (res.data.length !== 0) {
             setCountry(res.data)
               // const defaultCountry = res.data.find(item => item.sCountryname === 'India')
@@ -158,7 +157,6 @@ const Basics = () => {
                 }
             })
                 .then(res => {
-                    console.log(res.data)
                     if (res.data.length !== 0) {
                         setState(res.data)
                     }
@@ -184,7 +182,6 @@ const Basics = () => {
             }
           })
               .then(res => {
-                // console.log(res.data)
                 if (res.data.length !== 0) {
                   setCity(res.data)
                 }
@@ -206,7 +203,6 @@ const Basics = () => {
   }
 
     const VerifyEmail = () => {
-      console.log(sEmail)
 
       if(emailpattern.test(sEmail)) {
           sendSignInLinkToEmail(auth, sEmail, {
@@ -224,7 +220,6 @@ const Basics = () => {
               // localStorage.setItem('userRegData', JSON.stringify(userData))
               alert('We have sent you an email with a link to sign in')
           }).catch(err => {
-              console.error('Firebase Error:', err.code, err.message)
 
               alert('Firebase Error:', err)
           })
@@ -235,13 +230,12 @@ const Basics = () => {
     const [mob_verify, setmob_verify] = useState(false)
     const verifyMobile = () => {
 
-          // console.log(value)
+
           Axios.get(`${API_URL}/api/registration/CheckEmailMobileExist/${sMobile}`, {
               headers: {
                   ApiKey: `${API_KEY}`
               }
           }).then(res => {
-              // console.log('called')
               if (res.data[0].ecnt === 1) {
                   if (emailpattern.test(sMobile)) {
                       chkErr = 'Email already exists'
@@ -253,9 +247,7 @@ const Basics = () => {
                   }
 
               } else {
-                  // alert('go ahead')
                   const verify = new RecaptchaVerifier(auth, 'recaptcha', {})
-                  // console.log(verify)
                   const phone = `+91${sMobile}`
                   const confirmation = signInWithPhoneNumber(auth, phone, verify)
                       .then((code) => {
@@ -356,7 +348,6 @@ const Basics = () => {
               }
           })
               .then(res => {
-                  console.log("Details",res.data)
 
                   if(res.data.length !== 0) {
                       // if(res.data[0].bIsReview !== 0) {
@@ -377,7 +368,6 @@ const Basics = () => {
               }
           })
               .then(res => {
-                  console.log('GetTutorVerify', res.data)
                   if(res.data.length !== 0){
                       setverifySts(res.data[0])
                       setisBasicAlert(1)
@@ -388,15 +378,13 @@ const Basics = () => {
               .catch(err => {
                   { ErrorDefaultAlert(err) }
               })
-          // console.log(JSON.parse(localStorage.getItem('verify_mobile')))
-          // console.log((DecryptData(DecryptData(localStorage.getItem('userData')).username).Username))
           setsFname(DecryptData(localStorage.getItem('userData')).fname)
           setsLname(DecryptData(localStorage.getItem('userData')).lname)
           setregId(DecryptData(localStorage.getItem('userData')).regid)
           // setUsername(DecryptData(DecryptData(localStorage.getItem('userData')).username))
           setUsername((DecryptData(DecryptData(localStorage.getItem('userData')).username).EM))
 
-          console.log(DecryptData(DecryptData(localStorage.getItem('userData')).username))
+          // console.log(DecryptData(DecryptData(localStorage.getItem('userData')).username))
 
           if((DecryptData(DecryptData(localStorage.getItem('userData')).username).EM) === 'email'){
               // EM
@@ -424,7 +412,6 @@ const Basics = () => {
               }
           })
               .then(res => {
-                  // console.log(res.data)
                   // if(res.data.)
                   if(res.data[0].cnt !== 0) {
                       setTutorcnt(res.data[0].cnt)
@@ -461,7 +448,6 @@ const Basics = () => {
               }
           })
               .then(res => {
-                  console.log("Basic Details",res.data)
                   if(res.data.length !== 0) {
                       setsFname(res.data[0].sFName)
                       setsLname(res.data[0].sLName)
@@ -485,7 +471,6 @@ const Basics = () => {
                           }
                       })
                           .then(ret => {
-                              // console.log(ret.data)
                               if (ret.data.length !== 0) {
                                   setState(ret.data)
                               }
@@ -505,13 +490,11 @@ const Basics = () => {
                           }
                       })
                           .then(ret => {
-                              // console.log(ret.data)
                               if (ret.data.length !== 0) {
                                   setCity(ret.data)
                               }
                               const defaultcity = ret.data.filter(item => item.nCityId === res.data[0].nCityId)
 
-                              // console.log('defaultstate', defaultcity)
                               if (defaultcity) {
                                   setcityId(res.data[0].nCityId); // Set default countryId to India's ID
                               }
@@ -626,7 +609,6 @@ const Basics = () => {
               }}
               enableReinitialize={true}
               onSubmit={async (values, {resetForm}) => {
-                console.log("values",values)
                   if(verifysts.sBasic_verify === 2) {
                     // router.push('/become-a-tutor/profile-photo')
                     router.push(`/become-a-tutor/profile-photo`)
@@ -636,11 +618,9 @@ const Basics = () => {
                               ApiKey: `${API_KEY}`
                           }
                       }).then(res => {
-                          // console.log(res.data)
                           setisLoading(true)
                           const retData = JSON.parse(res.data)
                           localStorage.removeItem('verify_uname')
-                          // console.log(retData)
                           resetForm({})
                           if(retData.success === '1') {
                               router.push('/become-a-tutor/profile-photo')

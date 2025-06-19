@@ -16,6 +16,7 @@ import { Provider } from "react-redux";
 import {API_URL, API_KEY} from "../../../constants/constant";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
+import withAuth from "@/components/Utils/withAuth";
 
 const TutorProfile = () => {
   const REACT_APP = API_URL
@@ -105,4 +106,4 @@ const TutorProfile = () => {
   );
 };
 
-export default TutorProfile;
+export default withAuth(TutorProfile);

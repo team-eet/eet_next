@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import IntroVideo from "@/components/Become-a-Tutor/IntroVideo";
+import withAuth from "@/components/Utils/withAuth";
 
 const OrderHistoryPage = () => {
   return (
@@ -55,4 +56,4 @@ const OrderHistoryPage = () => {
   );
 };
 
-export default OrderHistoryPage;
+export default withAuth(OrderHistoryPage);

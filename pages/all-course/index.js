@@ -8,7 +8,7 @@ import AllCoursetwo from "@/components/AllCourse/allcourse";
 const AllCourse = () => {
     return (
         <>
-            <PageHead title="Home - Online Courses & Education NEXTJS14 Template" />
+            <PageHead title="Courses - EET English" />
 
             <Provider store={Store}>
                 <Context>

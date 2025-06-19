@@ -17,7 +17,7 @@ const BlogListLayout = () => {
   let getAllBlogs = JSON.parse(JSON.stringify(BlogData.blogList));
   return (
     <>
-      <PageHead title="Blog List - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Blog List - EET English" />
       <Provider store={Store}>
         <Context>
           <MobileMenu />

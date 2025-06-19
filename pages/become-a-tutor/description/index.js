@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import Description from "@/components/Become-a-Tutor/Description";
+import withAuth from "@/components/Utils/withAuth";
 
 const TutorDescription = () => {
   return (
@@ -55,4 +56,4 @@ const TutorDescription = () => {
   );
 };
 
-export default TutorDescription;
+export default withAuth(TutorDescription);

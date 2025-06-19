@@ -76,7 +76,7 @@ const CourseLesson = () => {
     // };
 
     const viewActivity = (nAQId,act_first,questionNo,y,nCId,userRegId,sActivityName,nSQId) => {
-        alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
+        // alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
         setShowModal(true)
@@ -100,6 +100,11 @@ const CourseLesson = () => {
             case 12:
             case 13:
                 setUrlIFrame(`${WEB_URL}/mcqmultipleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                break;
+            case 14:
+            case 15:
+            case 16:
+                setUrlIFrame(`${WEB_URL}/mcqmultipleoptionact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
                 break;
             default:
                 setUrlIFrame(`${WEB_URL}/frame_error`)

@@ -16,11 +16,12 @@ import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import Reciept from "@/components/Student/Receipt";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 const StudentReceipt = () => {
 
     return (
         <>
-            <PageHead title="Student Profile - Online Courses & Education NEXTJS14 Template" />
+            <PageHead title="Student Profile - EET English" />
 
             <Provider store={Store}>
                 <Context>
@@ -61,4 +62,4 @@ const StudentReceipt = () => {
     );
 };
 
-export default StudentReceipt;
+export default withAuth(StudentReceipt);

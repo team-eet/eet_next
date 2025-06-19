@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import Interest from "@/components/Become-a-Tutor/Interest";
+import withAuth from "@/components/Utils/withAuth";
 
 const TutorInterest = () => {
   return (
@@ -55,4 +56,4 @@ const TutorInterest = () => {
   );
 };
 
-export default TutorInterest;
+export default withAuth(TutorInterest);

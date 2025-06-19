@@ -12,6 +12,7 @@ import Store from "@/redux/store";
 import React, {useEffect, useState} from "react";
 import { Provider } from "react-redux";
 import Basics from "@/components/Become-a-Tutor/Basics";
+import withAuth from "@/components/Utils/withAuth";
 
 const BasicsDashboard = () => {
   const [url, setUrl] = useState('')
@@ -19,7 +20,6 @@ const BasicsDashboard = () => {
     const url = window.location.href
     const parts = url.split("/");
     const postId = parts[parts.length - 1];
-    // console.log(postId)
     setUrl(postId)
     // if(postId === 'basics') {
     //   alert('basics')
@@ -65,4 +65,4 @@ const BasicsDashboard = () => {
   );
 };
 
-export default BasicsDashboard;
+export default withAuth(BasicsDashboard);

@@ -62,7 +62,7 @@ const AllBatches = () => {
 
         const isValidTimeFormat = (time) => /^\d{1,2}:\d{2}\s*(am|pm)$/i.test(time);
         if (!isValidTimeFormat(startTime) || !isValidTimeFormat(endTime)) {
-            console.error("Invalid time format:", startTime, endTime);
+            // console.error("Invalid time format:", startTime, endTime);
             return { hours: 0, minutes: 0 };
         }
 
@@ -85,7 +85,7 @@ const AllBatches = () => {
         const totalHours = Math.floor(totalMinutes / 60);
         const remainingMinutes = totalMinutes % 60;
 
-        console.log("Final Calculation:", { totalHours, remainingMinutes });
+        // console.log("Final Calculation:", { totalHours, remainingMinutes });
 
         return { totalHours, remainingMinutes };
     };
@@ -112,7 +112,7 @@ const AllBatches = () => {
                 if (res.data) {
                     // console.log(res.data)
                     if (res.data.length !== 0) {
-                        console.log("Batches All Data",res.data)
+                        // console.log("Batches All Data",res.data)
                         setBatchData(res.data)
                         setbatchcount(res.data[0]['remain_course_count'])
                     }
@@ -188,7 +188,7 @@ const AllBatches = () => {
     };
 
     const onTutorchange = (e) => {
-        console.log(e.target.value)
+        // console.log(e.target.value)
 
 
         Axios.get(`${API_URL}/api/coursemain/GetBatchCoursesMem/0/${categoryId}/${e.target.value}/${shortBy}/${searchBy}`, {
@@ -198,7 +198,7 @@ const AllBatches = () => {
         })
             .then(res => {
                 if (res.data) {
-                    console.log(res.data)
+                    // console.log(res.data)
                     // if (res.data.length !== 0) {
                     //     setBatchData(res.data)
                     //     setbatchcount(res.data[0]['remain_course_count'])
@@ -260,7 +260,7 @@ const AllBatches = () => {
                             <div className="row">
                                 <div className="col-lg-12">
                                     <ul className="page-list">
-                                        <li className="rbt-breadcrumb-item"><Link href="index.html">Home</Link></li>
+                                        <li className="rbt-breadcrumb-item"><Link href={`/`}>Home</Link></li>
                                         <li>
                                             <div className="icon-right"><i className="feather-chevron-right"></i></div>
                                         </li>
@@ -902,11 +902,11 @@ const AllBatches = () => {
                                                     <span className="lesson-number mb-1">By <span
                                                         className={'text-dark'}><b>{data.sFName} {data.sLName}</b></span></span>
                                                     <span className="lesson-number">
-    {data.batchdays} Days
-    <span className="lesson-time ms-2">
-        ({totalHours} Hours {remainingMinutes} Minutes)
-    </span>
-</span>
+                                                        {data.batchdays} Days
+                                                        <span className="lesson-time ms-2">
+                                                            ({totalHours} Hours {remainingMinutes} Minutes)
+                                                        </span>
+                                                    </span>
                                                     <p className="rbt-card-text m-0">
                                                     <span
                                                         className={'mr-2'}>{new Date(data.batchstartdatenew).getDate()} {new Date(data.batchstartdatenew).toLocaleString('default', {month: 'short'})} - {new Date(data.dBatchEndDate).getDate()} {new Date(data.dBatchEndDate).toLocaleString('default', {month: 'short'})}</span> |

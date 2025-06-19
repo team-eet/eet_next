@@ -60,7 +60,6 @@ const Certification = () => {
 
 
   const handleChangeTitle = (e, index) => {
-    console.log(certificationFields.length)
     const { value } = e.target;
     if(certificationFields.length >= 1){
       const updatedFields = [...certificationFields];
@@ -110,7 +109,6 @@ const Certification = () => {
 
     if (event.target.files[0].size < 2000000) {
       if (fileext.includes(event.target.files[0].type)) {
-        // console.log(event.target.files[0])
         getBase64(event.target.files[0])
             .then((result) => {
               if(certificationFields.length >= 1){
@@ -261,12 +259,10 @@ const Certification = () => {
     setcertificationFields(updatedFields);
 
     const deletedFields = certificationFields.filter((field) => field.nTCId === id);
-    console.log('deletedFields', deletedFields)
 
     const deletedarray = deletedFields.map((item) => {
       return item.nTCId
     })
-    console.log('deletedArray', deletedarray)
     setdeletedArray(deletedarray)
 
     const originalArray = updateArray;
@@ -284,7 +280,6 @@ const Certification = () => {
       }
     })
         .then(res => {
-          // console.log(res.data)
           // window.location.reload()
         })
         .catch(err => {
@@ -305,9 +300,7 @@ const Certification = () => {
   }
   const [isCertified, setisCertified] = useState('')
   const handleIsCertification= (e) => {
-    // console.log(e.target.checked)
     setisCertified(e.target.checked)
-    // console.log(e.target.checked)
     if(e.target.checked){
       sethideFields(false)
     } else {
@@ -336,17 +329,14 @@ const Certification = () => {
       positionsOfThree.push(currentIndex);
     }
 
-    // console.log(positionsOfThree);
     let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification', 'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
     const array3 = positionsOfThree;
 
     let valuesFromArray1 = array3.map(index => array1[index - 1]);
 
-    // console.log(valuesFromArray1);
     let startIndex = ''
     for (let i = 0; i < array3.length; i++) {
       startIndex = array3[i];
-      console.log(startIndex);
       // let startIndex = 6; // Start checking from the index after the first occurrence of 3
       let nextIndex = -1;
 
@@ -358,15 +348,14 @@ const Certification = () => {
       }
 
       if (nextIndex !== -1) {
-        console.log("The index of the next occurrence of 3 after index", startIndex, "is:", nextIndex);
+        // console.log("The index of the next occurrence of 3 after index", startIndex, "is:", nextIndex);
       } else {
-        console.log("No occurrence of 3 found after index", startIndex);
+        // console.log("No occurrence of 3 found after index", startIndex);
       }
 
 
     }
 
-    // console.log(a)
 
     if(localStorage.getItem('userData')) {
       setregId(DecryptData(localStorage.getItem('userData')).regid)
@@ -378,7 +367,6 @@ const Certification = () => {
         }
       })
           .then(res => {
-            console.log("GetTutorEducationVerify",res.data)
             if (res.data.length !== 0) {
               if (res.data[0].sCertification_verify !== null){
                 setCommentMessage(res.data[0])
@@ -403,7 +391,6 @@ const Certification = () => {
         }
       })
           .then(res => {
-            // console.log(res.data)
             if(res.data[0].cnt !== 0) {
               setTutorcnt(res.data[0].cnt)
             }
@@ -418,7 +405,6 @@ const Certification = () => {
         }
       })
           .then(res => {
-            console.log('GetTutorCertiData', res.data)
             if(res.data.length !== 0) {
               settutcerticnt(res.data[0].certification_data)
             }
@@ -436,7 +422,6 @@ const Certification = () => {
               return item.nTCId
             })
 
-            // console.log(array)
             setUpdatearray(array)
 
             // ---------------------
@@ -444,7 +429,6 @@ const Certification = () => {
               const certivalue = res.data.map((item, index) => {
                 return item.sCertification_comment
               })
-              // console.log(certivalue)
               // if(certivalue[0] === 'No Certification') {
               //   sethideFields(false)
               // }
@@ -480,7 +464,6 @@ const Certification = () => {
               //
               // }
             }
-            console.log('GetTutorDetails' ,res.data)
 
           })
           .catch(err => {
@@ -577,13 +560,11 @@ const Certification = () => {
 
                       validateForm(values).then((errors) => {
                         if (Object.keys(errors).length === 0) {
-                          console.log("Form is valid: ", values);
+                          // console.log("Form is valid: ", values);
                         } else {
-                          console.log("Form has errors: ", errors);
+                          // console.log("Form has errors: ", errors);
                         }
                       });
-                      // console.log([values])
-                      // console.log([values])
                       if (verifySts === 2) {
                         router.push('/become-a-tutor/teaching-experience')
                       } else {
@@ -595,14 +576,12 @@ const Certification = () => {
                               nRegId : regId,
                               sIsCertification : "true"
                             }
-                            // console.log(noEducation)
                             await Axios.post(`${API_URL}/api/TutorCertification/InsertTutorBasicCertificate`, noEducation, {
                               headers: {
                                 ApiKey: `${API_KEY}`
                                 // 'Content-Type' : 'application/json'
                               }
                             }).then(res => {
-                              // console.log(res.data)
                               const retData = JSON.parse(res.data)
                               resetForm({})
                               if(retData.success === '1') {
@@ -626,17 +605,14 @@ const Certification = () => {
                                   ApiKey: `${API_KEY}`
                                 }
                               }).then(res => {
-                                // console.log(res.data)
                                 const retData = JSON.parse(res.data)
                                 // localStorage.removeItem('verify_uname')
-                                // console.log(retData)
                                 resetForm({})
                                 if (retData.success === '1') {
                                   router.push('/become-a-tutor/teaching-experience')
                                 }
                               })
                                   .catch(err => {
-                                    // console.log(err)
                                     {
                                       ErrorDefaultAlert(JSON.stringify(err.response))
                                     }
@@ -650,16 +626,13 @@ const Certification = () => {
                                 sCertification : CertificationList[0]
                               }]
                               setisLoading(true)
-                              // console.log(updateValues)
                               await Axios.put(`${API_URL}/api/TutorCertification/UpdateTutorCertification`, updateValues, {
                                 headers: {
                                   ApiKey: `${API_KEY}`
                                 }
                               }).then(res => {
-                                console.log(res.data)
                                 const retData = JSON.parse(res.data)
                                 // localStorage.removeItem('verify_uname')
-                                // console.log(retData)
                                 resetForm({})
                                 if(retData.success === '1') {
 
@@ -669,14 +642,11 @@ const Certification = () => {
                                     }
                                   })
                                       .then(res => {
-                                        // console.log(res.data)
                                         if(res.data.length !== 0) {
                                           const array2 = res.data.map((item) => {
                                             return item.verify_list
                                           })
-                                          // console.log(array2)
                                           let array = array2[0].split(',').map(Number);
-                                          console.log('---------------', array);
                                           let array1 = ['basics', 'profile-photo', 'cover-photo', 'cover-photo', 'cover-photo', 'education', 'certification',
                                             'teaching-experience', 'description', 'intro-video', 'interest', 'time-availability'];
 
@@ -686,8 +656,6 @@ const Certification = () => {
                                             // Check the 0th position in array2 and get the corresponding string from array1
                                             let positionToCheck = verify_string[0];
                                             let conditionString = url[positionToCheck + 1];
-                                            console.log(conditionString)
-
 
                                             // Check the position of the first 3 numbers in array2
                                             let positionOfThree = verify_string.findIndex(num => num === 3);
@@ -695,8 +663,6 @@ const Certification = () => {
                                             let stringForUrl = url[positionOfThree];
                                             let result = array1.indexOf(stringForUrl)
 
-
-                                            console.log('stringForUrl', stringForUrl, result)
                                             router.push(`/become-a-tutor/teaching-experience`)
                                           } else {
                                             router.push('/become-a-tutor/teaching-experience')
@@ -711,7 +677,6 @@ const Certification = () => {
                                 }
                               })
                                   .catch(err => {
-                                    // console.log(err)
                                     {
                                       ErrorDefaultAlert(JSON.stringify(err.response))
                                     }
@@ -735,7 +700,6 @@ const Certification = () => {
                     return (
                         <>
                           <Form>
-                            {/*{console.log(educationFields.length)}*/}
                             <div className="section-title mb-3">
                               <h4 className="rbt-title-style-3">Teaching Certification</h4>
                               {
@@ -814,17 +778,13 @@ const Certification = () => {
 
                             </div>
                             <div className={'row'}>
-                              {/*{console.log(certificationFields)}*/}
                               {/*<form action="#" className="row row--15 mt-5">*/}
                               {hideFields ? <>
                                 {/*{verifySts !== 2 ? <>*/}
                                   {certificationFields.length >= 1 ? <>
 
                                     {values.sCertification.map((certification, index) => {
-                                      console.log("certification",certification)
-                                      console.log("index",index)
-                                      console.log("Errors Message" , errors)
-                                      console.log("Message:", errors.sCertification?.[index]?.sCerti_title);
+                                      // console.log("Message:", errors.sCertification?.[index]?.sCerti_title);
                                       return (
                                           <>
                                             {

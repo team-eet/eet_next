@@ -12,11 +12,12 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 
 const StudentSetting = () => {
   return (
     <>
-      <PageHead title="Student Settings - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Student Settings - EET English" />
 
       <Provider store={Store}>
         <Context>
@@ -57,4 +58,4 @@ const StudentSetting = () => {
   );
 };
 
-export default StudentSetting;
+export default withAuth(StudentSetting);

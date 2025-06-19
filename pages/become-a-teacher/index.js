@@ -32,7 +32,6 @@ const TeacherPage = () => {
               }
           })
               .then(res => {
-                  console.log("GetTutorDetails",res.data)
                   if(res.data.length !== 0) {
                       setverifySts(res.data[0].bVerifyStatus)
                   }else{
@@ -51,7 +50,7 @@ const TeacherPage = () => {
 
   return (
     <>
-      <PageHead title="Become a Teacher - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Become a Tutor - EET English" />
 
       <Provider store={Store}>
         <Context>

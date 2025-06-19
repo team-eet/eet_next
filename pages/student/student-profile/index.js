@@ -15,11 +15,12 @@ import {useEffect, useState} from "react";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 const StudentProfile = () => {
 
   return (
     <>
-      <PageHead title="Student Profile - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Student Profile - EET English" />
 
       <Provider store={Store}>
         <Context>
@@ -60,4 +61,4 @@ const StudentProfile = () => {
   );
 };
 
-export default StudentProfile;
+export default withAuth(StudentProfile);

@@ -16,6 +16,7 @@ import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import Invoice from "@/components/Student/Invoice";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 const StudentReceipt = () => {
 
     return (
@@ -61,4 +62,4 @@ const StudentReceipt = () => {
     );
 };
 
-export default StudentReceipt;
+export default withAuth(StudentReceipt);

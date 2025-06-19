@@ -45,7 +45,6 @@ const SingleCourse = () => {
         .then(res => {
           if (res.data) {
             if (res.data.length !== 0) {
-              //console.log(res.data)
               setStudentcnt(res.data[0]['ecnt'])
             }
           }
@@ -60,7 +59,6 @@ const SingleCourse = () => {
     const parts = url.split("/");
     const  batchId = parts[parts.length - 1];
     const  courseId = parts[parts.length - 2];
-    // console.log(courseId, batchId)
     Axios.get(`${API_URL}/api/coursemain/GetBatchCoursesOnly/${batchId}`, {
       headers: {
         ApiKey: `${API_KEY}`
@@ -69,9 +67,7 @@ const SingleCourse = () => {
         .then(res => {
           if (res.data) {
             if (res.data.length !== 0) {
-              console.log('Final Result', res.data)
               setbatchData(res.data)
-              console.log("Batch Video Details", res.data[0].sVideoURL,res.data[0].sVideoPath)
               if (res.data[0].sVideoURL !== ""){
                 setvideoOpenModal(res.data[0].sVideoURL)
               }else if(res.data[0].sVideoPath !== ""){
@@ -92,7 +88,6 @@ const SingleCourse = () => {
                 })
                     .then(res => {
                       if (res.data) {
-                        console.log('Names', res.data)
                         if (res.data.length !== 0) {
                           setFirstName(res.data[0].sFName)
                           setLastName(res.data[0].sLName)
@@ -152,8 +147,6 @@ const SingleCourse = () => {
   // getCourse = JSON.parse(JSON.stringify(CourseData.courseDetails));
 
   const checkMatch = getbatchData.length !== 0 ? getbatchData[0] : ''
-  // console.log(checkMatch)
-  // console.log(EncryptData(postId), EncryptData(0))
 
 
   const courseContentMatch = getsectionItems.length !== 0 ? getsectionItems : ''
@@ -163,7 +156,6 @@ const SingleCourse = () => {
       getCourse();
       getEnrollStudent();
       // getcourseContent();
-    // console.log(postId, checkMatch)
     // if (postId && checkMatch === undefined) {
     //   router.push("/course-filter-one-toggle");
     // }

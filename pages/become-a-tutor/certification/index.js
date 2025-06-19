@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import Certification from "@/components/Become-a-Tutor/Certification";
+import withAuth from "@/components/Utils/withAuth";
 
 const WishlistPage = () => {
   return (
@@ -55,4 +56,4 @@ const WishlistPage = () => {
   );
 };
 
-export default WishlistPage;
+export default withAuth(WishlistPage);

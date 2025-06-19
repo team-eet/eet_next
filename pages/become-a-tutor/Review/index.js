@@ -18,6 +18,7 @@ import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import {API_URL, API_KEY} from "../../../constants/constant";
 import ReviewPage from "@/components/Become-a-Tutor/Review";
 import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
+import withAuth from "@/components/Utils/withAuth";
 
 const Review = () => {
     const REACT_APP = API_URL
@@ -84,4 +85,4 @@ const Review = () => {
     );
 };
 
-export default Review;
+export default withAuth(Review);

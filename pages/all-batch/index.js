@@ -10,7 +10,7 @@ const AllBatch = () => {
 
     return (
         <>
-            <PageHead title="Home - Online Courses & Education NEXTJS14 Template" />
+            <PageHead title="Batches - EET English" />
 
             <Provider store={Store}>
                 <Context>

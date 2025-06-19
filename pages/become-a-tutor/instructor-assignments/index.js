@@ -11,6 +11,7 @@ import PageHead from "@/pages/Head";
 import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
+import withAuth from "@/components/Utils/withAuth";
 
 const AssignmentsPage = () => {
   return (
@@ -54,4 +55,4 @@ const AssignmentsPage = () => {
   );
 };
 
-export default AssignmentsPage;
+export default withAuth(AssignmentsPage);

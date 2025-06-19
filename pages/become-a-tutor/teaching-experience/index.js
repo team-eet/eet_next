@@ -12,11 +12,12 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import Experience from "@/components/Become-a-Tutor/Experience2";
+import withAuth from "@/components/Utils/withAuth";
 
 const TeachingExperience = () => {
   return (
     <>
-      <PageHead title="Become a tutor - TeachingExperience" />
+      <PageHead title="Become a tutor - EET English" />
       <Provider store={Store}>
         <Context>
           <MobileMenu />
@@ -55,4 +56,4 @@ const TeachingExperience = () => {
   );
 };
 
-export default TeachingExperience;
+export default withAuth(TeachingExperience);

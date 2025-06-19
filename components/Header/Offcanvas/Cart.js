@@ -93,10 +93,8 @@ const Cart = () => {
       })
           .then(res => {
             if (res.data) {
-              console.log("res.data",res.data)
               if (res.data.length !== 0) {
                 const newcartlist = res.data.filter((v, i, a) => a.findIndex(t => ((t.cid === v.cid) && (t.pkgId === v.pkgId))) === i)
-                // console.log(newcartlist)
                 setcourseitem(newcartlist)
                 localStorage.removeItem('cart')
                 localStorage.setItem('cart', JSON.stringify(newcartlist))
@@ -122,7 +120,6 @@ const Cart = () => {
     }
   }, [cart,path,cartToggle]);
   let checkoutAmount = 0
-// console.log("courseitem",courseitem)
   return (
     <>
       <div className={`${!cartToggle ? "cart-sidenav-menu-active" : ""}`}>
@@ -152,12 +149,11 @@ const Cart = () => {
                   <div className="rbt-minicart-wrapper">
                     {courseitem &&
                         courseitem.map((data, index) => {
-                          console.log("Cart Drower Price",data)
                               // const userPay = (parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100))
                           // const userPay = data.sDiscountType === "amount"
                           //     ? parseInt(data.pay_price) - parseInt(data.discount)
                           //     : parseInt(data.pay_price) - (parseInt(data.pay_price) * parseInt(data.discount) / 100);
-                              // console.log(userPay, pay_amnt)
+
                           let pay_amnt;
 
                           if (data.pkgId !== 0) {
@@ -166,7 +162,6 @@ const Cart = () => {
                             pay_amnt = parseInt(data.pay_price) - parseInt(data.user_pay);
                           }
 
-                              // console.log(pay_amnt)
                               checkoutAmount += pay_amnt
                               return (
                                   <>

@@ -13,6 +13,7 @@ import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import Interests from "@/components/Become-a-Tutor/Availability";
 import Availability from "@/components/Become-a-Tutor/Availability";
+import withAuth from "@/components/Utils/withAuth";
 
 const TimeAvailability = () => {
   return (
@@ -56,4 +57,4 @@ const TimeAvailability = () => {
   );
 };
 
-export default TimeAvailability;
+export default withAuth(TimeAvailability);

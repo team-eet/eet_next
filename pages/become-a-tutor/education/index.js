@@ -12,6 +12,7 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import Education from "@/components/Become-a-Tutor/Education2";
+import withAuth from "@/components/Utils/withAuth";
 
 const EnrolledCoursePage = () => {
   return (
@@ -55,4 +56,4 @@ const EnrolledCoursePage = () => {
   );
 };
 
-export default EnrolledCoursePage;
+export default withAuth(EnrolledCoursePage);

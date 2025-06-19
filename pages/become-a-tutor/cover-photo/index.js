@@ -14,6 +14,7 @@ import Store from "@/redux/store";
 import React from "react";
 import { Provider } from "react-redux";
 import Cover from "@/components/Become-a-Tutor/Cover";
+import withAuth from "@/components/Utils/withAuth";
 
 const TutorCover = () => {
     return (
@@ -57,4 +58,4 @@ const TutorCover = () => {
     );
 };
 
-export default TutorCover;
+export default withAuth(TutorCover);

@@ -13,11 +13,12 @@ import Dashboard from "@/components/Student/Dashboard";
 import StudentDashboardHeader from "@/components/Student/StudentDashboardHeader";
 import StudentDashboardSidebar from "@/components/Student/StudentDashboardSidebar";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 
 const StudentDashboard = () => {
   return (
     <>
-      <PageHead title="Student Dashboard - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Student Dashboard - EET English" />
 
       <Provider store={Store}>
         <Context>
@@ -58,4 +59,4 @@ const StudentDashboard = () => {
   );
 };
 
-export default StudentDashboard;
+export default withAuth(StudentDashboard);

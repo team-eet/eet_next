@@ -182,7 +182,7 @@ const MainDemo = () => {
                             }).then(res => {
                               const retData = JSON.parse(res.data)
                               if (retData.success === "1") {
-                                console.log('done')
+                                // console.log('done')
 
                                 if (!localStorage.getItem('cart')) {
                                   const str_arr = JSON.stringify([insert_arr])

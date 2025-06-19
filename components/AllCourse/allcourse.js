@@ -84,7 +84,6 @@ const AllCoursetwo = () => {
         })
             .then(res => {
                 if (res.data.length !== 0) {
-                    // console.log(res.data)
                     setcategoryData(res.data)
                 }
             })
@@ -100,7 +99,6 @@ const AllCoursetwo = () => {
             }
         })
             .then(res => {
-                // console.log('Price data', res.data)
                 if (res.data.length !== 0) {
                     setpriceData(res.data)
 
@@ -121,9 +119,7 @@ const AllCoursetwo = () => {
             }
         })
             .then(res => {
-                // console.log('Level data', res.data)
                 if (res.data.length !== 0) {
-                    console.log("Level Data",res.data)
                     setlevelData(res.data)
                     // setisLoading(false)
                 }
@@ -141,9 +137,7 @@ const AllCoursetwo = () => {
             }
         })
             .then(res => {
-                console.log(1)
                 if (res.data) {
-                    // console.log('getcoursedata', res.data)
                     if (res.data.length !== 0) {
                         setcourseData(res.data)
                         setcoursecount(res.data[0]['remain_course_count'])
@@ -152,7 +146,6 @@ const AllCoursetwo = () => {
                 }
             })
             .catch(err => {
-                console.log(11)
                 { ErrorDefaultAlert(err) }
             })
     }
@@ -165,7 +158,6 @@ const AllCoursetwo = () => {
         if (e.target.value === 'L') {
             setcategoryChecked(true)
             setcourseData([])
-            console.log('L')
             // Axios.get(`${REACT_APP.API_URL}/api/coursemain/GetCoursesMem/2/L/ccid/clid/""/price`, {
             Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2/L/${category}/${level}/${searchvalue}/${price}`, {
                 headers: {
@@ -173,7 +165,6 @@ const AllCoursetwo = () => {
                 }
             })
                 .then(res => {
-                    console.log(res.data)
                     if (res.data.length !== 0) {
                         setdatacategorywise(res.data)
                     }
@@ -184,14 +175,12 @@ const AllCoursetwo = () => {
         } else {
             setcategoryChecked(true)
             setcourseData([])
-            console.log('H')
             Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2/H/${category}/${level}/${searchvalue}/${price}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }
             })
                 .then(res => {
-                    console.log(res.data)
                     if (res.data.length !== 0) {
                         setdatacategorywise(res.data)
                     }
@@ -225,16 +214,12 @@ const AllCoursetwo = () => {
 
     const categoryParam = updatedCategories.join('-');
     categoryId = EncryptData(categoryParam)
-    // console.log(categoryParam)
-    console.log(categoryId, categoryParam, levelId);
-
         Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2/L/${EncryptData(categoryParam)}/${level}/${searchvalue}/${price}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
         })
             .then(res => {
-                console.log(res.data)
                 if(isChecked){
                     // alert("isChecked True")
                     if (res.data.length !== 0) {
@@ -242,9 +227,6 @@ const AllCoursetwo = () => {
                         setdatacategorywise(res.data)
                     }
                 }else{
-                    // alert("isChecked False");
-                    console.log("False");
-                    console.log("Updated Values -> Categories:", updatedCategories.length, "Levels:", selectedLevels.length, "Price:", selectedPrice.length);
 
                     // ✅ Use updatedCategories instead of selectedCategories
                     if (updatedCategories.length === 0 && selectedLevels.length === 0 && selectedPrice.length === 0) {
@@ -287,19 +269,12 @@ const AllCoursetwo = () => {
         setSelectedCategories(updatedCategories);
 
         const levelParam = updatedLevels.join('-');
-        // console.log(levelParam)
-        // console.log(EncryptData(levelParam));
-        // levelId = EncryptData(levelParam)
-        console.log("Level Data",category, level, searchvalue,price);
         Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2/L/${category}/${level}/${searchvalue}/${price}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
         })
             .then(res => {
-                console.log("Enter",res.data)
-                // console.log("levelParam",res.data)
-                // alert("hello")
                 // Old Code
                 // if (res.data.length !== 0) {
                 //     setdatacategorywise(res.data)
@@ -309,24 +284,15 @@ const AllCoursetwo = () => {
                 // }
 
                 if(isChecked){
-                    alert("isChecked True")
                     if (res.data.length !== 0) {
-                        alert("Enter")
-                        console.log("Enter",res.data)
                         setdatacategorywise(res.data)
                     }
                 }else{
-                    alert("isChecked False");
-                    console.log("False");
-                    console.log("Updated Values -> Categories:", updatedCategories.length, "Levels:", selectedLevels.length, "Price:", selectedPrice.length);
-
                     // ✅ Use updatedCategories instead of selectedCategories
                     if (updatedLevels.length === 0 && updatedCategories.length === 0 && selectedPrice.length === 0) {
                         getCourse();
-                        alert("isChecked False 1");
                     } else {
                         if (res.data.length !== 0) {
-                            alert("isChecked False 2");
                             setdatacategorywise(res.data);
                         }
                     }
@@ -360,17 +326,13 @@ const AllCoursetwo = () => {
         setselectedPrice(updatedPrice);
 
         const PriceParam = updatedPrice.join('-');
-        // console.log(levelParam)
-        // console.log(EncryptData(levelParam));
         priceId = PriceParam
-        console.log(category, level, price);
         Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2/L/${category}/${level}/${searchvalue}/${price}`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
         })
             .then(res => {
-                console.log(res.data)
                 if (res.data.length !== 0) {
                     setdatacategorywise(res.data)
                     // setcourseData(res.data)
@@ -394,7 +356,6 @@ const AllCoursetwo = () => {
         const level = levelId !== undefined ? levelId : EncryptData('0')
         const price = priceId !== undefined ? priceId : EncryptData('0')
 
-        console.log(category, level, searchValue, price)
         if(searchValue.length !== 0) {
             Axios.get(`${API_URL}/api/coursemain/GetCoursesMem/2/L/${category}/${level}/${searchValue}/${price}`, {
                 headers: {
@@ -402,7 +363,6 @@ const AllCoursetwo = () => {
                 }
             })
                 .then(res => {
-                    console.log(res.data)
                     if (res.data.length !== 0) {
                         setdatacategorywise(res.data)
                     } else {
@@ -1708,7 +1668,6 @@ const AllCoursetwo = () => {
 
                             </>}
 
-                            {/*{console.log(currentRecords)}*/}
 
                             <div className="row">
                                 <div className="col-lg-12 mt--60">

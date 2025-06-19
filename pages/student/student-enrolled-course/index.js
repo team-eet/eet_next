@@ -17,7 +17,7 @@ import withAuth from "@/components/Utils/withAuth";
 const StudentCourse = () => {
   return (
     <>
-      <PageHead title="Student Enrolled Course - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Student Enrolled Courses - EET English" />
 
       <Provider store={Store}>
         <Context>

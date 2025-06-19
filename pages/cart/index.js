@@ -16,7 +16,7 @@ import withAuth from "@/components/Utils/withAuth";
 const CartPageLayout = () => {
   return (
     <>
-      <PageHead title="Cart - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Cart - EET English" />
 
       <Provider store={Store}>
         <Context>

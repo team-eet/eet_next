@@ -12,11 +12,12 @@ import BackToTop from "@/pages/backToTop";
 import Store from "@/redux/store";
 import { Provider } from "react-redux";
 import FooterThree from "@/components/Footer/Footer-Three";
+import withAuth from "@/components/Utils/withAuth";
 
 const StudentWishlist = () => {
   return (
     <>
-      <PageHead title="Student Wishlist Course - Online Courses & Education NEXTJS14 Template" />
+      <PageHead title="Student Wishlist Course - EET English" />
 
       <Provider store={Store}>
         <Context>
@@ -57,4 +58,4 @@ const StudentWishlist = () => {
   );
 };
 
-export default StudentWishlist;
+export default withAuth(StudentWishlist);
