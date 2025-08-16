@@ -76,7 +76,7 @@ const CourseLesson = () => {
     // };
 
     const viewActivity = (nAQId,act_first,questionNo,y,nCId,userRegId,sActivityName,nSQId) => {
-        // alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
+        alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
         setShowModal(true)
@@ -118,7 +118,7 @@ const CourseLesson = () => {
             path : `https://docs.google.com/gview?url=${pdfPath}&embedded=true`,
             name : pdfName
         })
-        setIsPDFLoading(true);
+        setIsPDFLoading(true)
         setPDFModal(true)
     }
 

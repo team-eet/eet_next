@@ -35,7 +35,7 @@ const FooterThree = () => {
                           <ul className="social-icon social-default justify-content-start">
                               {footer.socialLink.map((value, innerIndex) => (
                                   <li key={innerIndex}>
-                                      <Link href={value.link}>
+                                      <Link href={value.link} target="_blank">
                                           <i className={value.icon}></i>
                                       </Link>
                                   </li>

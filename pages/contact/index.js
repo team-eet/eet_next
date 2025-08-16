@@ -40,7 +40,7 @@ const ContactPage = () => {
             </div>
           </div>
 
-          <ContactForm />
+          {/* <ContactForm /> */}
 
           <div className="rbt-google-map bg-color-white rbt-section-gapTop">
             {/*<iframe*/}

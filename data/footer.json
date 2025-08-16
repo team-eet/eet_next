@@ -55,7 +55,7 @@
       ],
       "policies": [
         {
-          "text": "Privacy",
+          "text": "Privacy Policy",
           "link": "/privacy-policy"
         },
         {
@@ -65,32 +65,16 @@
         {
           "text": "Refund Policy",
           "link": "/Refund"
-        },
-        {
-          "text": "Tutor Policy",
-          "link": "javascript:void(0)"
-        },
-        {
-          "text": "Pricing And Promotion",
-          "link": "javascript:void(0)"
         }
       ],
       "socialLink": [
         {
           "icon": "feather-facebook",
-          "link": "https://www.facebook.com/eet.englishetutorials"
-        },
-        {
-          "icon": "feather-twitter",
-          "link": "https://www.twitter.com"
+          "link": "https://www.facebook.com/share/16naSQaqyd/"
         },
         {
           "icon": "feather-instagram",
-          "link": "https://www.instagram.com/eet.english/"
-        },
-        {
-          "icon": "feather-youtube",
-          "link": "https://youtube.com"
+          "link": "https://www.instagram.com/eet.english?igsh=MW84MXlnNHkwNmduaQ=="
         }
       ]
     }
