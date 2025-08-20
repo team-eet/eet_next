@@ -49,7 +49,7 @@ const ContactPage = () => {
             {/*    referrerPolicy="no-referrer-when-downgrade"></iframe>*/}
             <iframe
                 className="w-100"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3667.5971381704053!2d72.631637!3d23.184899200000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c2b9940c4e883%3A0xa9cbf9b99eb71cdf!2sGNYANAM%20ENGLISH%20INSTITUTE!5e0!3m2!1sen!2sin!4v1724331710206!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3667.5975162225564!2d72.62908797490758!3d23.18488541025233!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395c2b16824f73e5%3A0x81535b0dc258d58c!2sEET%20English%20Private%20Limited!5e0!3m2!1sen!2sin!4v1755680958275!5m2!1sen!2sin"
                 height="600"
                 style={{border: "0"}}
             ></iframe>
