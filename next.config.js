@@ -11,7 +11,7 @@
 
 // console.log(generateBuildId)
 const nextConfig = {
-  reactStrictMode: true,
+  // reactStrictMode: true,
   productionBrowserSourceMaps: true,
   output:"standalone",
   images: {
