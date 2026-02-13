@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import "plyr/dist/plyr.css";
-import Plyr from "plyr";
+// import "plyr/dist/plyr.css";
+// import Plyr from "plyr";
 
 import PageHead from "../Head";
 
@@ -11,19 +11,36 @@ import LessonTop from "@/components/Lesson/LessonTop";
 
 const LessonLayout = () => {
   useEffect(() => {
-    new Plyr(".rbtplayer", {
-      muted: false,
-      volume: 1,
-      controls: [
-        "play-large",
-        "play",
-        "progress",
-        "current-time",
-        "mute",
-        "volume",
-        "fullscreen",
-      ],
-    });
+    // new Plyr(".rbtplayer", {
+    //   muted: false,
+    //   volume: 1,
+    //   controls: [
+    //     "play-large",
+    //     "play",
+    //     "progress",
+    //     "current-time",
+    //     "mute",
+    //     "volume",
+    //     "fullscreen",
+    //   ],
+    // });
+    if (typeof window !== "undefined") {
+      import("plyr").then((Plyr) => {
+        new Plyr.default(".rbtplayer", {
+          muted: false,
+          volume: 1,
+          controls: [
+            "play-large",
+            "play",
+            "progress",
+            "current-time",
+            "mute",
+            "volume",
+            "fullscreen",
+          ],
+        });
+      });
+    }
   }, []);
   return (
     <>

@@ -5,6 +5,7 @@ import "bootstrap/scss/bootstrap.scss";
 import "../public/scss/default/euclid-circulara.scss";
 
 // ========= Plugins CSS START =========
+import "plyr/dist/plyr.css";
 import "../node_modules/sal.js/dist/sal.css";
 import "../public/css/plugins/fontawesome.min.css";
 import "../public/css/plugins/feather.css";
