@@ -6,6 +6,7 @@
 // const API_URL = "https://eet-backendservice.azurewebsites.net";
 const API_URL = "https://access.eetenglish.in";
 const API_KEY = "AlwyMoZbdq2H-Lrm2bi05xkQg7CbTrFHJWe6ygesk0c=";
-const WEB_URL = "https://eet-frontend.azurewebsites.net";
+// const WEB_URL = "https://eet-frontend.azurewebsites.net";
+const WEB_URL = "https://old.eetenglish.in";
 
 export { API_URL, API_KEY,WEB_URL };
