@@ -6,6 +6,7 @@ import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 import nouser from '../../../public/images/testimonial/default-avatar-profile-icon-of-social-media-user-vector.jpg'
+import {WEB_URL} from "@/constants/constant";
 
 const User = ({fname, lname, profile}) => {
   // console.log(UserData)
@@ -77,7 +78,7 @@ const handleLogout = () =>{
             <ul className="user-list-wrapper">
               {userRole.role === 'Admin' ? <>
                 <li>
-                  <Link target={'_blank'} href="https://eet-frontend.azurewebsites.net/admin/dashboard">
+                  <Link target={'_blank'} href={`${WEB_URL}/admin/dashboard`}>
                     <i className="feather-book-open"></i>
                     <span>Admin Dashboard</span>
                   </Link>
@@ -85,7 +86,7 @@ const handleLogout = () =>{
               </> : <>
                 {userRole.role === 'Tutor' ? <>
                   <li>
-                    <Link target={"_blank"} href="https://eet-frontend.azurewebsites.net/tutorbatch/dashboard">
+                    <Link target={"_blank"} href={`${WEB_URL}/tutorbatch/dashboard`}>
                       <i className="feather-book-open"></i>
                       <span>Tutor Dashboard</span>
                     </Link>

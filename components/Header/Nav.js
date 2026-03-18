@@ -5,7 +5,7 @@ import Image from "next/image";
 import {useEffect, useState} from "react";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
-import {API_URL, API_KEY} from "../../constants/constant";
+import {API_URL, API_KEY, WEB_URL} from "../../constants/constant";
 import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
@@ -169,7 +169,7 @@ const  Nav = () => {
                       <li>
                           <a
                               className={`${activeMenuItem === "tutor" ? "open" : ""}`}
-                              href={`https://eet-frontend.azurewebsites.net/access/${token}`}
+                              href={`${WEB_URL}/access/${token}`}
                               target={'_blank'}
                           >
                               Tutor dashboard

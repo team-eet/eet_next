@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {useEffect, useState} from "react";
 import Axios from "axios";
-import {API_URL, API_KEY} from "../../constants/constant";
+import {API_URL, API_KEY, WEB_URL} from "../../constants/constant";
 import {useRouter} from "next/router";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
@@ -89,7 +89,7 @@ const VerifyBreadCrumb = ({ title, text }) => {
                             {showContinue ? <>
                                 <a
                                     className="rbt-btn btn-gradient hover-icon-reverse radius-round mt-3 ms-3"
-                                    href="https://eet-frontend.azurewebsites.net/tutorbatch/dashboard"
+                                    href={`${WEB_URL}/tutorbatch/dashboard`}
                                     target={'_blank'}
                                 >
                                     <span className="icon-reverse-wrapper">

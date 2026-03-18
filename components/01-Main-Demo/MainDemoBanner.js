@@ -10,7 +10,7 @@ import {useEffect, useState} from "react";
 import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
-import { API_URL,  API_KEY} from "../../constants/constant";
+import {API_URL, API_KEY, WEB_URL} from "../../constants/constant";
 import Skeleton, {SkeletonTheme} from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
@@ -89,7 +89,7 @@ const MainDemoBanner = () => {
                       }
                       {verifySts === 2 ? <>
                         <Link className="rbt-btn btn-gradient hover-icon-reverse mt-3 ms-3"
-                              target='_blank' href="https://eet-frontend.azurewebsites.net/tutorbatch/dashboard"
+                              target='_blank' href={`${WEB_URL}/tutorbatch/dashboard`}
                         >
                           <span className="icon-reverse-wrapper">
                             <span className="btn-text">Tutor</span>
