@@ -1,0 +1,44 @@
+import Link from "next/link";
+
+import {useEffect, useState} from "react";
+import SuccessFile from "@/components/PaymentSuccess/successfile";
+import PageHead from "@/pages/Head";
+import {Provider} from "react-redux";
+import Store from "@/redux/store";
+import Context from "@/context/Context";
+import HeaderStyleTen from "@/components/Header/HeaderStyle-Ten";
+import MobileMenu from "@/components/Header/MobileMenu";
+import Cart from "@/components/Header/Offcanvas/Cart";
+import CartBreadCrumb from "@/components/Common/Cart-BreadCrumb";
+import CartPage from "@/components/Cart/CartPage";
+import Separator from "@/components/Common/Separator";
+import FooterOne from "@/components/Footer/Footer-One";
+import InvoiceDownload from "@/components/PaymentSuccess/invoice";
+import WithAuth from "@/components/Utils/withAuth";
+
+const InvoicePage = () => {
+
+
+    return (
+        <>
+            <PageHead title="Invoice Download" />
+
+            <Provider store={Store}>
+                <Context>
+                    <HeaderStyleTen headerSticky="rbt-sticky" headerType="" />
+                    <MobileMenu />
+                    <Cart />
+                    {/*<CartBreadCrumb title="Cart" text="Cart" />*/}
+                    <div className="rbt-cart-area bg-color-white rbt-section-gap py-5">
+                        <InvoiceDownload />
+                    </div>
+
+                    <Separator />
+                    <FooterOne />
+                </Context>
+            </Provider>
+        </>
+    );
+};
+
+export default WithAuth(InvoicePage)

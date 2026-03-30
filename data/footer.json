@@ -1,0 +1,140 @@
+{
+  "footerOne": [
+    {
+      "description": " We’re always in search for talented and motivated people.Don’t be shy introduce yourself!",
+      "phone": "(406) 555-0120",
+      "mail": "rainbow@example.com",
+      "address": "North America, USA",
+      "usefulLinks": [
+        {
+          "text": "Courses",
+          "link": "/all-course"
+        },
+        {
+          "text": "Batches",
+          "link": "/all-batch"
+        },
+        {
+          "text": "Blogs",
+          "link": "/blog-list"
+        },
+        {
+          "text": "Reels",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "E-Store",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Become a Tutor",
+          "link": "/become-a-teacher"
+        }
+      ],
+      "ourCompany": [
+        {
+          "text": "About Us",
+          "link": "/pages/about-us-02"
+        },
+        {
+          "text": "Our Team",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Testimonial",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "Reviews",
+          "link": "javascript:void(0)"
+        },
+        {
+          "text": "FAQ",
+          "link": "/pages/faqs"
+        }
+      ],
+      "policies": [
+        {
+          "text": "Privacy Policy",
+          "link": "/privacy-policy"
+        },
+        {
+          "text": "Terms And Conditions",
+          "link": "/TermsOfService"
+        },
+        {
+          "text": "Refund Policy",
+          "link": "/Refund"
+        }
+      ],
+      "socialLink": [
+        {
+          "icon": "feather-facebook",
+          "link": "https://www.facebook.com/share/16naSQaqyd/"
+        },
+        {
+          "icon": "feather-instagram",
+          "link": "https://www.instagram.com/eet.english?igsh=MW84MXlnNHkwNmduaQ=="
+        }
+      ]
+    }
+  ],
+  "footerTwo": [
+    {
+      "description": " We’re always in search for talented and motivated people.Don’t be shy introduce yourself!",
+      "phone": "(406) 555-0120",
+      "mail": "rainbow@example.com",
+      "address": "North America, USA",
+      "usefulLinks": [
+        {
+          "text": "Home",
+          "link": "/12-marketplace"
+        },
+        {
+          "text": "About us",
+          "link": "/04-kindergarten"
+        },
+        {
+          "text": "My Learning",
+          "link": "/13-university-classic"
+        }
+      ],
+      "ourCompany": [
+        {
+          "text": "Contact us",
+          "link": "/contact"
+        },
+        {
+          "text": "Become a teacher",
+          "link": "/become-a-teacher"
+        },
+        {
+          "text": "Blog",
+          "link": "/blog-list"
+        },
+        {
+          "text": "Success Story",
+          "link": "/elements/team"
+        }
+      ],
+      "socialLink": [
+        {
+          "icon": "feather-facebook",
+          "link": "https://www.facebook.com/eet.englishetutorials"
+        },
+        {
+          "icon": "feather-twitter",
+          "link": "https://www.twitter.com"
+        },
+        {
+          "icon": "feather-instagram",
+          "link": "https://www.instagram.com/eet.english/"
+        },
+        {
+          "icon": "feather-youtube",
+          "link": "https://youtube.com"
+        }
+      ]
+    }
+  ]
+}
