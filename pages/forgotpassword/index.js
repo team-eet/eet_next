@@ -28,7 +28,7 @@ const ForgotPasswordPage = () => {
                     <div className="rbt-elements-area bg-color-white">
 
                         <div className="row row--30">
-                           <Forgotpass />
+                            <Forgotpass />
                         </div>
 
                     </div>

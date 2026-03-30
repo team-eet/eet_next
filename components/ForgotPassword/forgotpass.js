@@ -15,7 +15,7 @@ const Forgotpass = () => {
                     <div className="row g-5 align-items-center">
                         <TestimonialSix/>
                         <div className="col-xl-4">
-                           <LostPass />
+                            <LostPass />
                         </div>
                     </div>
                 </div>

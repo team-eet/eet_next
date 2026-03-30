@@ -110,7 +110,7 @@ const AllBatches = () => {
         })
             .then(res => {
                 if (res.data) {
-                    // console.log(res.data)
+                 console.log("GET COURSE", res.data)
                     if (res.data.length !== 0) {
                         // console.log("Batches All Data",res.data)
                         setBatchData(res.data)

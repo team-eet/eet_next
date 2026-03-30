@@ -230,7 +230,7 @@ const Login = () => {
                         </Label>
                         <Field validate={validateMobile} name="username" type="text" size={'sm'}
                                className={`form-control ${errors.username && touched.username && 'is-invalid'}`}
-                               placeholder="Enter Email or Mobile number" tabIndex='1'/>
+                               placeholder="Enter Mobile number" tabIndex='1'/>
                         <ErrorMessage name='username' component='div' className='field-error text-danger'/>
                       </FormGroup>
                       <Label className='form-label' for='password'>

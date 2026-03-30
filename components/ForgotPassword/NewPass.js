@@ -1,196 +1,161 @@
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link'
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import Axios from 'axios';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { Row, Col, CardTitle, CardText, FormGroup, Label, Button } from 'reactstrap';
-// import '@styles/base/pages/page-auth.scss';
+import Axios from 'axios';
 import { SuccessAlert, ErrorAlert, ErrorDefaultAlert } from '../Services/SweetAlert';
-import { DecryptData, EncryptData } from '../Services/encrypt-decrypt';
-import withReactContent from "sweetalert2-react-content";
-import Swal from "sweetalert2";
-import {API_URL, API_KEY} from "../../constants/constant";
+import { API_URL, API_KEY } from '../../constants/constant';
 
-const UserValidationSchema = Yup.object().shape({
+const validationSchema = Yup.object().shape({
     newpassword: Yup.string()
         .min(8, 'Password must be at least 8 characters')
         .max(14, 'Only 14 characters allowed')
         .matches(
             /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-            "Must Contain at least 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+            "Must contain at least 8 characters, one uppercase, one lowercase, one number and one special character"
         )
         .required('New password is required'),
     confirmpassword: Yup.string()
         .oneOf([Yup.ref('newpassword'), null], 'Passwords must match')
-        .required('Confirm password is required')
+        .required('Confirm password is required'),
 });
 
-let newPsw = ''
-let ConfPsw = ''
-let pwdMsg = ''
-
-const MySwal = withReactContent(Swal);
-
-
-function validateNewPassword(value) {
-    console.log(value)
-    newPsw = value
-}
-
-function validateConfirmPassword(value) {
-    // console.log(value)
-    let error = ''
-    ConfPsw = value
-    if (newPsw && ConfPsw) {
-        if (newPsw !== ConfPsw) {
-            pwdMsg = 'Confirm password do not match'
-        } else {
-            pwdMsg = ''
-        }
-    }
-    if (pwdMsg) {
-        error = pwdMsg
-    }
-
-    return error
-}
-
-const NewPassword = () => {
-    const REACT_APP = API_URL
+const NewPass = () => {
     const router = useRouter();
-    const [sFName, setSFName] = useState('');
-    const [sLName, setSLName] = useState('');
-    const [sPassword, setSPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [roleID, setRoleID] = useState('');
-    const [em, setem] = useState('')
-    const [emName, setemName] = useState('')
-
-    // const history = useHistory();
-
-    const handleFirstName = (e) => {
-        setSFName(e.target.value);
-    };
-
-    const handleLastName = (e) => {
-        setSLName(e.target.value);
-    };
-
-    const handlePassword = (e) => {
-        setSPassword(e.target.value);
-    };
-
-    const handleConfirmPassword = (e) => {
-        setConfirmPassword(e.target.value);
-    };
-
-    const checkRole = () => {
-        if (localStorage.getItem('lgntr')) {
-            const userinfo = localStorage.getItem('lgntr');
-            if (userinfo === '1') {
-                setRoleID('3');
-            }
-        } else if (localStorage.getItem('lgninst')) {
-            const userinfo = localStorage.getItem('lgninst');
-            if (userinfo === '1') {
-                setRoleID('4');
-            }
-        } else {
-            setRoleID('2');
-        }
-    };
+    const [em, setEm] = useState('');
+    const [emName, setEmName] = useState('');
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
-        checkRole();
-        const em = JSON.parse(localStorage.getItem('userUpdateData')).emname ? (JSON.parse(localStorage.getItem('userUpdateData')).em) : ''
-        const emName = JSON.parse(localStorage.getItem('userUpdateData')).emname ? (JSON.parse(localStorage.getItem('userUpdateData')).emname) : ''
-        setem(em)
-        setemName(emName)
+        const data = localStorage.getItem('userUpdateData');
+        if (data) {
+            const parsed = JSON.parse(data);
+            setEm(parsed.em || '');
+            setEmName(parsed.emname || 'mobile');
+        }
     }, []);
+
+    // Eye SVG Icon
+    const EyeIcon = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+        </svg>
+    );
+
+    // Eye Off SVG Icon
+    const EyeOffIcon = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+        </svg>
+    );
 
     return (
         <Formik
-            validationSchema={UserValidationSchema}
-            initialValues={{
-                newpassword: '',
-                confirmpassword: ''
-            }}
-            enableReinitialize={true}
-            onSubmit={async (input, { resetForm }) => {
-                await Axios.put(`${API_URL}/api/registration/updateForgotPassword/${em}/${emName}/${ConfPsw}`, '1', {
-                    headers: {
-                        ApiKey: `${API_KEY}`
-                    }
-                }).then(res => {
-                    console.log(res)
-                    const retData = JSON.parse(res.data);
-                    resetForm({});
+            validationSchema={validationSchema}
+            initialValues={{ newpassword: '', confirmpassword: '' }}
+            onSubmit={async (values, { resetForm, setSubmitting }) => {
+                try {
+                    const res = await Axios.put(
+                        `${API_URL}/api/registration/updateForgotPassword/${em}/${emName}/${values.confirmpassword}`,
+                        '1',
+                        { headers: { ApiKey: API_KEY } }
+                    );
+                    const retData = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+                    resetForm();
                     if (retData.success === "1") {
-                        { SuccessAlert(retData) }
-                        router.push('/login')
-
-                    } else if (retData.success === "0") {
+                        SuccessAlert(retData);
+                        router.push('/login');
+                    } else {
                         ErrorAlert(retData);
                     }
-                }).catch(err => {
+                } catch (err) {
                     ErrorDefaultAlert(err);
-                });
+                } finally {
+                    setSubmitting(false);
+                }
             }}
         >
-            {({ errors, touched }) => (
-                <div className='auth-wrapper auth-v2'>
-                    <Row className='auth-inner m-0'>
-                        {/*<Col className='d-flex align-items-center auth-bg px-2 p-lg-5' lg='5' sm='12'>*/}
-                        <Col className='px-xl-2 mx-auto' sm='8' md='6' lg='12'>
-                            {/*<p className="description mt--20">*/}
-                            {/*    Fill in the form below to get instant access*/}
-                            {/*</p>*/}
-                            <Form className='auth-register-form mt-2'>
-                                <FormGroup>
-                                    <Label style={{ fontSize: '15px' }} className='form-label' for='sFName'>
-                                        New Password<span className="text-danger">*</span>
-                                    </Label>
-                                    <Field validate={validateNewPassword} name="newpassword" type="password" size={'sm'} className={`form-control ${errors.newpassword && touched.newpassword && 'is-invalid'}`} placeholder="******" />
+            {({ errors, touched, isSubmitting }) => (
+                <Form className="auth-register-form mt-2">
+                    {/* New Password */}
+                    <div className="form-group mb-4">
+                        <label className="form-label fw-semibold text-dark"></label>
+                        <div className="position-relative">
+                            <Field
+                                name="newpassword"
+                                type={showNewPassword ? "text" : "password"}
+                                className={`form-control form-control-lg pe-5 ${errors.newpassword && touched.newpassword ? 'is-invalid' : ''}`}
+                                placeholder="Enter new password"
+                            />
+                            <button
+                                type="button"
+                                className="btn position-absolute top-50 end-0 translate-middle-y me-3 border-0 bg-transparent p-0 text-secondary"
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                style={{
+                                    fontSize: '1.5rem',
+                                    lineHeight: 1,
+                                    zIndex: 10,
+                                }}
+                            >
+                                {showNewPassword ? <EyeOffIcon /> : <EyeIcon />}
+                            </button>
+                        </div>
+                        <ErrorMessage name="newpassword" component="div" className="text-danger mt-2 small fw-medium" />
+                    </div>
 
-                                    {/*<Field name="sFName" type="text" size={'sm'}*/}
-                                    {/*       className={`form-control ${errors.sFName && touched.sFName && 'is-invalid'}`}*/}
-                                    {/*       placeholder="Enter First Name" value={sFName} onChange={handleFirstName}/>*/}
-                                    <ErrorMessage name='newpassword' component='div' className='field-error text-danger' />
-                                </FormGroup>
-                                <FormGroup>
-                                    <Label style={{ fontSize: '15px' }} className='form-label' for='sLName'>
-                                        Last Name<span className="text-danger">*</span>
-                                    </Label>
-                                    <Field validate={validateConfirmPassword} name="confirmpassword" type="password" size={'sm'} className={`form-control ${errors.confirmpassword && touched.confirmpassword && 'is-invalid'}`} placeholder="******" />
+                    {/* Confirm Password */}
+                    <div className="form-group mb-4">
+                        <label className="form-label fw-semibold text-dark"></label>
+                        <div className="position-relative">
+                            <Field
+                                name="confirmpassword"
+                                type={showConfirmPassword ? "text" : "password"}
+                                className={`form-control form-control-lg pe-5 ${errors.confirmpassword && touched.confirmpassword ? 'is-invalid' : ''}`}
+                                placeholder="Confirm new password"
+                            />
+                            <button
+                                type="button"
+                                className="btn position-absolute top-50 end-0 translate-middle-y me-3 border-0 bg-transparent p-0 text-secondary"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                style={{
+                                    fontSize: '1.5rem',
+                                    lineHeight: 1,
+                                    zIndex: 10,
+                                }}
+                            >
+                                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                            </button>
+                        </div>
+                        <ErrorMessage name="confirmpassword" component="div" className="text-danger mt-2 small fw-medium" />
+                    </div>
 
-                                    {/*<Field name="sLName" type="text" size={'sm'}*/}
-                                    {/*       className={`form-control ${errors.sLName && touched.sLName && 'is-invalid'}`}*/}
-                                    {/*       placeholder="Enter Last Name" autoComplete="new-lname" value={sLName}*/}
-                                    {/*       onChange={handleLastName}/>*/}
-                                    <ErrorMessage name='confirmpassword' component='div' className='field-error text-danger' />
-                                </FormGroup>
+                    {/* Fixed Update Password Button */}
+                    <button
+                        type="submit"
+                        className="rbt-btn btn-gradient w-100 py-3 mt-3"
+                        disabled={isSubmitting}
+                        style={{
+                            fontSize: '1.6rem',
+                            fontWeight: 600,
+                            height: '54px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        {isSubmitting ? 'Updating Password...' : 'Update Password'}
+                    </button>
 
-                                <FormGroup className={'mb-1'}>
-                                    <button className="rbt-btn btn-gradient" type="submit">
-                                        Submit
-                                    </button>
-                                    <br></br>
-                                    <p className={'text-muted font-12 mb-1'}>By Signing up, you agree to
-                                        our <b><Link href={'/pc/termsofuse'} className={'text-muted'}>Terms of
-                                            use</Link></b> and <b><Link href={'/pc/privacypolicy'}
-                                                                        className={'text-muted'}>Privacy
-                                            Policy</Link></b></p>
-                                </FormGroup>
-                            </Form>
-                        </Col>
-                        {/*</Col>*/}
-                    </Row>
-                </div>
+                    <div className="text-center mt-4">
+
+                    </div>
+                </Form>
             )}
         </Formik>
     );
 };
 
-export default NewPassword;
+export default NewPass;
