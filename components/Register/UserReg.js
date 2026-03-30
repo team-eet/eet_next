@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link'
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import Axios from 'axios';
 import * as Yup from 'yup';
-import { Row, Col, CardTitle, CardText, FormGroup, Label, Button } from 'reactstrap';
-// import '@styles/base/pages/page-auth.scss';
+import { Row, Col, FormGroup, Label } from 'reactstrap';
 import { SuccessAlert, ErrorAlert, ErrorDefaultAlert } from '../Services/SweetAlert';
 import { DecryptData, EncryptData } from '../Services/encrypt-decrypt';
 import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
-import {API_URL, API_KEY} from "../../constants/constant";
+import { API_URL, API_KEY } from "../../constants/constant";
 
 const UserValidationSchema = Yup.object().shape({
     sFName: Yup.string()
@@ -33,43 +32,26 @@ const UserValidationSchema = Yup.object().shape({
 const MySwal = withReactContent(Swal);
 
 const UserReg = () => {
-    const REACT_APP = API_URL
     const router = useRouter();
     const [sFName, setSFName] = useState('');
     const [sLName, setSLName] = useState('');
     const [sPassword, setSPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [roleID, setRoleID] = useState('');
+    const [roleID, setRoleID] = useState('2'); // Default to '2'
 
-    // const history = useHistory();
-
-    const handleFirstName = (e) => {
-        setSFName(e.target.value);
-    };
-
-    const handleLastName = (e) => {
-        setSLName(e.target.value);
-    };
-
-    const handlePassword = (e) => {
-        setSPassword(e.target.value);
-    };
-
-    const handleConfirmPassword = (e) => {
-        setConfirmPassword(e.target.value);
-    };
+    const handleFirstName = (e) => setSFName(e.target.value);
+    const handleLastName = (e) => setSLName(e.target.value);
+    const handlePassword = (e) => setSPassword(e.target.value);
+    const handleConfirmPassword = (e) => setConfirmPassword(e.target.value);
 
     const checkRole = () => {
-        if (localStorage.getItem('lgntr')) {
-            const userinfo = localStorage.getItem('lgntr');
-            if (userinfo === '1') {
-                setRoleID('3');
-            }
-        } else if (localStorage.getItem('lgninst')) {
-            const userinfo = localStorage.getItem('lgninst');
-            if (userinfo === '1') {
-                setRoleID('4');
-            }
+        const lgntr = localStorage.getItem('lgntr');
+        const lgninst = localStorage.getItem('lgninst');
+
+        if (lgntr === '1') {
+            setRoleID('3');
+        } else if (lgninst === '1') {
+            setRoleID('4');
         } else {
             setRoleID('2');
         }
@@ -88,127 +70,144 @@ const UserReg = () => {
                 sLName,
                 sPassword,
                 confirmPassword,
-                sEmail: localStorage.getItem('userRegData') ? JSON.parse(localStorage.getItem('userRegData')).emname === 'email' ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em) : '' : '',
-                sMobile: localStorage.getItem('userRegData') ? JSON.parse(localStorage.getItem('userRegData')).emname === 'mobile' ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em) : '' : ''
+                sEmail: localStorage.getItem('userRegData')
+                    ? (JSON.parse(localStorage.getItem('userRegData')).emname === 'email'
+                        ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em) : '') : '',
+                sMobile: localStorage.getItem('userRegData')
+                    ? (JSON.parse(localStorage.getItem('userRegData')).emname === 'mobile'
+                        ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em) : '') : ''
             }}
             enableReinitialize={true}
-            onSubmit={async (input, { resetForm }) => {
-                await Axios.post(`${API_URL}/api/registration/InsertUserRegData/${EncryptData(input)}`, 1, {
-                    headers: {
-                        ApiKey: `${API_KEY}`
-                    }
-                }).then(res => {
-                    // console.log(res)
-                    const retData = JSON.parse(res.data);
-                    resetForm({});
+            onSubmit={async (values, { resetForm }) => {
+                try {
+                    const response = await Axios.post(`${API_URL}/api/registration/InsertUserRegData/${EncryptData(values)}`, 1, {
+                        headers: { ApiKey: `${API_KEY}` }
+                    });
+
+                    const retData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+
                     if (retData.success === "1") {
+                        resetForm();
                         MySwal.fire({
-                            title: retData.message,
+                            title: retData.message || "Registration Successful",
                             icon: 'success',
                             confirmButtonText: 'Login',
-                            customClass: {
-                                confirmButton: 'btn btn-primary'
-                            },
+                            customClass: { confirmButton: 'btn btn-primary' },
                             buttonsStyling: false
+                        }).then(() => {
+                            // Handle redirection logic
+                            const lgntr = localStorage.getItem('lgntr');
+                            const lgninst = localStorage.getItem('lgninst');
+
+                            if (retData.rid) {
+                                localStorage.setItem('regid', retData.rid);
+                            }
+
+                            if (lgntr === '1') {
+                                router.push("/tutorreg");
+                            } else if (lgninst === '1') {
+                                router.push("/institutionalpartenerreg");
+                            } else {
+                                router.push("/login");
+                            }
                         });
-                        if (localStorage.getItem('lgntr')) {
-                            const userinfo = localStorage.getItem('lgntr');
-                            if (userinfo === '1') {
-                                if (!localStorage.getItem('regid')) {
-                                    localStorage.setItem('regid', retData.rid);
-                                }
-                                // router.push("/tutorreg");
-                            }
-                        } else {
-                            router.push("/login");
-                        }
-
-                        if (localStorage.getItem('lgninst')) {
-                            const userinfo = localStorage.getItem('lgninst');
-                            if (userinfo === '1') {
-                                if (!localStorage.getItem('regid')) {
-                                    localStorage.setItem('regid', retData.rid);
-                                }
-                                // router.push("/institutionalpartenerreg");
-                            }
-                        } else {
-                            router.push("/login");
-                        }
-
-                    } else if (retData.success === "0") {
+                    } else {
                         ErrorAlert(retData);
                     }
-                }).catch(err => {
+                } catch (err) {
                     ErrorDefaultAlert(err);
-                });
+                }
             }}
         >
             {({ errors, touched }) => (
                 <div className='auth-wrapper auth-v2'>
                     <Row className='auth-inner m-0'>
-                        {/*<Col className='d-flex align-items-center auth-bg px-2 p-lg-5' lg='5' sm='12'>*/}
                         <Col className='px-xl-2 mx-auto' sm='8' md='6' lg='12'>
                             <p className="description mt--20">
                                 Fill in the form below to get instant access
                             </p>
                             <Form className='auth-register-form mt-2'>
                                 <FormGroup>
-                                    <Label style={{ fontSize: '15px' }} className='form-label' for='sFName'>
+                                    <Label className='form-label' for='sFName' style={{ fontSize: '15px' }}>
                                         First Name<span className="text-danger">*</span>
                                     </Label>
-                                    <Field name="sFName" type="text" size={'sm'}
-                                           className={`form-control ${errors.sFName && touched.sFName && 'is-invalid'}`}
-                                           placeholder="Enter First Name" value={sFName} onChange={handleFirstName}/>
+                                    <Field
+                                        name="sFName"
+                                        type="text"
+                                        className={`form-control ${errors.sFName && touched.sFName && 'is-invalid'}`}
+                                        placeholder="Enter First Name"
+                                        value={sFName}
+                                        onChange={handleFirstName}
+                                    />
                                     <ErrorMessage name='sFName' component='div' className='field-error text-danger'/>
                                 </FormGroup>
+
                                 <FormGroup>
-                                    <Label style={{ fontSize: '15px' }} className='form-label' for='sLName'>
+                                    <Label className='form-label' for='sLName' style={{ fontSize: '15px' }}>
                                         Last Name<span className="text-danger">*</span>
                                     </Label>
-                                    <Field name="sLName" type="text" size={'sm'}
-                                           className={`form-control ${errors.sLName && touched.sLName && 'is-invalid'}`}
-                                           placeholder="Enter Last Name" autoComplete="new-lname" value={sLName}
-                                           onChange={handleLastName}/>
+                                    <Field
+                                        name="sLName"
+                                        type="text"
+                                        className={`form-control ${errors.sLName && touched.sLName && 'is-invalid'}`}
+                                        placeholder="Enter Last Name"
+                                        autoComplete="new-lname"
+                                        value={sLName}
+                                        onChange={handleLastName}
+                                    />
                                     <ErrorMessage name='sLName' component='div' className='field-error text-danger'/>
                                 </FormGroup>
+
                                 <FormGroup>
-                                    <Label style={{ fontSize: '15px' }} className='form-label' for='sPassword'>
+                                    <Label className='form-label' for='sPassword' style={{ fontSize: '15px' }}>
                                         Create new password<span className="text-danger">*</span>
                                     </Label>
-                                    <Field name="sPassword" type="password" size={'sm'}
-                                           className={`form-control ${errors.sPassword && touched.sPassword && 'is-invalid'}`}
-                                           placeholder="******" autoComplete="new-password" value={sPassword}
-                                           onChange={handlePassword}/>
+                                    <Field
+                                        name="sPassword"
+                                        type="password"
+                                        className={`form-control ${errors.sPassword && touched.sPassword && 'is-invalid'}`}
+                                        placeholder="******"
+                                        autoComplete="new-password"
+                                        value={sPassword}
+                                        onChange={handlePassword}
+                                    />
                                     <ErrorMessage name='sPassword' component='div' className='field-error text-danger'/>
                                 </FormGroup>
+
                                 <FormGroup>
-                                    <Label style={{ fontSize: '15px' }} className='form-label' for='confirmPassword'>
+                                    <Label className='form-label' for='confirmPassword' style={{ fontSize: '15px' }}>
                                         Confirm new password<span className="text-danger">*</span>
                                     </Label>
-                                    <Field name="confirmPassword" type="password" size={'sm'}
-                                           className={`form-control ${errors.confirmPassword && touched.confirmPassword && 'is-invalid'}`}
-                                           placeholder="******" value={confirmPassword}
-                                           onChange={handleConfirmPassword}/>
-                                    <ErrorMessage name='confirmPassword' component='div'
-                                                  className='field-error text-danger'/>
+                                    <Field
+                                        name="confirmPassword"
+                                        type="password"
+                                        className={`form-control ${errors.confirmPassword && touched.confirmPassword && 'is-invalid'}`}
+                                        placeholder="******"
+                                        value={confirmPassword}
+                                        onChange={handleConfirmPassword}
+                                    />
+                                    <ErrorMessage name='confirmPassword' component='div' className='field-error text-danger'/>
                                 </FormGroup>
-                                <FormGroup className={'mb-1'}>
+
+                                <FormGroup className='mb-1'>
                                     <button className="rbt-btn btn-gradient" type="submit">
                                         Submit
                                     </button>
-                                    {/*<Button.Ripple className={''} color='primary'*/}
-                                    {/*               type='submit'>Submit</Button.Ripple>*/}
-                                    <br></br>
-                                    <p className={'text-muted font-12 mb-1'}>By Signing up, you agree to our <b>
-                                        <Link href={'/pc/termsofuse'} className={'text-muted'}>
-                                            Terms of use</Link>
-                                    </b> and <b><Link href={'/pc/privacypolicy'}
-                                                                        className={'text-muted'}>Privacy
-                                            Policy</Link></b></p>
+                                    <br />
+                                    <p className='text-muted font-12 mb-1'>
+                                        By Signing up, you agree to our <b>
+                                        <Link href='/pc/TermsOfService'>
+                                            <span className='text-muted' style={{ cursor: 'pointer' }}>Terms of use</span>
+                                        </Link>
+                                    </b> and <b>
+                                        <Link href='/pc/privacypolicy'>
+                                            <span className='text-muted' style={{ cursor: 'pointer' }}>Privacy Policy</span>
+                                        </Link>
+                                    </b>
+                                    </p>
                                 </FormGroup>
                             </Form>
                         </Col>
-                        {/*</Col>*/}
                     </Row>
                 </div>
             )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { API_URL, API_KEY } from "../../constants/constant";
@@ -15,111 +15,185 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { SuccessProgressToast } from "@/components/Services/Toast";
 import { EncryptData, DecryptData } from "@/components/Services/encrypt-decrypt";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-const mob = /^[6-9]\d{9}$/;
+// ─── Constants ─────────────────────────────────────────────────────────────
+const MOB_REGEX          = /^[6-9]\d{9}$/;
 const COOLDOWN_THRESHOLD = 3;
 const COOLDOWN_SECONDS   = 90;
+const STORAGE_KEY        = 'otpCooldownExpiry';
 
-// ─── Yup Schema ───────────────────────────────────────────────────────────────
+// ─── Yup Schema ─────────────────────────────────────────────────────────────
 const UserValidationSchema = Yup.object().shape({
     emailmobile: Yup.string()
         .required('Mobile number is required')
         .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits')
-        .matches(mob, 'Invalid mobile number (must start with 6–9)'),
+        .matches(MOB_REGEX, 'Invalid mobile number (must start with 6–9)'),
 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 function formatCountdown(secs) {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
     const s = (secs % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// FIX: All storage access wrapped in try/catch — production browsers (Safari ITP,
+// private mode) can throw SecurityError on any sessionStorage/localStorage access.
+function safeGetSession(key) {
+    try {
+        if (typeof window === 'undefined') return null;
+        return sessionStorage.getItem(key);
+    } catch (_) { return null; }
+}
+
+function safeSetSession(key, value) {
+    try {
+        if (typeof window === 'undefined') return;
+        sessionStorage.setItem(key, String(value));
+    } catch (_) {}
+}
+
+function safeGetLocal(key) {
+    try {
+        if (typeof window === 'undefined') return null;
+        return localStorage.getItem(key);
+    } catch (_) { return null; }
+}
+
+function safeSetLocal(key, value) {
+    try {
+        if (typeof window === 'undefined') return;
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (_) {}
+}
+
+function getCooldownExpiry() {
+    const raw = safeGetSession(STORAGE_KEY);
+    return raw ? parseInt(raw, 10) : 0;
+}
+
+function setCooldownExpiry(ms) {
+    safeSetSession(STORAGE_KEY, ms);
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
 const Registration = () => {
     const router = useRouter();
 
-    // ── View state ──────────────────────────────────────────────────────────
-    const [showEmailMob, setShowEmailMob] = useState(true);
-    const [showOtp, setShowOtp]           = useState(false);
-    const [showRegister, setShowRegister] = useState(false);
-    const [codeSent, setCodeSent]         = useState(false);
+    // ── View state ────────────────────────────────────────────────────────
+    const [showEmailMob, setShowEmailMob]   = useState(true);
+    const [showOtp, setShowOtp]             = useState(false);
+    const [showRegister, setShowRegister]   = useState(false);
+    const [codeSent, setCodeSent]           = useState(false);
     const [alreadyRegisteredError, setAlreadyRegisteredError] = useState('');
-    // ── OTP input ───────────────────────────────────────────────────────────
+
+    // ── OTP input ─────────────────────────────────────────────────────────
     const [otpValues, setOtpValues] = useState({
-        otp1: '', otp2: '', otp3: '',
-        otp4: '', otp5: '', otp6: '',
+        otp1: '', otp2: '', otp3: '', otp4: '', otp5: '', otp6: '',
     });
     const [otpError, setOtpError] = useState('');
 
-    // ── Firebase refs ────────────────────────────────────────────────────────
-    // KEY FIX: Store verifier in a ref so it persists across renders
-    // and is never recreated on top of an existing one (which causes silent failures).
+    // ── Firebase refs ─────────────────────────────────────────────────────
     const [confirmationResult, setConfirmationResult] = useState(null);
-    const recaptchaVerifierRef = useRef(null);   // single persistent verifier
-    const recaptchaInitialised = useRef(false);  // guard: only create once
+    const recaptchaVerifierRef  = useRef(null);
+    const recaptchaInitialised  = useRef(false);
 
-    // ── Rate-limiting state ──────────────────────────────────────────────────
-    const [resendCount, setResendCount] = useState(0);
-    const [countdown, setCountdown]     = useState(0);
-    const timerRef                      = useRef(null);
+    // ── Rate-limiting state ───────────────────────────────────────────────
+    // FIX: Use ref for resendCount so it never resets on re-render and is
+    // always in sync when read inside async callbacks (closure-safe).
+    const resendCountRef        = useRef(0);
+    const [countdown, setCountdown] = useState(0);
+    const timerRef              = useRef(null);
 
-    // ── sessionStorage cooldown helpers ─────────────────────────────────────
-    const getCooldownExpiry = () => {
-        const raw = sessionStorage.getItem('otpCooldownExpiry');
-        return raw ? parseInt(raw, 10) : 0;
-    };
-    const setCooldownExpiry = (ms) => {
-        sessionStorage.setItem('otpCooldownExpiry', String(ms));
-    };
+    // FIX: Track mounted state to prevent setState after unmount (production
+    // unmounts components more aggressively during navigation than dev mode).
+    const mountedRef            = useRef(true);
 
-    // ── On mount: restore any in-progress cooldown ───────────────────────────
+    // ── Restore cooldown on mount ─────────────────────────────────────────
     useEffect(() => {
+        mountedRef.current = true;
+
         const remaining = Math.ceil((getCooldownExpiry() - Date.now()) / 1000);
         if (remaining > 0) {
             setCountdown(remaining);
             startCountdownTimer(remaining);
         }
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
 
+        return () => {
+            mountedRef.current = false;
+            if (timerRef.current) clearInterval(timerRef.current);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // ── KEY FIX: Initialise reCAPTCHA exactly ONCE after mount ──────────────
-    // By creating the verifier a single time and reusing it, we avoid the
-    // "reCAPTCHA has already been rendered" error that silently blocks submission.
+    // ── Initialise reCAPTCHA exactly once ─────────────────────────────────
+    // FIX: Wrapped in a try/catch with a retry on failure. In production,
+    // Firebase sometimes throws on first init if the SDK hasn't fully loaded;
+    // a small delay retry handles this without user impact.
     useEffect(() => {
         if (recaptchaInitialised.current) return;
-        recaptchaInitialised.current = true;
 
-        try {
-            recaptchaVerifierRef.current = new RecaptchaVerifier(
-                auth,
-                'recaptcha-global',   // one hidden div used for ALL OTP sends
-                { size: 'invisible' }
-            );
-            // Pre-render so it is ready immediately on first submit
-            recaptchaVerifierRef.current.render();
-        } catch (err) {
-            console.error('RecaptchaVerifier init failed:', err);
-        }
+        const initRecaptcha = () => {
+            try {
+                // FIX: Guard against double-init — clear any stale widget first.
+                if (recaptchaVerifierRef.current) {
+                    try { recaptchaVerifierRef.current.clear(); } catch (_) {}
+                    recaptchaVerifierRef.current = null;
+                }
+
+                recaptchaVerifierRef.current = new RecaptchaVerifier(
+                    auth,
+                    'recaptcha-global',
+                    {
+                        size: 'invisible',
+                        // FIX: 'expired-callback' resets the verifier so the next
+                        // OTP send doesn't silently fail with a stale token.
+                        'expired-callback': () => {
+                            try { recaptchaVerifierRef.current?.clear(); } catch (_) {}
+                            recaptchaVerifierRef.current = null;
+                            recaptchaInitialised.current  = false;
+                            // Re-init immediately so it's ready for the next attempt
+                            initRecaptcha();
+                        },
+                    }
+                );
+
+                recaptchaVerifierRef.current
+                    .render()
+                    .then(() => { recaptchaInitialised.current = true; })
+                    .catch((err) => {
+                        console.error('reCAPTCHA render failed:', err);
+                        // FIX: Retry once after a short delay (handles race with
+                        // Firebase SDK loading in production bundles).
+                        setTimeout(initRecaptcha, 1500);
+                    });
+            } catch (err) {
+                console.error('RecaptchaVerifier init failed:', err);
+                setTimeout(initRecaptcha, 1500);
+            }
+        };
+
+        initRecaptcha();
 
         return () => {
-            // Clean up on component unmount
             if (recaptchaVerifierRef.current) {
                 try { recaptchaVerifierRef.current.clear(); } catch (_) {}
                 recaptchaVerifierRef.current = null;
-                recaptchaInitialised.current = false;
+                recaptchaInitialised.current  = false;
             }
         };
     }, []);
 
-    // ── Timer helper ─────────────────────────────────────────────────────────
+    // ── Timer helpers ─────────────────────────────────────────────────────
     function startCountdownTimer(initialSeconds) {
         if (timerRef.current) clearInterval(timerRef.current);
+
         timerRef.current = setInterval(() => {
+            // FIX: Guard prevents setState on unmounted component — common
+            // production crash source when navigating away mid-countdown.
+            if (!mountedRef.current) {
+                clearInterval(timerRef.current);
+                return;
+            }
             setCountdown((prev) => {
                 if (prev <= 1) {
                     clearInterval(timerRef.current);
@@ -138,7 +212,7 @@ const Registration = () => {
         startCountdownTimer(COOLDOWN_SECONDS);
     }
 
-    // ── OTP input handlers ───────────────────────────────────────────────────
+    // ── OTP input handlers ────────────────────────────────────────────────
     const handleOtpChange = (fieldName, e) => {
         const val = e.target.value;
         if (val && !/^\d$/.test(val)) return;
@@ -149,14 +223,15 @@ const Registration = () => {
         const idx = e.target.tabIndex;
         if (e.key === 'Delete' || e.key === 'Backspace') {
             const prevIdx = idx - 2;
-            if (prevIdx >= 0) e.target.form.elements[prevIdx].focus();
-        } else {
+            if (prevIdx >= 0) e.target.form?.elements[prevIdx]?.focus();
+        } else if (/^\d$/.test(e.key)) {
+            // FIX: Only advance on digit key — not on Tab, Shift, etc.
             const nextIdx = idx;
-            if (nextIdx < 6) e.target.form.elements[nextIdx].focus();
+            if (nextIdx < 6) e.target.form?.elements[nextIdx]?.focus();
         }
     };
 
-    // ── OTP submit ───────────────────────────────────────────────────────────
+    // ── OTP submit ────────────────────────────────────────────────────────
     const handleOtpSubmit = (e) => {
         e.preventDefault();
         setOtpError('');
@@ -173,15 +248,17 @@ const Registration = () => {
             return;
         }
 
-        const finalOtp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
+        const finalOtp = `${otp1}${otp2}${otp3}${otp4}${otp5}${otp6}`;
 
         confirmationResult
             .confirm(finalOtp)
             .then(() => {
+                if (!mountedRef.current) return;
                 setShowOtp(false);
                 setShowRegister(true);
             })
             .catch((err) => {
+                if (!mountedRef.current) return;
                 if (err.code === 'auth/code-expired' || err.message?.includes('expired')) {
                     setOtpError('OTP expired. Please request a new one.');
                 } else if (err.code === 'auth/invalid-verification-code') {
@@ -192,19 +269,50 @@ const Registration = () => {
             });
     };
 
-    // ── Core OTP send (used by both first-send and resend) ───────────────────
-    // KEY FIX: Reuses the single persistent recaptchaVerifierRef instead of
-    // creating a new one each time, which was the root cause of the submit freeze.
-    const sendOtpViaFirebase = (phoneNumber) => {
-        if (!recaptchaVerifierRef.current) {
-            toast.error('reCAPTCHA not ready. Please refresh the page.');
-            return Promise.reject(new Error('reCAPTCHA not ready'));
-        }
-        return signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifierRef.current);
-    };
+    // ── Core OTP send ─────────────────────────────────────────────────────
+    // FIX: If the verifier was cleared (e.g. by expired-callback), we
+    // re-create it inline rather than failing silently. This is the most
+    // common production failure path after a user sits on the page too long.
+    const sendOtpViaFirebase = useCallback((phoneNumber) => {
+        return new Promise((resolve, reject) => {
+            const attemptSend = (retries = 0) => {
+                if (recaptchaVerifierRef.current) {
+                    signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifierRef.current)
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
 
-    // ── Resend OTP ───────────────────────────────────────────────────────────
-    const handleResend = () => {
+                if (retries >= 3) {
+                    reject(new Error('reCAPTCHA not ready after retries'));
+                    return;
+                }
+
+                // Verifier was cleared — re-init and retry
+                try {
+                    recaptchaVerifierRef.current = new RecaptchaVerifier(
+                        auth,
+                        'recaptcha-global',
+                        { size: 'invisible' }
+                    );
+                    recaptchaVerifierRef.current
+                        .render()
+                        .then(() => {
+                            recaptchaInitialised.current = true;
+                            setTimeout(() => attemptSend(retries + 1), 300);
+                        })
+                        .catch(() => setTimeout(() => attemptSend(retries + 1), 800));
+                } catch (_) {
+                    setTimeout(() => attemptSend(retries + 1), 800);
+                }
+            };
+
+            attemptSend();
+        });
+    }, []);
+
+    // ── Resend OTP ────────────────────────────────────────────────────────
+    const handleResend = useCallback(() => {
         const remaining = Math.ceil((getCooldownExpiry() - Date.now()) / 1000);
         if (remaining > 0) {
             toast.error(`Please wait ${formatCountdown(remaining)} before resending.`);
@@ -215,35 +323,58 @@ const Registration = () => {
         setOtpValues({ otp1: '', otp2: '', otp3: '', otp4: '', otp5: '', otp6: '' });
         setOtpError('Sending a new OTP…');
 
-        const newCount = resendCount + 1;
-        setResendCount(newCount);
+        // FIX: Use ref so this is always the true accumulated count,
+        // regardless of React batching or stale closure captures.
+        resendCountRef.current += 1;
 
-        if (newCount >= COOLDOWN_THRESHOLD) {
+        if (resendCountRef.current >= COOLDOWN_THRESHOLD) {
             enforceCooldown();
         }
 
-        const storedPhone = `+91${JSON.parse(localStorage.getItem('userRegData') || '{}')?.em}`;
+        // FIX: Parse phone from localStorage with a safe fallback — production
+        // users sometimes have localStorage cleared between sessions.
+        let storedPhone = '';
+        try {
+            const raw = safeGetLocal('userRegData');
+            // safeGetLocal already parses JSON for us via JSON.stringify on set,
+            // but it returns the raw string here — parse manually:
+            const parsed = raw ? JSON.parse(raw) : {};
+            storedPhone = `+91${parsed?.em || ''}`;
+        } catch (_) {
+            storedPhone = '';
+        }
+
+        if (!storedPhone || storedPhone === '+91') {
+            toast.error('Could not find your phone number. Please go back and re-enter.');
+            setOtpError('');
+            return;
+        }
 
         sendOtpViaFirebase(storedPhone)
             .then((result) => {
+                if (!mountedRef.current) return;
                 setConfirmationResult(result);
                 setOtpError('');
                 toast.success('OTP sent successfully.');
             })
             .catch(() => {
+                if (!mountedRef.current) return;
+                // FIX: Reset countdown if send fails so user isn't stuck
                 setCountdown(0);
                 if (timerRef.current) {
                     clearInterval(timerRef.current);
                     timerRef.current = null;
                 }
                 toast.error('Failed to send OTP. Please try again later.');
+                setOtpError('');
             });
-    };
+    }, [sendOtpViaFirebase]);
 
-    // ── Render ───────────────────────────────────────────────────────────────
+    // ── Render ────────────────────────────────────────────────────────────
     return (
         <>
-            {/* KEY FIX: Single global invisible reCAPTCHA div, never unmounted */}
+            {/* FIX: Must always be present in the DOM — never conditionally
+                rendered — or Firebase loses the widget reference in production. */}
             <div id="recaptcha-global" style={{ display: 'none' }} />
 
             <div>
@@ -253,36 +384,36 @@ const Registration = () => {
                     onSubmit={async (input, { setSubmitting }) => {
                         const phone = `+91${input.emailmobile}`;
 
-                        // ── Step 1: Check if number already registered ───────
+                        // ── Step 1: Check if already registered ─────────
                         try {
                             const checkRes = await Axios.get(
                                 `${API_URL}/api/registration/CheckEmailMobileExist/${input.emailmobile}`,
                                 { headers: { ApiKey: API_KEY } }
                             );
                             if (checkRes?.data[0]?.ecnt === 1) {
-                                setAlreadyRegisteredError('This mobile number is already registered. Please login instead.');
+                                setAlreadyRegisteredError(
+                                    'This mobile number is already registered. Please login instead.'
+                                );
                                 setSubmitting(false);
                                 return;
                             }
                         } catch (_) {
-                            // ✅ API check failed — stop spinner and bail out
-                            // (do NOT fall through to Firebase)
                             toast.error('Could not verify mobile number. Please try again.');
                             setSubmitting(false);
                             return;
                         }
 
-                        // ── Step 2: Send OTP via Firebase ────────────────────
-                        // KEY FIX: Uses the single persistent verifier from ref,
-                        // never constructs a new RecaptchaVerifier here.
+                        // ── Step 2: Send OTP ─────────────────────────────
                         sendOtpViaFirebase(phone)
                             .then(async (code) => {
+                                if (!mountedRef.current) return;
                                 setConfirmationResult(code);
                                 setShowEmailMob(false);
                                 setShowOtp(true);
                                 setCodeSent(true);
-                                const userData = { em: input.emailmobile, emname: 'mobile' };
-                                localStorage.setItem('userRegData', JSON.stringify(userData));
+
+                                // FIX: Use safe storage helper (never throws in production)
+                                safeSetLocal('userRegData', { em: input.emailmobile, emname: 'mobile' });
 
                                 try {
                                     const res = await Axios.get(
@@ -299,12 +430,17 @@ const Registration = () => {
                                 }
                             })
                             .catch(() => {
+                                if (!mountedRef.current) return;
                                 setShowOtp(false);
                                 setShowEmailMob(true);
                                 setCodeSent(false);
                                 toast.error('Failed to send OTP. Please try again later.');
                             })
-                            .finally(() => setSubmitting(false)); // ✅ always unblocks the button
+                            .finally(() => {
+                                // FIX: Guard here too — Formik may be unmounted by
+                                // the time .finally() runs on slow mobile networks.
+                                if (mountedRef.current) setSubmitting(false);
+                            });
                     }}
                 >
                     {({ errors, touched, isSubmitting }) => (
@@ -331,6 +467,7 @@ const Registration = () => {
                                                 <input
                                                     {...field}
                                                     type="text"
+                                                    inputMode="numeric"
                                                     autoComplete="off"
                                                     maxLength={10}
                                                     placeholder="Enter 10-digit Mobile Number"
@@ -340,27 +477,33 @@ const Registration = () => {
                                                             : ''
                                                     }`}
                                                     onChange={(e) => {
-                                                        field.onChange(e);              // ← Formik's own handler (keeps value updating)
-                                                        setAlreadyRegisteredError('');  // ← clears your custom error
+                                                        field.onChange(e);
+                                                        setAlreadyRegisteredError('');
                                                     }}
                                                 />
                                             )}
                                         </Field>
+
                                         <ErrorMessage
                                             name="emailmobile"
                                             component="div"
                                             className="field-error text-danger"
                                         />
+
                                         {alreadyRegisteredError && (
-                                            <div className="field-error text-danger mt-1" style={{ fontWeight: 600 }}>
+                                            <div
+                                                className="field-error text-danger mt-1"
+                                                style={{ fontWeight: 600 }}
+                                            >
                                                 {alreadyRegisteredError}{' '}
                                                 <Link href="/login">
-            <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>
-                Login here
-            </span>
+                                                    <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>
+                                                        Login here
+                                                    </span>
                                                 </Link>
                                             </div>
                                         )}
+
                                         {codeSent && (
                                             <p className="m-0 text-success">
                                                 OTP sent to the entered mobile number
@@ -370,7 +513,7 @@ const Registration = () => {
                                     </div>
 
                                     <button
-                                        className="rbt-btn btn-gradient"
+                                        className="rbt-btn btn-gradient mt-4"
                                         type="submit"
                                         disabled={isSubmitting}
                                     >
@@ -395,7 +538,7 @@ const Registration = () => {
                                                     name={field}
                                                     type="text"
                                                     inputMode="numeric"
-                                                    autoComplete="off"
+                                                    autoComplete="one-time-code"
                                                     className="otpInput"
                                                     value={otpValues[field]}
                                                     onChange={(e) => handleOtpChange(field, e)}
