@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Plyr } from "plyr-react";
+import "plyr-react/plyr.css";
 
-import "venobox/dist/venobox.min.css";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useAppContext } from "@/context/Context";
@@ -20,12 +21,13 @@ const Viedo = ({ checkMatchCourses }) => {
   const postId = parseInt(router.query.courseId);
 
   const [getCntActivity, setCntActivity] = useState('')
-  const [getCntVideo, setCntVideo] = useState('')
-  const [getCntPdf, setCntPdf] = useState('')
+  const [getCntVideo, setCntVideo] = useState(0)
+  const [getCntPdf, setCntPdf] = useState(0)
   const [getCntImg, setCntImg] = useState('')
   const [getNumberCount, setNumberCount] = useState({});
   const [isApiCall, setAPiCall] = useState({});
   const [getvideoOpenData,setvideoOpenData] = useState('')
+  const [showVideoModal, setShowVideoModal] = useState(false);
 console.log("VideoData",checkMatchCourses)
    const getFeatureCount = (crsid) => {
     // console.log(checkMatchCourses.nCId)
@@ -33,6 +35,22 @@ console.log("VideoData",checkMatchCourses)
      const parts = url.split("/");
      const courseId = parts[parts.length - 1];
      const course_mainId = parts[parts.length - 2];
+// With this:
+     console.log('courseId:', courseId, 'course_mainId:', course_mainId);
+
+     // Debug - log raw responses of all 3 APIs
+     Axios.get(`${API_URL}/api/package/Show_video_count/${EncryptData(parseInt(courseId))}`, {
+       headers: { ApiKey: `${API_KEY}` }
+     }).then(r => console.log('Show_video_count RAW:', JSON.stringify(r.data)))
+
+     Axios.get(`${API_URL}/api/package/Show_pdf_count/${EncryptData(parseInt(courseId))}`, {
+       headers: { ApiKey: `${API_KEY}` }
+     }).then(r => console.log('Show_pdf_count RAW:', JSON.stringify(r.data)))
+
+     Axios.get(`${API_URL}/api/coursemain/GetBatchDocumentCount/${course_mainId}`, {
+       headers: { ApiKey: `${API_KEY}` }
+     }).then(r => console.log('GetBatchDocumentCount RAW:', JSON.stringify(r.data)))
+
   //     //activity
        Axios.get(`${API_URL}/api/package/Show_activity_count/${EncryptData(parseInt(courseId))}`, {
         headers: {
@@ -56,53 +74,30 @@ console.log("VideoData",checkMatchCourses)
           .catch(err => {
             { ErrorDefaultAlert(err) }
           })
-  //
-  //     //video
-      Axios.get(`${API_URL}/api/coursemain/GetBatchDocumentCount/${course_mainId}`, {
-        headers: {
-           ApiKey: `${API_KEY}`
-        }
-      })
-          .then(res => {
-            if (res.data) {
-              console.log("Count Data",res.data,'courseId',course_mainId)
-              if (res.data.length !== 0) {
-                console.log('CntVideo', res.data)
-                // setCntVideo(res.data[0].cntf)
-                setNumberCount(res.data[0]);
-
-                // this.setState({
-                //   CntVideo: res.data[0].cntf
-                // })
-              }
-              setAPiCall(prevState => ({ ...prevState, pdfcount: 1 }));
-
-            }
-          })
-          .catch(err => {
-            { ErrorDefaultAlert(err) }
-          })
-
-  //     //pdf
-      Axios.get(`${API_URL}/api/package/Show_pdf_count/${EncryptData(parseInt(courseId))}`, {
-        headers: {
-           ApiKey: `${API_KEY}`
-        }
-      })
-          .then(res => {
-            if (res.data) {
-              if (res.data.length !== 0) {
-                // console.log('CntPdf', res.data)
-                setCntPdf(res.data[0].cntf)
-                // this.setState({
-                //   CntPdf: res.data[0].cntf
-                // })
-              }
-            }
-          })
-          .catch(err => {
-            { ErrorDefaultAlert(err) }
-          })
+     // With this:
+     Axios.all([
+       Axios.get(`${API_URL}/api/coursemain/GetBatchDocumentCount/${course_mainId}`, {
+         headers: { ApiKey: `${API_KEY}` }
+       }),
+       Axios.get(`${API_URL}/api/package/Show_video_count/${EncryptData(parseInt(courseId))}`, {
+         headers: { ApiKey: `${API_KEY}` }
+       }),
+       Axios.get(`${API_URL}/api/package/Show_pdf_count/${EncryptData(parseInt(courseId))}`, {
+         headers: { ApiKey: `${API_KEY}` }
+       })
+     ]).then(Axios.spread((batchRes, videoRes, pdfRes) => {
+       const batchData = batchRes.data.length !== 0 ? batchRes.data[0] : {};
+       const videoUrlCount = videoRes.data.length !== 0 ? (videoRes.data[0].cntf || 0) : 0;
+       const pdfUrlCount = pdfRes.data.length !== 0 ? (pdfRes.data[0].cntf || 0) : 0;
+       console.log('BATCH:', batchData, 'VIDEO URL COUNT:', videoUrlCount, 'PDF URL COUNT:', pdfUrlCount);
+       setNumberCount({
+         ...batchData,
+         video_count: (batchData.video_count || 0) + videoUrlCount,
+         pdf_count: (batchData.pdf_count || 0) + pdfUrlCount,
+       });
+       setAPiCall(prevState => ({ ...prevState, pdfcount: 1 }));
+     }))
+         .catch(err => { ErrorDefaultAlert(err) })
 
   //     //image
       Axios.get(`${API_URL}/api/package/Show_image_count/${EncryptData(parseInt(courseId))}`, {
@@ -130,19 +125,28 @@ console.log("VideoData",checkMatchCourses)
   useEffect(() => {
     getFeatureCount();
     // console.log(EncryptData('0'))
-    if (checkMatchCourses.sVideoURL !== ""){
-      setvideoOpenData(checkMatchCourses.sVideoURL)
-    }else if(checkMatchCourses.sVideoPath !== ""){
+    if (checkMatchCourses.sVideoPath !== "") {
       setvideoOpenData(checkMatchCourses.sVideoPath)
-    }else{
+    } else if (checkMatchCourses.sVideoURL !== "") {
+      setvideoOpenData(checkMatchCourses.sVideoURL)
+    } else {
       setvideoOpenData('')
     }
   }, [])
   console.log("getNumberCount",getNumberCount)
+
+
+  const getYouTubeID = (url) => {
+    if (!url) return null;
+    const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/i;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
+  };
+
   const [getsectionItems, setsectionItems] = useState([])
   const { cartToggle, setCart } = useAppContext();
   const [toggle, setToggle] = useState(false);
-  const [hideOnScroll, setHideOnScroll] = useState(false);
+
 
   // =====> Start ADD-To-Cart
   const dispatch = useDispatch();
@@ -173,28 +177,6 @@ console.log("VideoData",checkMatchCourses)
     localStorage.setItem("eetData", JSON.stringify(cart));
   }, []);
 
-  // =====> For video PopUp
-  useEffect(() => {
-    import("venobox/dist/venobox.min.js").then((venobox) => {
-      new venobox.default({
-        selector: ".popup-video",
-      });
-    });
-
-    const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset;
-      const isHide = currentScrollPos > 200;
-
-      setHideOnScroll(isHide);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-
-  }, []);
 
   return (
     <>
@@ -205,29 +187,63 @@ console.log("VideoData",checkMatchCourses)
       {/*  data-vbtype="video"*/}
       {/*  href={`${checkMatchCourses.sVideoPath !== "" ? checkMatchCourses.sVideoPath : ""}`}*/}
       {/*>*/}
-        <Link
-        className={`video-popup-with-text video-popup-wrapper text-center sidebar-video-hidden mb--15 ${
-          hideOnScroll ? "d-none" : ""
-        }`}
-        href={"javascript:void(0)"}
-            // data-vbtype="video"
-        {...(getvideoOpenData !== null && {
-          "data-bs-toggle": "modal",
-          "data-bs-target": "#videoOpenModal"
-        })}
+      {/* Add state at top of component: const [showVideoModal, setShowVideoModal] = useState(false); */}
+
+      <Link
+          className="video-popup-with-text video-popup-wrapper text-center sidebar-video-hidden mb--15"
+
+          href="javascript:void(0)"
+          onClick={() => getvideoOpenData && setShowVideoModal(true)}
       >
         <div className="video-content">
-          <Image className={"position-relative"} src={checkMatchCourses.sImagePath} height={255} width={355}></Image>
-        <div className="position-to-top">
-            <span className="rbt-btn rounded-player-2 with-animation">
-              <span className="play-icon"></span>
-            </span>
-        </div>
-        <span className="play-view-text d-block color-white">
-            <i className="feather-eye"></i> Preview this course
-          </span>
+          <Image className={"position-relative"} src={checkMatchCourses.sImagePath} height={255} width={355} />
+          <div className="position-to-top">
+      <span className="rbt-btn rounded-player-2 with-animation">
+        <span className="play-icon"></span>
+      </span>
+          </div>
+          <span className="play-view-text d-block color-white">
+      <i className="feather-eye"></i> Preview this course
+    </span>
         </div>
       </Link>
+
+      {/* Video Modal */}
+      {showVideoModal && (
+          <div
+              style={{
+                position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
+                backgroundColor: "rgba(0,0,0,0.8)", zIndex: 9999,
+                display: "flex", alignItems: "center", justifyContent: "center"
+              }}
+              onClick={() => setShowVideoModal(false)}
+          >
+            <div
+                style={{ width: "70%", maxWidth: "800px", position: "relative" }}
+                onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                  onClick={() => setShowVideoModal(false)}
+                  style={{
+                    position: "absolute", top: "-40px", right: "0",
+                    background: "transparent", border: "none",
+                    color: "#fff", fontSize: "28px", cursor: "pointer", zIndex: 10
+                  }}
+              >
+                <i className="feather-x"></i>
+              </button>
+
+              <Plyr
+                  source={{
+                    type: 'video',
+                    sources: [{ src: getvideoOpenData }]
+                  }}
+                  options={{ autoplay: true }}
+              />
+            </div>
+          </div>
+      )}
       <div className="content-item-content">
         <div className="rbt-price-wrapper d-flex flex-wrap align-items-center justify-content-between">
           <div className="rbt-price">
@@ -349,7 +365,7 @@ console.log("VideoData",checkMatchCourses)
                 {
                   isApiCall.pdfcount === 1 ? <>
                     <Link href="javascript:void(0);">
-                      {getNumberCount.video_count}
+                      {(getNumberCount.video_count || 0)}
                     </Link>
                     <span className="rbt-feature-value rbt-badge-5">
                      VIDEOs
@@ -369,7 +385,8 @@ console.log("VideoData",checkMatchCourses)
                 {
                   isApiCall.pdfcount === 1 ? <>
                     <Link href="javascript:void(0);">
-                      {getNumberCount.pdf_count}
+                      {(getNumberCount.pdf_count || 0)}
+
                     </Link>
                     <span className="rbt-feature-value rbt-badge-5">
                      PDFs
@@ -384,25 +401,7 @@ console.log("VideoData",checkMatchCourses)
                   </>
                 }
               </li>
-              <li>
-                {
-                  isApiCall.pdfcount === 1 ? <>
-                    <Link href="javascript:void(0);">
-                      {getNumberCount.ppt_count}
-                    </Link>
-                    <span className="rbt-feature-value rbt-badge-5">
-                     PPTs
-                  </span>
-                  </> : <>
-                    <a href="javascript:void(0);">
-                      <Skeleton width="20px" height="20px"/>
-                    </a>
-                    <span className="rbt-feature-value rbt-badge-5">
-                      <Skeleton width="60px" height="15px"/>
-                    </span>
-                  </>
-                }
-              </li>
+
             </ul>
           </div>
           <hr className="mt--20"/>
