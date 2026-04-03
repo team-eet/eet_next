@@ -36,7 +36,7 @@ const Content = () => {
         .then(res => {
           //alert(res.data.length)
           if (res.data.length !== 0) {
-            //console.log("batch Page ",res.data);
+          console.log("batch Page ",res.data);
             setsectionItems(res.data)
           }
           setIsApiCall(1)

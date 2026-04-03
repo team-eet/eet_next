@@ -125,19 +125,22 @@ const styles = `
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-bottom: 32px;
+    margin-bottom: 22px;
     padding: 10px 0;
   }
   .cb-avatar {
     position: relative;
-    width: 64px;
-    height: 64px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     overflow: hidden;
     border: 2px solid rgba(var(--rbt-primary-rgb,80,120,255),0.3);
     flex-shrink: 0;
     transition: border-color 0.2s;
-  }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
   .cb-avatar:hover { border-color: var(--rbt-primary, #5078ff); }
   .cb-avatar img { object-fit: cover; }
   .cb-instructor-info {
@@ -242,18 +245,18 @@ const styles = `
   .cb-days-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 9px;
-    font-size: 1.8rem;
+    gap: 11px;
+    font-size: 1.7rem;
     color: #000000;
   }
   .cb-day-pill {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 10px;
+    padding: 8px 11px;
     border-radius: 20px;
     font-size: 1.7rem;
-    font-weight: 500;
+    font-weight: 400;
     transition: all 0.2s ease;
     cursor: default;
   }
@@ -435,9 +438,11 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
                                     <div className="cb-avatar">
                                         <Image
                                             src={getMatchCourse.sProfilePhotoPath}
-                                            width={56}
-                                            height={56}
+                                            width={60}
+                                            height={60}
                                             alt={`${getMatchCourse.sFName} ${getMatchCourse.sLName}`}
+                                            className="rounded-circle"
+                                            style={{ objectFit: "cover", width: "100%", height: "100%" }}
                                         />
                                     </div>
                                 )}

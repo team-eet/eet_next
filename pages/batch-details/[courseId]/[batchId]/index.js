@@ -59,13 +59,17 @@ const SingleCourse = () => {
     const parts = url.split("/");
     const  batchId = parts[parts.length - 1];
     const  courseId = parts[parts.length - 2];
+     console.log('URL', `${API_URL}/api/coursemain/GetBatchCoursesOnly/${batchId}`)
     Axios.get(`${API_URL}/api/coursemain/GetBatchCoursesOnly/${batchId}`, {
       headers: {
         ApiKey: `${API_KEY}`
+
       }
     })
         .then(res => {
+            console.log("DATAIMP",res.data)
           if (res.data) {
+
             if (res.data.length !== 0) {
               setbatchData(res.data)
               if (res.data[0].sVideoURL !== ""){

@@ -238,7 +238,7 @@ const CourseLesson = () => {
     return (
         <>
             <div className="rbt-lesson-area bg-color-white">
-                <div className="rbt-lesson-content-wrapper">
+                <div className="rbt-lessofn-content-wrapper">
                     <div className="rbt-lesson-leftsidebar">
                         <div className="rbt-course-feature-inner rbt-search-activation">
                             <div className="section-title">
