@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { API_URL, API_KEY } from "../../constants/constant";
@@ -12,10 +13,7 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { EncryptData } from "@/components/Services/encrypt-decrypt";
 
-let categoryId;
-let tutordId;
-let shortBy;
-let searchBy;
+
 
 const AllBatches = () => {
     const REACT_APP = API_URL
@@ -23,7 +21,7 @@ const AllBatches = () => {
     const [getbatchcount, setbatchcount] = useState(0)
     const [getcategoryData, setcategoryData] = useState([])
     const [getcategoryLevel, setcategoryLevel] = useState([])
-    const [gettutorList, settutorList ] = useState([])
+    const [gettutorList, settutorList] = useState([])
     const [getshowFilter, setshowFilter] = useState(false)
     const [value, setValue] = useState([0, 400]);
     const [activeView, setActiveView] = useState('List');
@@ -35,10 +33,21 @@ const AllBatches = () => {
     const recordsPerPage = 10
     const indexOfLastRecord = currentPage * recordsPerPage;
     const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-
-    const currentRecords = getBatchData.slice(indexOfFirstRecord, indexOfLastRecord);
-    const nPages = Math.ceil(getBatchData.length / recordsPerPage)
-
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('');
+    const [priceFilter, setPriceFilter] = useState(''); // 'free' | 'paid' | ''
+    const [priceRange, setPriceRange] = useState([0, 10000]);
+    const [ratingFilter, setRatingFilter] = useState(0); // minimum rating
+    const [filteredData, setFilteredData] = useState([]);
+    // AFTER
+    const currentRecords = filteredData.slice(indexOfFirstRecord, indexOfLastRecord);
+    const nPages = Math.ceil(filteredData.length / recordsPerPage);
+// ADD after const [filteredData, setFilteredData] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedTutor, setSelectedTutor] = useState('');
+    const [selectedLevel, setSelectedLevel] = useState('');
+    const [selectedPriceRange, setSelectedPriceRange] = useState('');
+    const [startDateFilter, setStartDateFilter] = useState('');
     // Handlers for changing page
     const goToNextPage = () => {
         if (currentPage < nPages) {
@@ -85,11 +94,9 @@ const AllBatches = () => {
         const totalHours = Math.floor(totalMinutes / 60);
         const remainingMinutes = totalMinutes % 60;
 
-        // console.log("Final Calculation:", { totalHours, remainingMinutes });
 
         return { totalHours, remainingMinutes };
     };
-    // Close Code
 
 
     useEffect(() => {
@@ -101,6 +108,95 @@ const AllBatches = () => {
             setisLoading(false)
         }, 7000)
     }, [])
+    // AFTER
+    // AFTER
+    useEffect(() => {
+        let result = [...getBatchData];
+
+        // Default sort: newest first always
+        result.sort((a, b) => new Date(b.dBatchStartDate) - new Date(a.dBatchStartDate));
+
+        // Smart search across title, category, tutor, level
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            result = result.filter(batch =>
+                batch.sCourseTitle?.toLowerCase().includes(query) ||
+                batch.sCategory?.toLowerCase().includes(query) ||
+                batch.sFName?.toLowerCase().includes(query) ||
+                batch.sLName?.toLowerCase().includes(query) ||
+                `${batch.sFName} ${batch.sLName}`.toLowerCase().includes(query) ||
+                batch.sLevel?.toLowerCase().includes(query)
+            );
+        }
+
+        // Category filter
+        if (selectedCategory) {
+            result = result.filter(batch => batch.sCategory === selectedCategory);
+        }
+
+        // Level filter
+        if (selectedLevel) {
+            result = result.filter(batch => batch.sLevel === selectedLevel);
+        }
+
+        if (selectedTutor) {
+            result = result.filter(batch =>
+                `${batch.sFName?.trim()} ${batch.sLName?.trim()}`.toLowerCase() === selectedTutor.toLowerCase()
+            );
+        }
+
+        // Price filter
+        if (priceFilter === 'free') {
+            result = result.filter(batch => !batch.dAmount || Number(batch.dAmount) === 0);
+        } else if (priceFilter === 'paid') {
+            result = result.filter(batch => batch.dAmount && Number(batch.dAmount) > 0);
+        }
+
+        // Price range filter
+        if (selectedPriceRange === '0-200') {
+            result = result.filter(batch => Number(batch.dAmount) >= 0 && Number(batch.dAmount) <= 200);
+        } else if (selectedPriceRange === '200-900') {
+            result = result.filter(batch => Number(batch.dAmount) > 200 && Number(batch.dAmount) <= 900);
+        } else if (selectedPriceRange === '900+') {
+            result = result.filter(batch => Number(batch.dAmount) > 900);
+        }
+
+        // Rating filter
+        if (ratingFilter > 0) {
+            result = result.filter(batch => Number(batch.user_rate) >= ratingFilter);
+        }
+
+        // Start date filter
+        if (startDateFilter) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const weekEnd = new Date(today);
+            weekEnd.setDate(today.getDate() + 7);
+
+            if (startDateFilter === 'today') {
+                result = result.filter(batch => {
+                    const start = new Date(batch.dBatchStartDate);
+                    return start >= today && start < new Date(today.getTime() + 86400000);
+                });
+            } else if (startDateFilter === 'this_week') {
+                result = result.filter(batch => {
+                    const start = new Date(batch.dBatchStartDate);
+                    return start >= today && start <= weekEnd;
+                });
+            } else if (startDateFilter === 'upcoming') {
+                result = result.filter(batch => new Date(batch.dBatchStartDate) >= today);
+            }
+        }
+
+        // Override sort if user picks oldest
+        if (sortBy === 'oldest') {
+            result.sort((a, b) => new Date(a.dBatchStartDate) - new Date(b.dBatchStartDate));
+        }
+
+        setFilteredData(result);
+        setCurrentPage(1);
+    }, [getBatchData, searchQuery, sortBy, priceFilter, selectedCategory, selectedLevel, selectedTutor, selectedPriceRange, ratingFilter, startDateFilter]);
+
 
     const getCourse = () => {
         Axios.get(`${API_URL}/api/coursemain/GetBatchCoursesMem/0`, {
@@ -109,8 +205,9 @@ const AllBatches = () => {
             }
         })
             .then(res => {
+                console.log("GET COURSE", res.data)
                 if (res.data) {
-                 console.log("GET COURSE", res.data)
+                    console.log("GET COURSE", res.data)
                     if (res.data.length !== 0) {
                         // console.log("Batches All Data",res.data)
                         setBatchData(res.data)
@@ -157,19 +254,16 @@ const AllBatches = () => {
             })
     }
 
-    const  bindTutor = () => {
+    const bindTutor = () => {
         Axios.get(`${API_URL}/api/student/BindTutor`, {
-        // Axios.get(`${REACT_APP.API_URL}/api/tutorBatch/BindAllTutors`, {
-        // Axios.get(`${REACT_APP.API_URL}/api/TutorBasics/GetAllTutors/2`, {
             headers: {
                 ApiKey: `${API_KEY}`
             }
         })
             .then(res => {
-                // console.log(res.data)
-                if (res.data.length !== 0) {
-                    settutorList(res.data)
-
+                const raw = Array.isArray(res.data) ? res.data : res.data?.data || [];
+                if (raw.length !== 0) {
+                    settutorList(raw);
                 }
             })
             .catch(err => {
@@ -187,71 +281,50 @@ const AllBatches = () => {
         setActiveView(view);
     };
 
-    const onTutorchange = (e) => {
-        // console.log(e.target.value)
-
-
-        Axios.get(`${API_URL}/api/coursemain/GetBatchCoursesMem/0/${categoryId}/${e.target.value}/${shortBy}/${searchBy}`, {
-            headers: {
-                ApiKey: `${API_KEY}`
-            }
-        })
-            .then(res => {
-                if (res.data) {
-                    // console.log(res.data)
-                    // if (res.data.length !== 0) {
-                    //     setBatchData(res.data)
-                    //     setbatchcount(res.data[0]['remain_course_count'])
-                    //     // setisLoading(false)
-                    // }
-                }
-            })
-            .catch(err => {
-                { ErrorDefaultAlert(err) }
-            })
-            // Axios.get(`${REACT_APP.API_URL}/api/tutorBatch/GetApprovedBatchesAdminByTutor/${e.target.value}`, {
-            //     headers: {
-            //         ApiKey: `${REACT_APP.API_KEY}`
-            //     }
-            // })
-            //     .then(res => {
-            //         if (res.data.length !== 0) {
-            //             console.log(res.data)
-            //             // this.setState({ approvedbatchitems: res.data })
-            //         }
-            //     })
-            //     .catch(err => {
-            //         { ErrorDefaultAlert(err) }
-            //
-            //     })
-    }
-
+    // AFTER — pure client-side, no API call needed
     const onCategoryChange = (e) => {
-        // console.log(e.target.value)
-        categoryId = e.target.value
-        const tutorid = tutordId ? tutordId : '~'
-        const shortby = shortBy ? shortBy : 'L'
-        const searchby = searchBy ? searchBy : '~'
+        setSelectedCategory(e.target.value);
+        setCurrentPage(1);
+    };
 
-        // console.log(e.target.value, tutorid, shortby, searchby)
+    const onTutorchange = (e) => {
+        setSelectedTutor(e.target.value);
+        setCurrentPage(1);
+    };
+// ADD just before return (
+    const uniqueTutors = getBatchData.length > 0
+        ? [...new Map(
+            getBatchData.map(b => [
+                `${b.sFName?.trim()} ${b.sLName?.trim()}`,
+                { sFName: b.sFName?.trim(), sLName: b.sLName?.trim() }
+            ])
+        ).values()]
+        : [];
 
-        Axios.get(`${API_URL}/api/coursemain/GetBatchCoursesMem/2/${e.target.value}/${tutorid}/${shortby}/${searchby}`, {
-            headers: {
-                ApiKey: `${API_KEY}`
-            }
-        })
-            .then(res => {
-                if (res.data) {
-                    // console.log(res.data)
-                    setdatactageorywise(res.data)
-                }
-            })
-            .catch(err => {
-                { ErrorDefaultAlert(err) }
-            })
-    }
+
     return (
+
+
         <>
+            {/* ── paste this style block once, near the top of your component's return ── */}
+            <style>{`
+.batch-card { border-radius: 12px; overflow: hidden; border: 0.5px solid #e0e0e0; background: #fff; display: flex; flex-direction: column; height: 100%; min-height: 520px; }
+ .batch-card .rbt-card-img { position: relative; height: 190px; flex-shrink: 0; overflow: hidden; display: block; }
+  .batch-card .rbt-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+  .cat-badge { display: inline-block; background: #EEEDFE; color: #3C3489; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; text-decoration: none; }
+  .batch-card .rbt-card-title { font-size: 15px; font-weight: 500; margin: 0 0 4px; }
+  .batch-card .rbt-card-title a { color: inherit; text-decoration: none; }
+  .batch-tutor { font-size: 12px; color: #666; margin: 0 0 5px; }
+  .batch-meta { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #666; margin-bottom: 3px; }
+  .batch-days { display: flex; gap: 5px; margin: 10px 0 12px; flex-wrap: wrap; }
+  .day-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+  .day-on  { background: #534AB7; color: #fff; }
+  .day-off { background: #f3f3f3; color: #aaa; border: 0.5px solid #ddd; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 0.5px solid #eee; margin-top: auto; }
+  .star-row { display: flex; align-items: center; gap: 3px; font-size: 12px; color: #666; }
+  .rbt-reg-btn { background: #534AB7; color: #fff; border: none; border-radius: 20px; padding: 7px 16px; font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .rbt-reg-btn:hover { background: #3C3489; color: #fff; }
+`}</style>
             <div className="rbt-page-banner-wrapper">
                 <div className="rbt-banner-image"></div>
                 <div className="rbt-banner-content">
@@ -310,7 +383,7 @@ const AllBatches = () => {
                                         </div>
                                         {getBatchData.length !== 0 ? <div className="rbt-short-item">
                                             <span
-                                                className="course-index">Showing {indexOfFirstRecord + 1}-{indexOfLastRecord} of {getBatchData.length} results</span>
+                                                className="course-index">Showing {Math.min(indexOfFirstRecord + 1, filteredData.length)}-{Math.min(indexOfLastRecord, filteredData.length)} of {filteredData.length} results</span>
                                         </div> : ''}
                                     </div>
                                 </div>
@@ -319,9 +392,40 @@ const AllBatches = () => {
                                     <div
                                         className="rbt-sorting-list d-flex flex-wrap align-items-center justify-content-start justify-content-lg-end">
                                         <div className="rbt-short-item">
-                                            <div className="rbt-search-style me-0">
-                                                <input type="text" className={'search-btn'}
-                                                       placeholder="Search Your batch.."/>
+                                            <div className="rbt-search-style me-0" style={{ position: 'relative' }}>
+                                                <input
+                                                    type="text"
+                                                    className={'search-btn'}
+                                                    placeholder="Search by title, tutor, PTE, IELTS..."
+                                                    value={searchQuery}
+                                                    onChange={(e) => {
+                                                        setSearchQuery(e.target.value);
+                                                        setCurrentPage(1);
+                                                    }}
+                                                    style={{ paddingRight: searchQuery ? '60px' : '40px' }}
+                                                />
+                                                {searchQuery && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setSearchQuery(''); setCurrentPage(1); }}
+                                                        style={{
+                                                            position: 'absolute',
+                                                            right: '42px',
+                                                            top: '50%',
+                                                            transform: 'translateY(-50%)',
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            padding: '0 6px',
+                                                            color: '#999',
+                                                            fontSize: '16px',
+                                                            lineHeight: 1,
+                                                            zIndex: 2
+                                                        }}
+                                                    >
+                                                        <i className="feather-x"></i>
+                                                    </button>
+                                                )}
                                                 <button type="submit" className="rbt-search-btn rbt-round-btn">
                                                     <i className="feather-search"></i>
                                                 </button>
@@ -355,58 +459,121 @@ const AllBatches = () => {
 
                             {getshowFilter ? <div className="filter-inner" style={{marginTop: '70px'}}>
                                 <hr color={'#e6e3f14f'} style={{opacity: '0.2'}}></hr>
-                                <Row>
-                                    <Col>
-                                        <div className="filter-select-option">
-                                            <div className="filter-select rbt-modern-select">
-                                                <span className="select-label d-block">Short By Category</span>
-                                                <select onChange={onCategoryChange}>
-                                                    {getcategoryData.map((data, index) => {
-                                                        return (
-                                                            <>
-                                                                <option key={index}
-                                                                        value={data.nCCId}>{data.sCategory}</option>
-                                                            </>
-                                                        )
-                                                    })
-                                                    }
-                                                </select>
-                                            </div>
+
+                                <Row className="align-items-end g-3">
+                                    <Col md={2}>
+                                        <div className="filter-select rbt-modern-select">
+                                            <span className="select-label d-block">Category</span>
+                                            <select value={selectedCategory} onChange={onCategoryChange}>
+                                                <option value="">All Categories</option>
+                                                {getcategoryData.map((data, index) => (
+                                                    <option key={index} value={data.sCategory}>{data.sCategory}</option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </Col>
-                                    <Col>
-                                        <div className="filter-select-option">
-                                            <div className="filter-select rbt-modern-select">
-                                                <span className="select-label d-block">Select Tutor</span>
-                                                <select onChange={onTutorchange}>
-                                                    {gettutorList.map((data, index) => {
-                                                        // console.log(data.nCreatedBy)
-                                                        return (
-                                                            <div key={index}>
-                                                                <option
-                                                                    value={data.nCreatedBy}>{data.sFName} {data.sLName}</option>
-                                                            </div>
-                                                        )
-                                                    })
-                                                    }
-                                                </select>
-                                            </div>
+
+                                    <Col md={2}>
+                                        <div className="filter-select rbt-modern-select">
+                                            <span className="select-label d-block">Level</span>
+                                            <select value={selectedLevel} onChange={(e) => { setSelectedLevel(e.target.value); setCurrentPage(1); }}>
+                                                <option value="">All Levels</option>
+                                                <option value="Beginner">Beginner</option>
+                                                <option value="Intermediate">Intermediate</option>
+                                                <option value="Advanced">Advanced</option>
+                                            </select>
                                         </div>
                                     </Col>
-                                    <Col>
-                                        <div className="filter-select-option">
-                                            <div className="filter-select rbt-modern-select">
-                                                <span className="select-label d-block">Short By</span>
-                                                <select>
-                                                    <option value={"lowest"}>Lowest</option>
-                                                    <option value={"highest"}>Highest</option>
-                                                </select>
-                                            </div>
+
+                                    <Col md={2}>
+                                        <div className="filter-select rbt-modern-select">
+                                            <span className="select-label d-block">Tutor</span>
+                                            <select value={selectedTutor} onChange={onTutorchange}>
+                                                <option value="">All Tutors</option>
+                                                {uniqueTutors.map((data, index) => (
+                                                    <option key={index} value={`${data.sFName} ${data.sLName}`}>
+                                                        {data.sFName} {data.sLName}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                     </Col>
-                                    <Col style={{marginTop: '25px'}}>
-                                        <button className="rbt-btn btn-gradient btn-md">
-                                            Filter
+
+                                    <Col md={2}>
+                                        <div className="filter-select rbt-modern-select">
+                                            <span className="select-label d-block">Price</span>
+                                            <select value={priceFilter} onChange={(e) => { setPriceFilter(e.target.value); setSelectedPriceRange(''); setCurrentPage(1); }}>
+                                                <option value="">All</option>
+                                                <option value="free">Free</option>
+                                                <option value="paid">Paid</option>
+                                            </select>
+                                        </div>
+                                    </Col>
+
+                                    {priceFilter === 'paid' && (
+                                        <Col md={2}>
+                                            <div className="filter-select rbt-modern-select">
+                                                <span className="select-label d-block">Price Range</span>
+                                                <select value={selectedPriceRange} onChange={(e) => { setSelectedPriceRange(e.target.value); setCurrentPage(1); }}>
+                                                    <option value="">Any</option>
+                                                    <option value="0-200">₹0 – ₹200</option>
+                                                    <option value="200-900">₹200 – ₹900</option>
+                                                    <option value="900+">₹900+</option>
+                                                </select>
+                                            </div>
+                                        </Col>
+                                    )}
+
+                                    <Col md={2}>
+                                        <div className="filter-select rbt-modern-select">
+                                            <span className="select-label d-block">Rating</span>
+                                            <select value={ratingFilter} onChange={(e) => { setRatingFilter(Number(e.target.value)); setCurrentPage(1); }}>
+                                                <option value={0}>Any Rating</option>
+                                                <option value={4}>4★ & above</option>
+                                                <option value={3}>3★ & above</option>
+                                            </select>
+                                        </div>
+                                    </Col>
+
+                                    <Col md={2}>
+                                        <div className="filter-select rbt-modern-select">
+                                            <span className="select-label d-block">Start Date</span>
+                                            <select value={startDateFilter} onChange={(e) => { setStartDateFilter(e.target.value); setCurrentPage(1); }}>
+                                                <option value="">Any Time</option>
+                                                <option value="today">Starting Today</option>
+                                                <option value="this_week">This Week</option>
+                                                <option value="upcoming">Upcoming</option>
+                                            </select>
+                                        </div>
+                                    </Col>
+
+                                    <Col md={2}>
+                                        <div className="filter-select rbt-modern-select">
+                                            <span className="select-label d-block">Sort By</span>
+                                            <select value={sortBy} onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}>
+                                                <option value="">Newest First</option>
+                                                <option value="oldest">Oldest First</option>
+                                            </select>
+                                        </div>
+                                    </Col>
+
+                                    <Col md={12} className="d-flex justify-content-end mt-2">
+                                        <button
+                                            className="rbt-btn btn-gradient btn-md"
+                                            onClick={() => {
+                                                setSearchQuery('');
+                                                setSelectedCategory('');
+                                                setSelectedLevel('');
+                                                setSelectedTutor('');
+                                                setPriceFilter('');
+                                                setSelectedPriceRange('');
+                                                setRatingFilter(0);
+                                                setStartDateFilter('');
+                                                setSortBy('');
+                                                setCurrentPage(1);
+                                            }}
+                                        >
+                                            Clear All <i className="feather-x ms-1"></i>
                                         </button>
                                     </Col>
                                 </Row>
@@ -424,9 +591,9 @@ const AllBatches = () => {
             {activeView === 'Grid' ? (
                 <div className="rbt-section-overlayping-top rbt-section-gapBottom">
                     <div className="container">
-                        <div className="rbt-course-grid-column list-column-half active-list-view">
+                        <div className="row" style={{margin: '0 -8px'}}>
                             {isLoading ? <>
-                                <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-5">
+                                <div className="course-grid-4 col-md-6 col-sm-6 col-12 mt-5">
                                     <div className="rbt-card variation-01 rbt-hover" style={{margin: '10px'}}>
                                         <div className="rbt-card-img">
                                             <Skeleton height={150}/>
@@ -459,7 +626,7 @@ const AllBatches = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-5">
+                                <div className="course-grid-4 col-md-6 col-sm-6 col-12 mt-5">
                                     <div className="rbt-card variation-01 rbt-hover" style={{margin: '10px'}}>
                                         <div className="rbt-card-img">
                                             <Skeleton height={150}/>
@@ -492,7 +659,7 @@ const AllBatches = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-5">
+                                <div className="course-grid-4 col-md-6 col-sm-6 col-12 mt-5">
                                     <div className="rbt-card variation-01 rbt-hover" style={{margin: '10px'}}>
                                         <div className="rbt-card-img">
                                             <Skeleton height={150}/>
@@ -525,7 +692,7 @@ const AllBatches = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-5">
+                                <div className="course-grid-4 col-md-6 col-sm-6 col-12 mt-5">
                                     <div className="rbt-card variation-01 rbt-hover" style={{margin: '10px'}}>
                                         <div className="rbt-card-img">
                                             <Skeleton height={150}/>
@@ -561,97 +728,84 @@ const AllBatches = () => {
                             </> : <>
                                 {currentRecords && currentRecords.map((data, index) => {
                                     const { totalHours, remainingMinutes } = getTimeDifference(
-                                        data.sBatchStartTime,
-                                        data.sBatchEndTime,
-                                        data.batchdays
+                                        data.sBatchStartTime, data.sBatchEndTime, data.batchdays
+                                    );
+                                    const days = JSON.parse(data.sDays);
+                                    const rating = parseFloat(data.user_rate) || 0;
+                                    const fullStars = Math.floor(rating);
+                                    const hasHalf = rating % 1 >= 0.5;
+                                    const startD = new Date(data.batchstartdatenew);
+                                    const endD = new Date(data.dBatchEndDate);
+                                    const fmt = (d) => `${d.getDate()} ${d.toLocaleString('default', {month: 'short'})}`;
+                                    const WEEK = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+                                    const LABELS = ['M','T','W','T','F','S','S'];
+                                    const StarIcon = ({filled}) => (
+                                        <svg width="13" height="13" viewBox="0 0 24 24"
+                                             fill={filled ? '#EF9F27' : 'none'} stroke="#EF9F27" strokeWidth="2">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                        </svg>
                                     );
                                     return (
-                                        <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-5" key={index}>
-                                            <div className="rbt-card variation-01 rbt-hover" style={{margin: '10px'}}>
-                                                <div className="rbt-card-img">
-                                                    <Link
-                                                        href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
-                                                        <Image className={"position-relative"} objectFit="inherit"
-                                                               fill={true} src={data.batchimg} alt="Card image"/>
-                                                        {/*style={{ height: '200px' }}*/}
+                                        <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-4" key={index} style={{padding: '8px'}}>
+                                            <div className="batch-card" style={{height: '100%'}}>
+                                                <div style={{position:'relative', height:'300px', flexShrink:0, overflow:'hidden', display:'block'}}>
+                                                    <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} style={{display:'block', position:'absolute', inset:0}}>
+                                                        <Image
+                                                            src={data.batchimg}
+                                                            alt="Card image"
+                                                            fill
+                                                            sizes="(max-width: 630px) 100vw, (max-width: 1250px) 60vw, 43vw"
+                                                            style={{objectFit:'cover', objectPosition:'center top'}}
+                                                        />
                                                     </Link>
                                                 </div>
-                                                <div className="rbt-card-body">
-                                                    <div className="rbt-category">
-                                                        <Link href="#">{data.sCategory}</Link>
-                                                    </div>
+                                                <div className="rbt-card-body" style={{padding:'26px 16px 16px', display:'flex', flexDirection:'column', flex:1}}>
+                                                    <Link href="#" className="cat-badge">{data.sCategory}</Link>
                                                     <h4 className="rbt-card-title">
-                                                        <Link
-                                                            href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
+                                                        <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
                                                             {data.sCourseTitle}
                                                         </Link>
                                                     </h4>
-
-                                                    <span className="lesson-number mb-1">By <span
-                                                        className={'text-dark'}><b>{data.sFName} {data.sLName}</b></span></span>
-                                                    <br></br>
-                                                    <span className="lesson-number">
-    {data.batchdays} Days
-    <span className="lesson-time ms-2">
-        ({totalHours} Hours {remainingMinutes} Minutes)
-    </span>
-</span>
-                                                    <p className="rbt-card-text m-0">
-                                                        <span
-                                                            className={'mr-2'}>{new Date(data.batchstartdatenew).getDate()} {new Date(data.batchstartdatenew).toLocaleString('default', {month: 'short'})} - {new Date(data.dBatchEndDate).getDate()} {new Date(data.dBatchEndDate).toLocaleString('default', {month: 'short'})}</span> |
-                                                        <span
-                                                            className={'ms-2'}>{data.sBatchStartTime} to {data.sBatchEndTime}</span>
-                                                    </p>
-
-                                                    <div className='d-flex mt-1 mb-5 mt-2'>
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Monday')) ? <>
-                                                            <div className='circle-fill-badge'><span>M</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>M</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Tuesday')) ? <>
-                                                            <div className='circle-fill-badge'><span>T</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>T</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Wednesday')) ? <>
-                                                            <div className='circle-fill-badge'><span>W</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>W</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Thursday')) ? <>
-                                                            <div className='circle-fill-badge'><span>T</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>T</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Friday')) ? <>
-                                                            <div className='circle-fill-badge'><span>F</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>F</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Saturday')) ? <>
-                                                            <div className='circle-fill-badge'><span>S</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>S</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Sunday')) ? <>
-                                                            <div className='circle-fill-badge'><span>S</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>S</span></div>
-                                                        </>}
-
+                                                    <p className="batch-tutor">By <strong>{data.sFName} {data.sLName}</strong></p>
+                                                    <div className="batch-meta">
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                                        </svg>
+                                                        {data.batchdays} Days · {totalHours} hrs {remainingMinutes} min
                                                     </div>
-
+                                                    <div className="batch-meta">
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                                            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                                        </svg>
+                                                        {fmt(startD)} – {fmt(endD)} &nbsp;|&nbsp; {data.sBatchStartTime} to {data.sBatchEndTime}
+                                                    </div>
+                                                    <div className="batch-days">
+                                                        {WEEK.map((day, i) => (
+                                                            <div key={i} className={`day-dot ${days.includes(day) ? 'day-on' : 'day-off'}`}>
+                                                                {LABELS[i]}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="card-foot">
+                                                        <div className="star-row">
+                                                            {[1,2,3,4,5].map(s => (
+                                                                <StarIcon key={s} filled={s <= fullStars || (s === fullStars+1 && hasHalf)} />
+                                                            ))}
+                                                            <span style={{marginLeft:'3px'}}>
+                                {rating > 0 ? rating.toFixed(1) : '0.0'}
+                                                                {data.user_rate_cnt && Number(data.user_rate_cnt) > 0 ? ` (${data.user_rate_cnt})` : ''}
+                            </span>
+                                                        </div>
+                                                        <Link className="rbt-reg-btn" href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
+                                                            Register Now →
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )
+                                    );
                                 })}
                             </>}
 
@@ -694,7 +848,7 @@ const AllBatches = () => {
                 <div className="rbt-section-overlayping-top rbt-section-gapBottom">
                     <div className="container">
 
-                        <div className={`rbt-course-grid-column list-column-half active-list-view`}>
+                        <div className="row" style={{margin: '0 -8px'}}>
                             {isLoading ? <>
                                 <div className="course-grid-4" data-sal-delay="150" data-sal="data-up"
                                      data-sal-duration="800">
@@ -873,116 +1027,108 @@ const AllBatches = () => {
                             </> : <>
                                 {currentRecords && currentRecords.map((data, index) => {
                                     const { totalHours, remainingMinutes } = getTimeDifference(
-                                        data.sBatchStartTime,
-                                        data.sBatchEndTime,
-                                        data.batchdays
+                                        data.sBatchStartTime, data.sBatchEndTime, data.batchdays
                                     );
+                                    const days = JSON.parse(data.sDays);
+                                    const rating = parseFloat(data.user_rate) || 0;
+                                    const fullStars = Math.floor(rating);
+                                    const hasHalf = rating % 1 >= 0.5;
+
+                                    const startD = new Date(data.batchstartdatenew);
+                                    const endD   = new Date(data.dBatchEndDate);
+                                    const fmt    = (d) => `${d.getDate()} ${d.toLocaleString('default',{month:'short'})}`;
+
+                                    const WEEK = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+                                    const LABELS = ['M','T','W','T','F','S','S'];
+
+                                    const StarIcon = ({filled}) => (
+                                        <svg width="13" height="13" viewBox="0 0 24 24"
+                                             fill={filled ? '#EF9F27' : 'none'}
+                                             stroke="#EF9F27" strokeWidth="2">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                        </svg>
+                                    );
+
                                     return (
-                                        <div className="course-grid-4" key={index} data-sal-delay="150"
-                                             data-sal="data-up"
-                                             data-sal-duration="800">
-                                            <div className="rbt-card variation-01 rbt-hover card-list-2">
-                                                <div className="rbt-card-img">
-                                                    <Link
-                                                        href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
-                                                        <Image className={"position-relative"} objectFit="inherit"
-                                                               fill={true} src={data.batchimg} alt="Card image"/>
+                                        <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
+                                            <div className="batch-card" style={{height: '100%'}}>
+
+                                                {/* Image */}
+                                                <div style={{position:'relative', width:'100%', paddingTop:'56.25%', flexShrink:0, overflow:'hidden', display:'block'}}>
+                                                    <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} style={{display:'block', position:'absolute', inset:0}}>
+                                                        <Image
+                                                            src={data.batchimg}
+                                                            alt="Card image"
+                                                            fill
+                                                            sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
+                                                            style={{objectFit:'cover', objectPosition:'center center'}}
+                                                        />
                                                     </Link>
                                                 </div>
                                                 <div className="rbt-card-body">
-                                                    <div className="rbt-category">
-                                                        <Link href="#">{data.sCategory}</Link>
-                                                    </div>
+                                                    {/* Category badge */}
+                                                    <Link href="#" className="cat-badge">{data.sCategory}</Link>
+
+                                                    {/* Title */}
                                                     <h4 className="rbt-card-title">
-                                                        <Link
-                                                            href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
+                                                        <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
                                                             {data.sCourseTitle}
                                                         </Link>
                                                     </h4>
-                                                    <span className="lesson-number mb-1">By <span
-                                                        className={'text-dark'}><b>{data.sFName} {data.sLName}</b></span></span>
-                                                    <span className="lesson-number">
-                                                        {data.batchdays} Days
-                                                        <span className="lesson-time ms-2">
-                                                            ({totalHours} Hours {remainingMinutes} Minutes)
-                                                        </span>
-                                                    </span>
-                                                    <p className="rbt-card-text m-0">
-                                                    <span
-                                                        className={'mr-2'}>{new Date(data.batchstartdatenew).getDate()} {new Date(data.batchstartdatenew).toLocaleString('default', {month: 'short'})} - {new Date(data.dBatchEndDate).getDate()} {new Date(data.dBatchEndDate).toLocaleString('default', {month: 'short'})}</span> |
-                                                        <span
-                                                            className={'ms-2'}>{data.sBatchStartTime} to {data.sBatchEndTime}</span>
-                                                    </p>
-                                                    <p className="rbt-card-text font-14 m-0">
 
-                                                    </p>
-                                                    <div className='d-flex mt-1 mb-5 mt-2'>
+                                                    {/* Tutor */}
+                                                    <p className="batch-tutor">By <strong>{data.sFName} {data.sLName}</strong></p>
 
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Monday')) ? <>
-                                                            <div className='circle-fill-badge'><span>M</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>M</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Tuesday')) ? <>
-                                                            <div className='circle-fill-badge'><span>T</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>T</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Wednesday')) ? <>
-                                                            <div className='circle-fill-badge'><span>W</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>W</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Thursday')) ? <>
-                                                            <div className='circle-fill-badge'><span>T</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>T</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Friday')) ? <>
-                                                            <div className='circle-fill-badge'><span>F</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>F</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Saturday')) ? <>
-                                                            <div className='circle-fill-badge'><span>S</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>S</span></div>
-                                                        </>}
-
-                                                        {(JSON.parse(data.sDays).find(obj => obj === 'Sunday')) ? <>
-                                                            <div className='circle-fill-badge'><span>S</span></div>
-                                                        </> : <>
-                                                            <div className='circle-badge'><span>S</span></div>
-                                                        </>}
-
+                                                    {/* Duration */}
+                                                    <div className="batch-meta">
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                                        </svg>
+                                                        {data.batchdays} Days · {totalHours} hrs {remainingMinutes} min
                                                     </div>
-                                                    <div className="rbt-card-bottom">
-                                                        <div className="read-more-btn">
-                                                            <Link className="rbt-moderbt-btn"
-                                                                  href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
-                                                                    <span
-                                                                        className="moderbt-btn-text">Register Now</span>
-                                                                <i className="feather-arrow-right"></i>
-                                                            </Link>
+
+                                                    {/* Date & time */}
+                                                    <div className="batch-meta">
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                                            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                                        </svg>
+                                                        {fmt(startD)} – {fmt(endD)} &nbsp;|&nbsp; {data.sBatchStartTime} to {data.sBatchEndTime}
+                                                    </div>
+
+                                                    {/* Day circles */}
+                                                    <div className="batch-days">
+                                                        {WEEK.map((day, i) => (
+                                                            <div key={i} className={`day-dot ${days.includes(day) ? 'day-on' : 'day-off'}`}>
+                                                                {LABELS[i]}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Footer: stars + button */}
+                                                    <div className="card-foot">
+                                                        <div className="star-row">
+                                                            {[1,2,3,4,5].map(s => (
+                                                                <StarIcon key={s} filled={s <= fullStars || (s === fullStars+1 && hasHalf)} />
+                                                            ))}
+                                                            <span style={{marginLeft:'3px'}}>
+        {rating > 0 ? rating.toFixed(1) : '0.0'}
+                                                                {data.user_rate_cnt && Number(data.user_rate_cnt) > 0
+                                                                    ? ` (${data.user_rate_cnt})`
+                                                                    : ''}
+    </span>
                                                         </div>
-                                                        {/*<Link className="transparent-button" href="course-details.html">Register Now<i>*/}
-                                                        {/*  <svg width="17" height="12" xmlns="http://www.w3.org/2000/svg">*/}
-                                                        {/*    <g stroke="#27374D" fill="none" fill-rule="evenodd">*/}
-                                                        {/*      <path d="M10.614 0l5.629 5.629-5.63 5.629"/>*/}
-                                                        {/*      <path stroke-linecap="square" d="M.663 5.572h14.594"/>*/}
-                                                        {/*    </g>*/}
-                                                        {/*  </svg>*/}
-                                                        {/*</i></Link>*/}
+                                                        <Link
+                                                            className="rbt-reg-btn"
+                                                            href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
+                                                            Register Now →
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )
+                                    );
                                 })}
                             </>}
 
