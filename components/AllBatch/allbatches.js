@@ -308,22 +308,22 @@ const AllBatches = () => {
         <>
             {/* ── paste this style block once, near the top of your component's return ── */}
             <style>{`
-.batch-card { border-radius: 12px; overflow: hidden; border: 0.5px solid #e0e0e0; background: #fff; display: flex; flex-direction: column; height: 100%; min-height: 520px; }
+.batch-card { border-radius: 12px; overflow: hidden; border: 0.5px solid #e0e0e0; background: #fff; display: flex; flex-direction: column; height: 100%; }
  .batch-card .rbt-card-img { position: relative; height: 190px; flex-shrink: 0; overflow: hidden; display: block; }
   .batch-card .rbt-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
   .cat-badge { display: inline-block; background: #EEEDFE; color: #3C3489; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; text-decoration: none; }
   .batch-card .rbt-card-title { font-size: 15px; font-weight: 500; margin: 0 0 4px; }
   .batch-card .rbt-card-title a { color: inherit; text-decoration: none; }
   .batch-tutor { font-size: 12px; color: #666; margin: 0 0 5px; }
-  .batch-meta { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #666; margin-bottom: 3px; }
-  .batch-days { display: flex; gap: 5px; margin: 10px 0 12px; flex-wrap: wrap; }
-  .day-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+ .batch-meta { display: flex; align-items: flex-start; gap: 5px; font-size: 11px; color: #666; margin-bottom: 3px; line-height: 1.4; }
+ .batch-days { display: flex; gap: 4px; margin: 10px 0 12px; flex-wrap: nowrap; }
+ .day-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
   .day-on  { background: #534AB7; color: #fff; }
   .day-off { background: #f3f3f3; color: #aaa; border: 0.5px solid #ddd; }
-  .card-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 0.5px solid #eee; margin-top: auto; }
-  .star-row { display: flex; align-items: center; gap: 3px; font-size: 12px; color: #666; }
-  .rbt-reg-btn { background: #534AB7; color: #fff; border: none; border-radius: 20px; padding: 7px 16px; font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
-  .rbt-reg-btn:hover { background: #3C3489; color: #fff; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 0.5px solid #eee; margin-top: auto; flex-wrap: nowrap; }
+ .star-row { display: flex; align-items: center; gap: 2px; font-size: 11px; color: #666; flex-shrink: 0; min-width: 0; }
+ .rbt-reg-btn { background: #534AB7; color: #fff; border: none; border-radius: 20px; padding: 6px 12px; font-size: 11px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; flex-shrink: 0; }
+.rbt-reg-btn:hover { background: #3C3489; color: #fff; }
 `}</style>
             <div className="rbt-page-banner-wrapper">
                 <div className="rbt-banner-image"></div>
