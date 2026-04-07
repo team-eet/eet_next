@@ -1,5 +1,3 @@
-
-
 import Image from "next/image";
 import Link from "next/link";
 import { API_URL, API_KEY } from "../../constants/constant";
@@ -114,8 +112,21 @@ const AllBatches = () => {
     useEffect(() => {
         let result = [...getBatchData];
 
-        // Default sort: newest first always
-        result.sort((a, b) => new Date(b.dBatchStartDate) - new Date(a.dBatchStartDate));
+        // Default sort: upcoming batches first (closest to today first)
+        const today = new Date();
+        result.sort((a, b) => {
+            const aDate = new Date(a.dBatchStartDate);
+            const bDate = new Date(b.dBatchStartDate);
+            const aFuture = aDate >= today;
+            const bFuture = bDate >= today;
+
+            // Both upcoming: show nearest first
+            if (aFuture && bFuture) return aDate - bDate;
+            // Both past: show most recent past first
+            if (!aFuture && !bFuture) return bDate - aDate;
+            // Upcoming always above past
+            return aFuture ? -1 : 1;
+        });
 
         // Smart search across title, category, tutor, level
         if (searchQuery.trim()) {
@@ -189,9 +200,22 @@ const AllBatches = () => {
             }
         }
 
-        // Override sort if user picks oldest
+        // Override sort if user picks oldest (farthest upcoming date first)
         if (sortBy === 'oldest') {
-            result.sort((a, b) => new Date(a.dBatchStartDate) - new Date(b.dBatchStartDate));
+            const today = new Date();
+            result.sort((a, b) => {
+                const aDate = new Date(a.dBatchStartDate);
+                const bDate = new Date(b.dBatchStartDate);
+                const aFuture = aDate >= today;
+                const bFuture = bDate >= today;
+
+                // Both upcoming: show farthest first
+                if (aFuture && bFuture) return bDate - aDate;
+                // Both past: show oldest past first
+                if (!aFuture && !bFuture) return aDate - bDate;
+                // Upcoming always above past
+                return aFuture ? -1 : 1;
+            });
         }
 
         setFilteredData(result);
@@ -208,7 +232,7 @@ const AllBatches = () => {
             .then(res => {
                 console.log("GET COURSE", res.data)
                 if (res.data) {
-                 console.log("GET COURSE", res.data)
+                    console.log("GET COURSE", res.data)
                     if (res.data.length !== 0) {
                         // console.log("Batches All Data",res.data)
                         setBatchData(res.data)
@@ -309,22 +333,156 @@ const AllBatches = () => {
         <>
             {/* ── paste this style block once, near the top of your component's return ── */}
             <style>{`
-.batch-card { border-radius: 12px; overflow: hidden; border: 0.5px solid #e0e0e0; background: #fff; display: flex; flex-direction: column; height: 100%; min-height: 520px; }
- .batch-card .rbt-card-img { position: relative; height: 190px; flex-shrink: 0; overflow: hidden; display: block; }
-  .batch-card .rbt-card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; flex: 1; }
-  .cat-badge { display: inline-block; background: #EEEDFE; color: #3C3489; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; text-decoration: none; }
-  .batch-card .rbt-card-title { font-size: 15px; font-weight: 500; margin: 0 0 4px; }
-  .batch-card .rbt-card-title a { color: inherit; text-decoration: none; }
-  .batch-tutor { font-size: 12px; color: #666; margin: 0 0 5px; }
-  .batch-meta { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #666; margin-bottom: 3px; }
- .batch-days { display: flex; gap: 4px; margin: 10px 0 12px; flex-wrap: nowrap; }
-.day-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
-  .day-on  { background: #534AB7; color: #fff; }
-  .day-off { background: #f3f3f3; color: #aaa; border: 0.5px solid #ddd; }
- .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 0.5px solid #eee; margin-top: auto; flex-wrap: nowrap; }
-  .star-row { display: flex; align-items: center; gap: 2px; font-size: 11px; color: #666; flex-shrink: 0; min-width: 0; }
- .rbt-reg-btn { background: #534AB7; color: #fff; border: none; border-radius: 20px; padding: 6px 12px; font-size: 11px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; flex-shrink: 0; }
-.rbt-reg-btn:hover { background: #3C3489; color: #fff; }
+/* ── Screenshot-matching card styles ── */
+.ss-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 0px solid #ebebf0;
+    overflow: hidden;
+    transition: box-shadow 0.22s ease, transform 0.22s ease;
+    height: 100%;
+    display: flex;
+}
+.ss-card:hover {
+    box-shadow: 0 8px 32px rgba(80,60,180,0.13);
+    transform: translateY(-2px);
+}
+
+/* Grid card: vertical */
+.ss-card-grid { flex-direction: column; }
+.ss-card-img-wrap {
+    position: relative;
+    height: 200px;
+    flex-shrink: 0;
+    display: block;
+    overflow: hidden;
+    border: 1px solid #ebebf0;
+    border-radius: 12px;
+    margin: 10px 10px 0 10px;
+}
+
+/* List card: horizontal */
+.ss-card-list { flex-direction: row; align-items: stretch; }
+.ss-list-img-wrap {
+    position: relative;
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+    display: block;
+    overflow: hidden;
+    border: 1px solid #ebebf0;
+    border-radius: 12px;
+    margin: 10px 0 10px 10px;
+}
+
+@media (max-width: 640px) {
+    .ss-card-list { flex-direction: column; }
+    .ss-list-img-wrap { width: calc(100% - 20px); min-width: unset; height: 300px; margin: 10px 10px 0 10px; }
+}
+@media (max-width: 768px) {
+    .ss-card-img-wrap, .ss-list-img-wrap {
+        height: 240px !important;
+    }
+}
+
+/* Adjust spacing when tutor is below image in grid */
+.ss-card-grid .ss-tutor-row {
+    margin-bottom: 8px;
+    padding: 0 20px;
+}
+
+/* Card body */
+.ss-card-body {
+    padding: 18px 20px 18px;
+    display: flex; flex-direction: column; flex: 1;
+    min-width: 0;
+}
+
+/* Top row */
+.ss-card-top-row {
+    display: flex; align-items: center; justify-content: flex-start;
+    margin-bottom: 8px;
+}
+.ss-stars-row { display: flex; align-items: center; gap: 2px; }
+.ss-rating-text { font-size: 12px; color: #888; margin-left: 5px; }
+.ss-bookmark-btn {
+    background: none; border: none; cursor: pointer;
+    color: #bbb; padding: 2px 4px; border-radius: 6px;
+    transition: color 0.15s;
+}
+.ss-bookmark-btn:hover { color: #7c3aed; }
+
+/* Title */
+.ss-title { font-size: 16px; font-weight: 700; margin: 0 0 10px; line-height: 1.35; color: #1a1a2e; }
+.ss-title a { color: inherit; text-decoration: none; }
+.ss-title a:hover { color: #7c3aed; }
+
+/* Meta row */
+.ss-meta-row {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 4px; font-size: 12px; color: #666; margin-bottom: 6px;
+}
+.ss-meta-item { display: flex; align-items: center; gap: 3px; }
+.ss-meta-dot { color: #ccc; }
+.ss-date-range { color: #555; }
+
+/* Day dots */
+.ss-day-dots { display: flex; gap: 5px; margin: 10px 0; }
+.ss-day-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600;
+}
+.ss-day-on  { background: #7c3aed; color: #fff; }
+.ss-day-off { background: #f4f4f8; color: #bbb; border: 1px solid #e8e8ee; }
+
+/* Tutor */
+/* Tutor row - remove avatar, keep text only */
+.ss-tutor-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: #555; margin-bottom: 12px; flex-wrap: wrap;
+}
+.ss-tutor-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg,#7c3aed,#a78bfa);
+    color: #fff; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; text-transform: uppercase;
+}
+.ss-cat-badge {
+    background: #ede9fe; color: #5b21b6;
+    font-size: 10px; font-weight: 600; padding: 2px 9px;
+    border-radius: 20px;
+}
+
+/* Footer */
+.ss-card-footer {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 8px;
+    padding-top: 12px; border-top: 1px solid #f0eef8;
+    margin-top: auto; flex-wrap: wrap;
+}
+.ss-price-area { display: flex; align-items: center; gap: 7px; }
+.ss-price { font-size: 17px; font-weight: 800; color: #1a1a2e; }
+.ss-free-badge {
+    background: #22c55e; color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 11px; border-radius: 20px; letter-spacing: 0.4px;
+}
+.ss-level-badge {
+    background: #fff4e5; color: #b45309;
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+}
+.ss-learn-btn {
+    background: #7c3aed; color: #fff;
+    border: none; border-radius: 22px;
+    padding: 8px 16px; font-size: 12px; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 4px;
+    white-space: nowrap; transition: background 0.18s;
+}
+.ss-learn-btn:hover { background: #5b21b6; color: #fff; }
 `}</style>
             <div className="rbt-page-banner-wrapper">
                 <div className="rbt-banner-image"></div>
@@ -552,8 +710,8 @@ const AllBatches = () => {
                                         <div className="filter-select rbt-modern-select">
                                             <span className="select-label d-block">Sort By</span>
                                             <select value={sortBy} onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}>
-                                                <option value="">Newest First</option>
-                                                <option value="oldest">Oldest First</option>
+                                                <option value="">Starting Soon</option>
+                                                <option value="oldest">Starting Later</option>
                                             </select>
                                         </div>
                                     </Col>
@@ -748,58 +906,78 @@ const AllBatches = () => {
                                     );
                                     return (
                                         <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-4" key={index} style={{padding: '8px'}}>
-                                            <div className="batch-card" style={{height: '100%'}}>
-                                                <div style={{position:'relative', height:'300px', flexShrink:0, overflow:'hidden', display:'block'}}>
-                                                    <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} style={{display:'block', position:'absolute', inset:0}}>
-                                                        <Image
-                                                            src={data.batchimg}
-                                                            alt="Card image"
-                                                            fill
-                                                            sizes="(max-width: 630px) 100vw, (max-width: 1250px) 60vw, 43vw"
-                                                            style={{objectFit:'cover', objectPosition:'center top'}}
-                                                        />
-                                                    </Link>
-                                                </div>
-                                                <div className="rbt-card-body" style={{padding:'26px 16px 16px', display:'flex', flexDirection:'column', flex:1}}>
-                                                    <Link href="#" className="cat-badge">{data.sCategory}</Link>
-                                                    <h4 className="rbt-card-title">
-                                                        <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
-                                                            {data.sCourseTitle}
-                                                        </Link>
-                                                    </h4>
-                                                    <p className="batch-tutor">By <strong>{data.sFName} {data.sLName}</strong></p>
-                                                    <div className="batch-meta">
-                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                                                        </svg>
-                                                        {data.batchdays} Days · {totalHours} hrs {remainingMinutes} min
-                                                    </div>
-                                                    <div className="batch-meta">
-                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                                            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                                                            <line x1="3" y1="10" x2="21" y2="10"/>
-                                                        </svg>
-                                                        {fmt(startD)} – {fmt(endD)} &nbsp;|&nbsp; {data.sBatchStartTime} to {data.sBatchEndTime}
-                                                    </div>
-                                                    <div className="batch-days">
-                                                        {WEEK.map((day, i) => (
-                                                            <div key={i} className={`day-dot ${days.includes(day) ? 'day-on' : 'day-off'}`}>
-                                                                {LABELS[i]}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                    <div className="card-foot">
-                                                        <div className="star-row">
+                                            <div className="ss-card ss-card-grid">
+                                                {/* Image */}
+                                                <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} className="ss-card-img-wrap" style={{height: '280px'}}>
+                                                    <Image
+                                                        src={data.batchimg}
+                                                        alt={data.sCourseTitle}
+                                                        fill
+                                                        sizes="(max-width: 630px) 100vw, (max-width: 1250px) 50vw, 33vw"
+                                                        style={{objectFit:'cover', objectPosition:'center top'}}
+                                                    />
+                                                </Link>
+
+                                                {/* Body with fixed sequence */}
+                                                <div className="ss-card-body">
+                                                    {/* 1. Reviews/Stars - TOP */}
+                                                    <div className="ss-card-top-row">
+                                                        <div className="ss-stars-row">
                                                             {[1,2,3,4,5].map(s => (
                                                                 <StarIcon key={s} filled={s <= fullStars || (s === fullStars+1 && hasHalf)} />
                                                             ))}
-                                                            <span style={{marginLeft:'3px'}}>
-                                {rating > 0 ? rating.toFixed(1) : '0.0'}
-                                                                {data.user_rate_cnt && Number(data.user_rate_cnt) > 0 ? ` (${data.user_rate_cnt})` : ''}
+                                                            <span className="ss-rating-text">
+                                {rating > 0 ? `(${data.user_rate_cnt || 0} Reviews)` : '(0 Reviews)'}
                             </span>
                                                         </div>
-                                                        <Link className="rbt-reg-btn" href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
+                                                    </div>
+
+                                                    {/* 2. Course Title */}
+                                                    <h4 className="ss-title">
+                                                        <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>{data.sCourseTitle}</Link>
+                                                    </h4>
+
+                                                    {/* 3. Duration & Hours */}
+                                                    <div className="ss-meta-row">
+                        <span className="ss-meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            {data.batchdays} Days
+                        </span>
+                                                        <span className="ss-meta-dot">·</span>
+                                                        <span className="ss-meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                            {totalHours}h {remainingMinutes}m
+                        </span>
+                                                    </div>
+
+                                                    {/* 4. Date Range & Time */}
+                                                    <div className="ss-meta-row">
+                        <span className="ss-meta-item ss-date-range">
+                            {fmt(startD)} – {fmt(endD)} | {data.sBatchStartTime} – {data.sBatchEndTime}
+                        </span>
+                                                    </div>
+
+                                                    {/* 5. Day Dots */}
+                                                    <div className="ss-day-dots">
+                                                        {WEEK.map((day, i) => (
+                                                            <div key={i} className={`ss-day-dot ${days.includes(day) ? 'ss-day-on' : 'ss-day-off'}`}>{LABELS[i]}</div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* 6. Tutor Name */}
+                                                    <div className="ss-tutor-row">
+                                                        <span>Tutor: <strong>{data.sFName} {data.sLName}</strong></span>
+                                                    </div>
+
+                                                    {/* 7. Footer: Price, Level & Button */}
+                                                    <div className="ss-card-footer">
+                                                        <div className="ss-price-area">
+                                                            {data.sLevel && <span className="ss-level-badge">{data.sLevel}</span>}
+                                                            {(!data.dAmount || Number(data.dAmount) === 0) && (
+                                                                <span className="ss-free-badge">FREE</span>
+                                                            )}
+                                                        </div>
+                                                        <Link className="ss-learn-btn" href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
                                                             Register Now →
                                                         </Link>
                                                     </div>
@@ -1034,14 +1212,11 @@ const AllBatches = () => {
                                     const rating = parseFloat(data.user_rate) || 0;
                                     const fullStars = Math.floor(rating);
                                     const hasHalf = rating % 1 >= 0.5;
-
                                     const startD = new Date(data.batchstartdatenew);
-                                    const endD   = new Date(data.dBatchEndDate);
-                                    const fmt    = (d) => `${d.getDate()} ${d.toLocaleString('default',{month:'short'})}`;
-
+                                    const endD = new Date(data.dBatchEndDate);
+                                    const fmt = (d) => `${d.getDate()} ${d.toLocaleString('default',{month:'short'})}`;
                                     const WEEK = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
                                     const LABELS = ['M','T','W','T','F','S','S'];
-
                                     const StarIcon = ({filled}) => (
                                         <svg width="13" height="13" viewBox="0 0 24 24"
                                              fill={filled ? '#EF9F27' : 'none'}
@@ -1049,80 +1224,81 @@ const AllBatches = () => {
                                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                                         </svg>
                                     );
-
                                     return (
-                                        <div className="col-lg-6 col-md-6 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
-                                            <div className="batch-card" style={{height: '100%'}}>
+                                        <div className="col-lg-6 col-md-6 col-12 mt-4" key={index} style={{padding: '8px'}}>
+                                            <div className="ss-card ss-card-list">
+                                                {/* Left image */}
+                                                <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} className="ss-list-img-wrap" style={{height: '280px'}}>
+                                                    <Image
+                                                        src={data.batchimg}
+                                                        alt={data.sCourseTitle}
+                                                        fill
+                                                        sizes="(max-width: 768px) 100vw, 300px"
+                                                        style={{objectFit:'cover', objectPosition:'center top'}}
+                                                    />
+                                                </Link>
 
-                                                {/* Image */}
-                                                <div style={{position:'relative', width:'100%', paddingTop:'69.25%', flexShrink:0, overflow:'hidden', display:'block'}}>
-                                                    <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} style={{display:'block', position:'absolute', inset:0}}>
-                                                        <Image
-                                                            src={data.batchimg}
-                                                            alt="Card image"
-                                                            fill
-                                                            sizes="(max-width: 576px) 100vw, (max-width: 992px) 50vw, 33vw"
-                                                            style={{objectFit:'cover', objectPosition:'center center'}}
-                                                        />
-                                                    </Link>
-                                                </div>
-                                                <div className="rbt-card-body">
-                                                    {/* Category badge */}
-                                                    <Link href="#" className="cat-badge">{data.sCategory}</Link>
-
-                                                    {/* Title */}
-                                                    <h4 className="rbt-card-title">
-                                                        <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
-                                                            {data.sCourseTitle}
-                                                        </Link>
-                                                    </h4>
-
-                                                    {/* Tutor */}
-                                                    <p className="batch-tutor">By <strong>{data.sFName} {data.sLName}</strong></p>
-
-                                                    {/* Duration */}
-                                                    <div className="batch-meta">
-                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                                                        </svg>
-                                                        {data.batchdays} Days · {totalHours} hrs {remainingMinutes} min
-                                                    </div>
-
-                                                    {/* Date & time */}
-                                                    <div className="batch-meta">
-                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                                            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-                                                            <line x1="3" y1="10" x2="21" y2="10"/>
-                                                        </svg>
-                                                        {fmt(startD)} – {fmt(endD)} &nbsp;|&nbsp; {data.sBatchStartTime} to {data.sBatchEndTime}
-                                                    </div>
-
-                                                    {/* Day circles */}
-                                                    <div className="batch-days">
-                                                        {WEEK.map((day, i) => (
-                                                            <div key={i} className={`day-dot ${days.includes(day) ? 'day-on' : 'day-off'}`}>
-                                                                {LABELS[i]}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-
-                                                    {/* Footer: stars + button */}
-                                                    <div className="card-foot">
-                                                        <div className="star-row">
+                                                {/* Right content with fixed sequence */}
+                                                <div className="ss-card-body">
+                                                    {/* 1. Reviews/Stars - TOP */}
+                                                    <div className="ss-card-top-row">
+                                                        <div className="ss-stars-row">
                                                             {[1,2,3,4,5].map(s => (
                                                                 <StarIcon key={s} filled={s <= fullStars || (s === fullStars+1 && hasHalf)} />
                                                             ))}
-                                                            <span style={{marginLeft:'3px'}}>
-        {rating > 0 ? rating.toFixed(1) : '0.0'}
-                                                                {data.user_rate_cnt && Number(data.user_rate_cnt) > 0
-                                                                    ? ` (${data.user_rate_cnt})`
-                                                                    : ''}
-    </span>
+                                                            <span className="ss-rating-text">
+                                {rating > 0 ? `(${data.user_rate_cnt || 0} Reviews)` : '(0 Reviews)'}
+                            </span>
                                                         </div>
-                                                        <Link
-                                                            className="rbt-reg-btn"
-                                                            href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
+                                                    </div>
+
+                                                    {/* 2. Course Title */}
+                                                    <h4 className="ss-title">
+                                                        <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>{data.sCourseTitle}</Link>
+                                                    </h4>
+
+                                                    {/* 3. Duration & Hours */}
+                                                    <div className="ss-meta-row">
+                        <span className="ss-meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            {data.batchdays} Days
+                        </span>
+                                                        <span className="ss-meta-dot">·</span>
+                                                        <span className="ss-meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                                            {totalHours}h {remainingMinutes}m
+                        </span>
+                                                    </div>
+
+                                                    {/* 4. Date Range & Time */}
+                                                    <div className="ss-meta-row">
+                        <span className="ss-meta-item ss-date-range">
+                            {fmt(startD)} – {fmt(endD)} | {data.sBatchStartTime} – {data.sBatchEndTime}
+                        </span>
+                                                    </div>
+
+                                                    {/* 5. Day Dots */}
+                                                    <div className="ss-day-dots">
+                                                        {WEEK.map((day, i) => (
+                                                            <div key={i} className={`ss-day-dot ${days.includes(day) ? 'ss-day-on' : 'ss-day-off'}`}>{LABELS[i]}</div>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* 6. Tutor Name */}
+                                                    <div className="ss-tutor-row">
+                                                        <span>Tutor: <strong>{data.sFName} {data.sLName}</strong></span>
+                                                        {data.sCategory && <span className="ss-cat-badge">{data.sCategory}</span>}
+                                                    </div>
+
+                                                    {/* 7. Footer: Level, Price & Button */}
+                                                    <div className="ss-card-footer">
+                                                        <div className="ss-price-area">
+                                                            {data.sLevel && <span className="ss-level-badge">{data.sLevel}</span>}
+                                                            {(!data.dAmount || Number(data.dAmount) === 0) && (
+                                                                <span className="ss-free-badge">FREE</span>
+                                                            )}
+                                                        </div>
+                                                        <Link className="ss-learn-btn" href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`}>
                                                             Register Now →
                                                         </Link>
                                                     </div>

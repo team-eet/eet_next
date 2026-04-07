@@ -161,22 +161,30 @@ const styles = `
   .cb-instructor-name:hover { opacity: 0.8; }
 
   /* ── Info cards grid - FIXED SIZE ── */
-  .cb-info-grid {
+ .cb-info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 2px;
-    margin-bottom: 1px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
-  .cb-info-card {
+  @media (max-width: 480px) {
+    .cb-info-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+.cb-info-card {
     display: flex;
     flex-direction: column;
-    gap: 1px;
-    padding: 14px 10px;
+    gap: 4px;
+    padding: 14px 12px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     transition: all 0.3s ease;
+    min-width: 0; /* prevents overflow */
+    word-break: break-word;
   }
 
   .cb-info-card:hover {
@@ -289,7 +297,7 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [totalDuration, setTotalDuration] = useState({ adjustedHours: 0, adjustedMinutes: 0 });
     const [activeDays, setActiveDays] = useState([]);
-
+    const [dayCounts, setDayCounts] = useState({});
     useEffect(() => {
         if (getMatchCourse && Object.keys(getMatchCourse).length !== 0) {
             setIsLoading(false);
@@ -330,10 +338,42 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
     const parseDays = () => {
         try {
             const raw = getMatchCourse.sDays;
-            if (raw && raw !== "undefined") setActiveDays(JSON.parse(raw));
+            if (!raw || raw === "undefined") return;
+            const days = JSON.parse(raw);
+            setActiveDays(days);
+
+            // Count occurrences of each active day between start and end date
+            const parseLocal = (d) => {
+                const dt = new Date(d);
+                return new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate());
+            };
+            const start = parseLocal(getMatchCourse.dBatchStartDate);
+            const end = parseLocal(getMatchCourse.dBatchEndDate);
+
+            const dayNameToIndex = {
+                Sunday: 0,
+                Monday: 1,
+                Tuesday: 2,
+                Wednesday: 3,
+                Thursday: 4,
+                Friday: 5,
+                Saturday: 6
+            };
+
+            const counts = {};
+            days.forEach((dayName) => {
+                const targetIndex = dayNameToIndex[dayName];
+                let count = 0;
+                const cur = new Date(start);
+                while (cur <= end) {
+                    if (cur.getDay() === targetIndex) count++;
+                    cur.setDate(cur.getDate() + 1);
+                }
+                counts[dayName] = count;
+            });
+            setDayCounts(counts);
         } catch { /* ignore */ }
     };
-
     /* ── date formatter ── */
     const fmtDate = (d) => {
         const dt = new Date(d);
@@ -447,7 +487,7 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
                                     </div>
                                 )}
                                 <div className="cb-instructor-info">
-                                    <div className="cb-instructor-label">Batch by</div>
+                                    <div className="cb-instructor-label">Tutor:</div>
                                     <Link href="javascript:void(0)" className="cb-instructor-name">
                                         {getMatchCourse.sFName} {getMatchCourse.sLName}
                                     </Link>
@@ -495,19 +535,40 @@ const CourseBreadcrumb = ({ getMatchCourse }) => {
                             </div>
 
                             {/* ── Days of the week - Fixed text sizes ── */}
+                            {/* ── Days of the week - Fixed text sizes ── */}
                             <div className="cb-days-section">
                                 <div className="cb-days-label">Weekly Schedule</div>
                                 <div className="cb-days-row">
                                     {DAYS.map((day) => {
                                         const isActive = activeDays.includes(day);
+                                        const count = dayCounts[day] || 0;
                                         return (
                                             <span
                                                 key={day}
                                                 className={`cb-day-pill ${isActive ? "active" : "inactive"}`}
+                                                style={{ gap: "10px" }}
                                             >
-                                                {isActive && <span className="active-indicator" />}
+                    {isActive && <span className="active-indicator" />}
                                                 {day}
-                                            </span>
+                                                {isActive && count > 0 && (
+                                                    <span style={{
+                                                        display: "inline-flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        width: "22px",
+                                                        height: "22px",
+                                                        borderRadius: "50%",
+                                                        background: "rgba(255,255,255,0.25)",
+                                                        color: "#fff",
+                                                        fontSize: "1.3rem",
+                                                        fontWeight: 700,
+                                                        lineHeight: 1,
+                                                        flexShrink: 0,
+                                                    }}>
+                            {count}
+                        </span>
+                                                )}
+                </span>
                                         );
                                     })}
                                 </div>
