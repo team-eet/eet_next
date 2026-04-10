@@ -11,3 +11,8 @@ node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+.next/
+.idea/
+node_modules/
+out/
