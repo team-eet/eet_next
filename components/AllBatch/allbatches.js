@@ -925,7 +925,7 @@ const AllBatches = () => {
                                         <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
                                             <div className="ss-card ss-card-grid">
                                                 {/* Image */}
-                                                <Link href={data.nCId && data.nTBId ? `/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}` : '#'} className="ss-card-img-wrap">
+                                                <Link href={data._encCId && data._encTBId ? `/batch-details/${data._encCId}/${data._encTBId}` : '#'} className="ss-card-img-wrap">
                                                     <Image
                                                         src={data.batchimg}
                                                         alt={data.sCourseTitle}
@@ -951,7 +951,7 @@ const AllBatches = () => {
 
                                                     {/* 2. Course Title */}
                                                     <h4 className="ss-title">
-                                                        <Link href={data.nCId && data.nTBId ? `/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}` : '#'} >{data.sCourseTitle}</Link>
+                                                        <Link href={data._encCId && data._encTBId ? `/batch-details/${data._encCId}/${data._encTBId}` : '#'}>{data.sCourseTitle}</Link>
                                                     </h4>
 
                                                     {/* 3. Duration & Hours */}
@@ -994,7 +994,7 @@ const AllBatches = () => {
                                                                 <span className="ss-free-badge">FREE</span>
                                                             )}
                                                         </div>
-                                                        <Link className="ss-learn-btn" href={data.nCId && data.nTBId ? `/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}` : '#'}>
+                                                        <Link className="ss-learn-btn" href={data._encCId && data._encTBId ? `/batch-details/${data._encCId}/${data._encTBId}` : '#'}>
                                                             Register Now →
                                                         </Link>
                                                     </div>
@@ -1245,7 +1245,7 @@ const AllBatches = () => {
                                         <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
                                             <div className="ss-card ss-card-list">
                                                 {/* Left image */}
-                                                <Link href= {data.nCId && data.nTBId ? `/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}` : '#'} className="ss-list-img-wrap">
+                                                <Link href={data._encCId && data._encTBId ? `/batch-details/${data._encCId}/${data._encTBId}` : '#'} className="ss-list-img-wrap">
                                                     <Image
                                                         src={data.batchimg}
                                                         alt={data.sCourseTitle}
@@ -1271,7 +1271,7 @@ const AllBatches = () => {
 
                                                     {/* 2. Course Title */}
                                                     <h4 className="ss-title">
-                                                        <Link href={data.nCId && data.nTBId ? `/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}` : '#'}>{data.sCourseTitle}</Link>
+                                                        <Link href={data._encCId && data._encTBId ? `/batch-details/${data._encCId}/${data._encTBId}` : '#'}>{data.sCourseTitle}</Link>
                                                     </h4>
 
                                                     {/* 3. Duration & Hours */}
@@ -1315,7 +1315,7 @@ const AllBatches = () => {
                                                                 <span className="ss-free-badge">FREE</span>
                                                             )}
                                                         </div>
-                                                        <Link className="ss-learn-btn" href={data.nCId && data.nTBId ? `/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}` : '#'} >
+                                                        <Link className="ss-learn-btn" href={data._encCId && data._encTBId ? `/batch-details/${data._encCId}/${data._encTBId}` : '#'} >
                                                             Register Now →
                                                         </Link>
                                                     </div>

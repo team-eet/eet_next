@@ -349,7 +349,7 @@ const Viedo = ({ checkMatchCourses }) => {
             },
             modal: {
                 ondismiss: function () {
-                   setIsLoading(false);  // this is here for the payment gateway loading fixes
+                    setIsLoading(false);  // this is here for the payment gateway loading fixes
                 },
             },
         };
