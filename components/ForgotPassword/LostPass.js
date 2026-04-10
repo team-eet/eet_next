@@ -203,7 +203,16 @@ const LostPass = () => {
                             <div ref={recaptchaWrapperRef} className="my-2" />
 
                             <button type="submit" className="rbt-btn btn-gradient w-100" disabled={isSubmitting}>
-                                {isSubmitting ? 'Sending...' : 'Send OTP'}
+                                {isSubmitting ? (
+                                    <>
+            <span
+                className="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+            />
+                                        Sending...
+                                    </>
+                                ) : 'Send OTP'}
                             </button>
                         </Form>
                     )}
