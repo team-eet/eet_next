@@ -6,6 +6,8 @@ import {EncryptData} from "@/components/Services/encrypt-decrypt";
 import Axios from "axios";
 import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import { useParams} from "react-router-dom";
+import dynamic from "next/dynamic";
+
 
 const BatchContent = () => {
   const REACT_APP = API_URL

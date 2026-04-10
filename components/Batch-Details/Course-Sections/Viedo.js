@@ -15,12 +15,14 @@ import withReactContent from "sweetalert2-react-content";
 import Swal from "sweetalert2";
 import Skeleton from "react-loading-skeleton";
 import InquiryPopup from "@/components/Inquiry/InquiryPopup";
+import useRazorpay from "react-razorpay";
+
 
 const MySwal = withReactContent(Swal);
 
 const Viedo = ({ checkMatchCourses }) => {
     console.log("Batch Data Check", checkMatchCourses);
-
+    console.log("checkMatchCourses FULL DATA:", checkMatchCourses);
     const router = useRouter();
     // batchId comes from URL — e.g. /batch-details/[courseId]/[batchId]
     // Adjust the query key names to match your actual Next.js route params.
@@ -39,7 +41,9 @@ const Viedo = ({ checkMatchCourses }) => {
     const [isLoading, setIsLoading]              = useState(false);
     const [toggle, setToggle]                    = useState(false);
     const [hideOnScroll, setHideOnScroll]        = useState(false);
-
+    const [Razorpay] = useRazorpay();
+    const [getOrderIDData, setOrderIDData]   =     useState("");
+    const [getTBID, setTBID]   =     useState("");
     // ─── Redux / Context ──────────────────────────────────────────────────────
     const dispatch               = useDispatch();
     const { cart }               = useSelector((state) => state.CartReducer);
@@ -55,15 +59,12 @@ const Viedo = ({ checkMatchCourses }) => {
 
     // ─── Fetch feature counts ─────────────────────────────────────────────────
     const getFeatureCount = () => {
-        const url         = window.location.href;
-        const parts       = url.split("/");
-        const batchId     = parts[parts.length - 1];   // encrypted batch id
-        const courseMainId = parts[parts.length - 2];  // encrypted course main id
-
+        const batchId = rawBatchId;       // already encrypted from router.query
+        const courseMainId = rawCourseId; // already encrypted from router.query
         console.log("batchId:", batchId, "courseMainId:", courseMainId);
-
+        console.log("batchId-ankit:", DecryptData(batchId), "courseMainId-ankit:", DecryptData(courseMainId));
         // Activity count
-        Axios.get(`${API_URL}/api/package/Show_activity_count/${EncryptData(parseInt(batchId))}`, {
+        Axios.get(`${API_URL}/api/package/Show_activity_count/${batchId}`, {
             headers: { ApiKey: `${API_KEY}` },
         })
             .then((res) => {
@@ -79,10 +80,10 @@ const Viedo = ({ checkMatchCourses }) => {
             Axios.get(`${API_URL}/api/coursemain/GetBatchDocumentCount/${courseMainId}`, {
                 headers: { ApiKey: `${API_KEY}` },
             }),
-            Axios.get(`${API_URL}/api/package/Show_video_count/${EncryptData(parseInt(batchId))}`, {
+            Axios.get(`${API_URL}/api/package/Show_video_count/${batchId}`, {
                 headers: { ApiKey: `${API_KEY}` },
             }),
-            Axios.get(`${API_URL}/api/package/Show_pdf_count/${EncryptData(parseInt(batchId))}`, {
+            Axios.get(`${API_URL}/api/package/Show_pdf_count/${batchId}`, {
                 headers: { ApiKey: `${API_KEY}` },
             }),
         ])
@@ -91,7 +92,9 @@ const Viedo = ({ checkMatchCourses }) => {
                     const batchData     = batchRes.data.length !== 0 ? batchRes.data[0] : {};
                     const videoUrlCount = videoRes.data.length !== 0 ? videoRes.data[0].cntf || 0 : 0;
                     const pdfUrlCount   = pdfRes.data.length !== 0  ? pdfRes.data[0].cntf  || 0 : 0;
-
+                    console.log(batchData.nTBId, "FOUND nTBId") // CHECK THIS
+                    console.log("BatchDoc nTBId ANOTHER SOURCE:", batchRes.data[0].nTBId)
+                    console.log(batchData, "BatchData PASSED")
                     setNumberCount({
                         ...batchData,
                         video_count: (batchData.video_count || 0) + videoUrlCount,
@@ -103,76 +106,17 @@ const Viedo = ({ checkMatchCourses }) => {
             .catch((err) => ErrorDefaultAlert(err));
     };
 
-    // ─── Check if batch already in cart ──────────────────────────────────────
-    const getCartItem = () => {
-        if (localStorage.getItem("userData")) {
-            const udata   = DecryptData(localStorage.getItem("userData"));
-            // Use the encrypted batchId from the URL (rawBatchId)
-            const batchId = rawBatchId;
-
-            Axios.get(
-                `${API_URL}/api/cart/GetCartItemCourse/${udata["regid"]}/${batchId}`,
-                { headers: { ApiKey: `${API_KEY}` } }
-            )
-                .then((res) => {
-                    console.log("Cart check for batch:", res.data);
-                    if (res.data && Array.isArray(res.data)) {
-                        if (res.data.length > 0 && EncryptData(res.data[0].cid) === batchId) {
-                            setisCartItem(true);
-                            setisCartId(EncryptData(res.data[0].nCartId));
-                        } else {
-                            setisCartId(EncryptData(0));
-                        }
-                    } else {
-                        setisCartId(EncryptData(0));
-                    }
-                })
-                .catch((err) => ErrorDefaultAlert(err));
+    useEffect(() => {
+        if (checkMatchCourses?.nTBId) {
+            setTBID(checkMatchCourses.nTBId);
         }
-
-        // Scroll listener
-        const handleScroll = () => {
-            setHideOnScroll(window.pageYOffset > 200);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    };
-
-    // ─── Promo code details ───────────────────────────────────────────────────
-    const getPromocodeDetails = () => {
-        const encryptedData = localStorage.getItem("userData");
-        const getamt        = parseInt(checkMatchCourses.dAmount) || 0;
-        const batchId       = rawBatchId;
-
-        if (encryptedData) {
-            const udatas = DecryptData(encryptedData);
-            Axios.get(
-                `${API_URL}/api/promocode/Get_promocode_detail/${batchId}/${udatas["regid"]}/${EncryptData(getamt)}`,
-                { headers: { ApiKey: `${API_KEY}` } }
-            )
-                .then((res) => {
-                    if (res.data && res.data.length !== 0) {
-                        const resData = JSON.parse(res.data);
-                        setPromoCodeData(resData);
-                        console.log("promoCode", resData);
-                    }
-                })
-                .catch((err) => {
-                    console.log("promoCode err", err);
-                    ErrorDefaultAlert(err);
-                });
-        }
-    };
+    }, [checkMatchCourses]);
 
     // ─── useEffect ────────────────────────────────────────────────────────────
     useEffect(() => {
         getFeatureCount();
-        dispatch({ type: "COUNT_CART_TOTALS" });
         localStorage.setItem("eetData", JSON.stringify(cart));
         localStorage.setItem("cart", JSON.stringify(cart));
-        getCartItem();
-        getPromocodeDetails();
-
         // Video preview source
         if (checkMatchCourses.sVideoURL && checkMatchCourses.sVideoURL !== "") {
             setvideoOpenData(checkMatchCourses.sVideoURL);
@@ -183,14 +127,9 @@ const Viedo = ({ checkMatchCourses }) => {
         }
     }, [rawBatchId]);
 
-    useEffect(() => {
-        if (!cartToggle) {
-            setIsLoading(false);
-        }
-    }, [cartToggle]);
-
     // ─── Add to Cart ──────────────────────────────────────────────────────────
-    const addToCartFun = (batchId, amount, product) => {
+    const addToCartFun = (batchId, amount,  product) => {
+        const courseMainId = rawCourseId;
         setIsLoading(true);
 
         if (!localStorage.getItem("userData")) {
@@ -213,163 +152,225 @@ const Viedo = ({ checkMatchCourses }) => {
             });
         }
 
-        // User is logged in — proceed
-        dispatch(addToCartAction(batchId, amount, product));
+        const getamt = parseInt(checkMatchCourses.dAmount) || 0;
+        const udata  = DecryptData(localStorage.getItem("userData"));
 
-        let cartitemcnt = 0;
-        if (localStorage.getItem("cart")) {
-            const str_arr = JSON.parse(localStorage.getItem("cart"));
-            if (str_arr.length !== 0) cartitemcnt = str_arr.length;
-        }
-
-        Axios.get(`${API_URL}/api/companySettings/FillCompanySettings`, {
-            headers: { ApiKey: `${API_KEY}` },
-        })
+        console.log("courseMainId-ankit:", courseMainId, "batchId-ankit:", batchId);
+        const cnewamt = checkMatchCourses.dAmount ? String(checkMatchCourses.dAmount) : "0";
+        const insert_arr = {
+            nCartId: EncryptData(0),
+            nRegId: udata["regid"],
+            cid: courseMainId,
+            batchId: batchId,  // ← Use 'batchId' as the field name
+            cname: checkMatchCourses.sCourseTitle,
+            fname: checkMatchCourses.sFName || "",
+            lname: checkMatchCourses.sLName || "",
+            camt: Number(checkMatchCourses.nCourseAmount || 0),
+            cnewamt: Number(cnewamt),
+            pkgprice: Number(checkMatchCourses.pkg_price || 0),
+            isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse || "no",
+            cimg: checkMatchCourses.sImagePath || "",
+            pkgId: EncryptData(0),
+            pkgname: "",
+            PCId: "",
+            promocode:"",
+            dDiscount: "",
+            isBatch: "true"
+        };
+        console.log("batch insert_arr", insert_arr);
+        console.log("Batch ID ", batchId);
+        console.log("Sending to InsertBatchCart:", JSON.parse(JSON.stringify(insert_arr)));
+        //   console.log("InsertCart nTBId:",retData.nTBId);
+        Axios.post(`${API_URL}/api/cart/InsertBatchCart`, insert_arr,
+            {
+                headers: {
+                    ApiKey:         `${API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        )
             .then((res) => {
-                if (res.data.length !== 0) {
-                    const maximumItemCart = res.data[0]["nMaximumItemCart"];
-
-                    if (maximumItemCart >= cartitemcnt + 1) {
-                        setisCartItem(true);
-
-                        const getamt = parseInt(checkMatchCourses.dAmount) || 0;
-                        const udata  = DecryptData(localStorage.getItem("userData"));
-
-                        Axios.get(
-                            `${API_URL}/api/promocode/Get_promocode_detail/${batchId}/${udata["regid"]}/${EncryptData(getamt)}`,
-                            { headers: { ApiKey: `${API_KEY}` } }
-                        )
-                            .then((res) => {
-                                if (res.data && res.data.length !== 0) {
-                                    const resData = JSON.parse(res.data);
-                                    const cnewamt = checkMatchCourses.dAmount ? String(checkMatchCourses.dAmount) : "0";
-
-                                    // ── INSERT (new cart entry) ──────────────────────────────
-                                    if (DecryptData(isCartId) === 0) {
-                                        const insert_arr = {
-                                            nCartId:          EncryptData(0),
-                                            nRegId:           udata["regid"],
-                                            cid:              batchId,
-                                            cname:            checkMatchCourses.sCourseTitle,
-                                            fname:            checkMatchCourses.sFName,
-                                            lname:            checkMatchCourses.sLName,
-                                            camt:             String(checkMatchCourses.nCourseAmount || 0),
-                                            cnewamt:          cnewamt,
-                                            pkgprice:         String(checkMatchCourses.pkg_price || 0),
-                                            isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse || "no",
-                                            cimg:             checkMatchCourses.sImagePath,
-                                            pkgId:            EncryptData(0),
-                                            pkgname:          "",
-                                            PCId:             resData.pcid,
-                                            promocode:        resData.promocode,
-                                            dDiscount:        resData.discount,
-                                            isBatch:          true,               // <── batch flag
-                                            nTBId:            EncryptData(checkMatchCourses.nTBId), // <── batch specific
-                                            batchID: resData.batchId
-                                        };
-
-                                        console.log("batch insert_arr", insert_arr);
-
-                                        Axios.post(
-                                            `${API_URL}/api/cart/InsertCart`,
-                                            JSON.stringify(insert_arr),
-                                            {
-                                                headers: {
-                                                    ApiKey:         `${API_KEY}`,
-                                                    "Content-Type": "application/json",
-                                                },
-                                            }
-                                        )
-                                            .then((res) => {
-                                                const retData = JSON.parse(res.data);
-                                                console.log("InsertCart retData", retData);
-
-                                                if (retData.success === "1") {
-                                                    // Update localStorage cart
-                                                    let genCart_arr = [];
-                                                    if (localStorage.getItem("cart")) {
-                                                        const gitem = JSON.parse(localStorage.getItem("cart"));
-                                                        if (gitem.length !== 0) genCart_arr = [...gitem];
-                                                    }
-                                                    genCart_arr.push(insert_arr);
-                                                    localStorage.setItem("cart", JSON.stringify(genCart_arr));
-                                                    setisCartId(EncryptData(retData.nCartId || 0));
-                                                    setCart(!cartToggle);
-                                                } else if (retData.success === "0") {
-                                                    ErrorDefaultAlert(retData);
-                                                }
-                                            })
-                                            .catch((err) => {
-                                                console.log("InsertCart err", err);
-                                                ErrorDefaultAlert(JSON.stringify(err.response));
-                                            });
-
-                                        // ── UPDATE (existing cart entry) ──────────────────────────
-                                    } else {
-                                        const update_arr = {
-                                            nCartId:          isCartId,
-                                            nRegId:           udata["regid"],
-                                            cid:              batchId,            // <── batch id (encrypted)
-                                            cname:            checkMatchCourses.sCourseTitle,
-                                            fname:            checkMatchCourses.sFName,
-                                            lname:            checkMatchCourses.sLName,
-                                            camt:             checkMatchCourses.nCourseAmount || 0,
-                                            cnewamt:          cnewamt,
-                                            pkgprice:         checkMatchCourses.pkg_price || 0,
-                                            isaccosiatecourse: checkMatchCourses.bIsAccosiateCourse || "no",
-                                            cimg:             checkMatchCourses.sImagePath,
-                                            pkgId:            EncryptData(0),
-                                            pkgname:          "",
-                                            PCId:             resData.pcid,
-                                            promocode:        resData.promocode,
-                                            dDiscount:        resData.discount,
-                                            isBatch:          true,
-                                            nTBId:            EncryptData(checkMatchCourses.nTBId),
-                                            batchID: resData.batchId
-                                        };
-
-                                        console.log("batch update_arr", update_arr);
-
-                                        Axios.post(
-                                            `${API_URL}/api/cart/InsertCart`,
-                                            update_arr,
-                                            { headers: { ApiKey: `${API_KEY}` } }
-                                        )
-                                            .then((res) => {
-                                                const retData = JSON.parse(res.data);
-
-                                                if (retData.success === "1") {
-                                                    delete update_arr["nCartId"];
-                                                    let genCart_arr = [];
-                                                    if (localStorage.getItem("cart")) {
-                                                        const gitem = JSON.parse(localStorage.getItem("cart"));
-                                                        if (gitem.length !== 0) genCart_arr = [...gitem];
-                                                    }
-                                                    genCart_arr.push(update_arr);
-                                                    localStorage.setItem("cart", JSON.stringify(genCart_arr));
-                                                    setCart(!cartToggle);
-                                                } else if (retData.success === "0") {
-                                                    ErrorAlert(retData);
-                                                }
-                                            })
-                                            .catch((err) => {
-                                                console.log("UpdateCart err", err);
-                                                ErrorDefaultAlert(JSON.stringify(err.response));
-                                            });
-                                    }
-                                }
-                            })
-                            .catch((err) => {
-                                console.log("promoCode err", err);
-                                ErrorDefaultAlert(err);
-                            });
-                    }
+                const retData = JSON.parse(res.data);
+                if (retData.success === "1") {
+                    // Processed to Create and Order handle
+                    const nTBId = getTBID;
+                    handlePayment(Number(cnewamt),batchId,nTBId);
+                } else if (retData.success === "0") {
+                    ErrorDefaultAlert(retData);
+                    setIsLoading(false);
                 }
             })
             .catch((err) => {
-                console.log("CompanySettings err", err);
-                ErrorDefaultAlert(err);
+                console.log("InsertCart err", err);
+                ErrorDefaultAlert(JSON.stringify(err.response));
+                setIsLoading(false);
             });
+    };
+
+    const handlePayment = (amount,batchId,nTBId) => {
+        if(localStorage.getItem('userData')) {
+            const regID = DecryptData(localStorage.getItem('userData'))
+            const totalAmnt = amount;
+            Axios.post(`${API_URL}/api/cart/PaymentBatchOrderInsert/${regID['regid']}/${EncryptData(totalAmnt)}/${EncryptData(batchId)}`, '1', {
+                headers: {
+                    ApiKey: `${API_KEY}`
+                }
+            }).then(res => {
+                const retData = JSON.parse(res.data)
+                // console.log('Response', res.data)
+                console.log('paydata', DecryptData(retData.pay_data))
+                console.log("Payment nTBId:", DecryptData(retData.pay_data).nTBId)
+                const OrderDetails = DecryptData(retData.pay_data)
+
+                if (retData.success === "1") {
+                    if (totalAmnt > 0) {
+                        CreatePayment(OrderDetails,nTBId)
+                        // initializing razorpay
+                    } else if (parseInt(checkoutAmount) === 0) {
+                        //if amount id '0' then do not open payment gateway
+                        Axios.get(`${API_URL}/api/cart/GetUserCartFree/${regID['regid']}`, {
+                            headers: {
+                                ApiKey: `${API_KEY}`
+                            }
+                        })
+                            .then(res => {
+                                if (res.data.length !== 0) {
+                                    console.log(res.data)
+                                    const retData = JSON.parse(res.data)
+                                    if (retData.success === '1') {
+                                        const ordid = retData.orderId
+                                        const pid = retData.payid
+                                        router.push(`/payment-detail/${EncryptData(ordid)}/${pid}/${EncryptData(parseInt(checkoutAmount))}`)
+                                    }
+
+                                }
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                { ErrorDefaultAlert(err) }
+                            })
+
+                    }
+                    //this.NewPayment(EncryptData(finalAmt))
+                }
+                else if (retData.success === "0") {
+                    // console.log(retData)
+                    { ErrorAlert(retData) }
+                }
+            })
+                .catch(err => {
+                    { ErrorDefaultAlert(JSON.stringify(err.response)) }
+                })
+
+        }
+    }
+
+    const CreatePayment = (orderDetails,nTBId) => {
+        console.log("ankit-OrderID", orderDetails)
+        console.log("ankit-nTBId", nTBId)
+        const options = {
+            key: "rzp_test_8zjBFXhPLdvQqc",
+            amount: orderDetails.txnAmount,
+            currency: "INR",
+            name: "EET English",
+            description: "Course Transaction",
+            image: "https://eetenglish.com/favicon.ico",
+            order_id: orderDetails.razorpayOrderId,
+            handler: function (response){
+                console.log('Decrypted', response)
+                console.log('Encrypted', EncryptData(response))
+                // router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
+
+                //api call backend
+                if(localStorage.getItem('userData')){
+                    const udata = DecryptData(localStorage.getItem('userData'))
+                    const verifyURL = `${API_URL}/api/cart/PaymentOrderVerify/${udata['regid']}/${EncryptData(orderDetails.orderId)}/${EncryptData(response)}`
+                    Axios.post(`${API_URL}/api/cart/PaymentOrderVerify/${udata['regid']}/${EncryptData(orderDetails.orderId)}/${EncryptData(response)}`, '1', {
+                        headers: {
+                            ApiKey: `${API_KEY}`
+                        }
+                    }).then(res => {
+                        if (res.data) {
+                            console.log(res.data)
+                            const retData = JSON.parse(res.data)
+                            const resDB = EncryptData(response);
+                            const u_data = udata['regid'];
+                            if(retData.success === "1"){
+                                // New Code
+                                console.log("ankit-OrderID", orderDetails.orderId);
+                                response["eet_orderID"] = orderDetails.orderId;
+                                response["query_for"] = "batch";
+                                response["eet_tbid"] = getTBID;
+                                console.log("ankit-getTBID", getTBID);
+                                console.log("ankit-response", EncryptData(response));
+                                Axios.get(`${API_URL}/api/cart/GetUserCart/${udata['regid']}/${EncryptData(response)}`, {
+                                    headers: {
+                                        ApiKey: `${API_KEY}`
+                                    }
+                                }).then(res => {
+                                    if (res.data) {
+                                        const retData = JSON.parse(res.data)
+                                        // alert(retData.payid)
+                                        if(retData.success === "1"){
+                                            router.push(`/payment-detail/${retData.payid}`)
+                                        } else {
+                                            rzpay.close();
+                                        }
+                                    }
+                                })
+                                    .catch(err => {
+                                        console.log(err)
+                                        ErrorDefaultAlert(err)
+                                    })
+                                // Close Code
+                            } else {
+                                //payment not verified error
+                            }
+                        }
+                    })
+                        .catch(err => {
+                            console.log(err)
+                            { ErrorDefaultAlert(err) }
+                        })
+                }
+
+                //call parameter
+            },
+            prefill: {
+                name: "username",
+                email: "user@gmail.com",
+                contact: "+919999999999",
+            },
+            notes: {
+                address: "EET English Pvt Ltd",
+            },
+            theme: {
+                color: "#4b71fc",
+            },
+            modal: {
+                ondismiss: function () {
+                   setIsLoading(false);  // this is here for the payment gateway loading fixes
+                },
+            },
+        };
+
+        const rzpay = new Razorpay(options);
+        rzpay.on('payment.failed', function (response){
+            // alert(EncryptData(response.error.metadata.payment_id));
+            // alert(rzpay.close())
+            setIsLoading(false)
+            if(response.error.code !== 'undefined'){
+                window.location.href = `/payment-detail/${EncryptData(response.error.metadata.payment_id)}`;
+            }
+            // alert(response.error.code);
+            // alert(response.error.description);
+            // alert(response.error.source);
+            // alert(response.error.step);
+            // alert(response.error.reason);
+            // alert(response.error.metadata.order_id);
+
+        })
+        rzpay.open();
     };
 
     // ─── Date formatter ───────────────────────────────────────────────────────
@@ -514,10 +515,10 @@ const Viedo = ({ checkMatchCourses }) => {
                                 >
                                     {isLoading ? (
                                         <span data-text="Loading...">
-                      <i className="fa fa-spinner fa-spin p-0"></i> Loading...
+        <i className="fa fa-spinner fa-spin p-0"></i> Loading...
                     </span>
                                     ) : (
-                                        <span data-text="Add to Cart">Add to Cart</span>
+                                        <span data-text="Add to Cart">Buy Now</span>
                                     )}
                                 </button>
                             ) : (

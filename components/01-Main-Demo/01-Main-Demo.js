@@ -612,7 +612,7 @@ const MainDemo = () => {
                                   {/*  </Link>*/}
                                   {/*</div>*/}
                                   <div className="rbt-author-info">
-                                    By{" "}
+                                    Tutor:{" "}
                                     <Link href={`/profile/${data.nCId}`}>{data.sFName} {data.sLName}</Link>
                                   </div>
                                 </div>
@@ -903,7 +903,7 @@ const MainDemo = () => {
                                           {data.sCourseTitle}
                                         </Link>
                                       </h4>
-                                      <span className="lesson-number mb-1">By <span
+                                      <span className="lesson-number mb-1">Tutor: <span
                                           className={'text-dark'}><b>{data.sFName} {data.sLName}</b></span></span>
                                       <span className="lesson-number">{data.batchdays} days <span
                                           className="lesson-time">({data.batchdays * hoursDifference} hrs)</span></span>

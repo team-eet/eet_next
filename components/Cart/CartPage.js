@@ -58,6 +58,7 @@ const CartPage = () => {
         //api call backend
         if(localStorage.getItem('userData')){
           const udata = DecryptData(localStorage.getItem('userData'))
+          const verifyURL = `${API_URL}/api/cart/PaymentOrderVerify/${udata['regid']}/${EncryptData(orderDetails.orderId)}/${EncryptData(response)}`;
           Axios.post(`${API_URL}/api/cart/PaymentOrderVerify/${udata['regid']}/${EncryptData(orderDetails.orderId)}/${EncryptData(response)}`, '1', {
             headers: {
               ApiKey: `${API_KEY}`
@@ -150,8 +151,6 @@ const CartPage = () => {
     if(localStorage.getItem('userData')) {
     const regID = DecryptData(localStorage.getItem('userData'))
       // alert(checkoutAmount * 100)
-
-
       Axios.get(`${API_URL}/api/cart/GetCartItem/${regID['regid']}`, {
         headers: {
           ApiKey: `${API_KEY}`
@@ -246,6 +245,7 @@ const CartPage = () => {
   let originalPrice = 0
   let discountPrice = 0
   let specialPrice = 0
+
   useEffect(() => {
     dispatch({ type: "COUNT_CART_TOTALS" });
     localStorage.setItem("eetData", JSON.stringify(cart));

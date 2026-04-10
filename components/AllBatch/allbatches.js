@@ -352,7 +352,8 @@ const AllBatches = () => {
 .ss-card-grid { flex-direction: column; }
 .ss-card-img-wrap {
     position: relative;
-    height: 200px;
+    width: calc(100% - 20px);
+    aspect-ratio: 16 / 9;
     flex-shrink: 0;
     display: block;
     overflow: hidden;
@@ -362,29 +363,41 @@ const AllBatches = () => {
 }
 
 /* List card: horizontal */
-.ss-card-list { flex-direction: row; align-items: stretch; }
+.ss-card-list { 
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 200px; 
+}
 .ss-list-img-wrap {
     position: relative;
-    width: 280px;
-    min-width: 280px;
+    width: 220px;
+    min-width: 220px;
     flex-shrink: 0;
     display: block;
+    align-self: stretch;
     overflow: hidden;
     border: 1px solid #ebebf0;
     border-radius: 12px;
     margin: 10px 0 10px 10px;
 }
 
-@media (max-width: 640px) {
-    .ss-card-list { flex-direction: column; }
-    .ss-list-img-wrap { width: calc(100% - 20px); min-width: unset; height: 300px; margin: 10px 10px 0 10px; }
-}
 @media (max-width: 768px) {
-    .ss-card-img-wrap, .ss-list-img-wrap {
-        height: 240px !important;
+    .ss-card-list { flex-direction: column; min-height: unset; }
+    .ss-list-img-wrap {
+        width: calc(100% - 20px);
+        min-width: unset;
+        aspect-ratio: 16 / 9;
+        height: unset;
+        min-height: unset;
+        margin: 10px 10px 0 10px;
+        align-self: auto;
+        flex-shrink: 0;
     }
 }
-
+@media (max-width: 480px) {
+    .ss-title { font-size: 14px; }
+    .ss-day-dot { width: 22px; height: 22px; font-size: 9px; }
+}
 /* Adjust spacing when tutor is below image in grid */
 .ss-card-grid .ss-tutor-row {
     margin-bottom: 8px;
@@ -905,16 +918,16 @@ const AllBatches = () => {
                                         </svg>
                                     );
                                     return (
-                                        <div className="col-lg-4 col-md-6 col-sm-6 col-12 mt-4" key={index} style={{padding: '8px'}}>
+                                        <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
                                             <div className="ss-card ss-card-grid">
                                                 {/* Image */}
-                                                <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} className="ss-card-img-wrap" style={{height: '280px'}}>
+                                                <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} className="ss-card-img-wrap">
                                                     <Image
                                                         src={data.batchimg}
                                                         alt={data.sCourseTitle}
                                                         fill
                                                         sizes="(max-width: 630px) 100vw, (max-width: 1250px) 50vw, 33vw"
-                                                        style={{objectFit:'cover', objectPosition:'center top'}}
+                                                        style={{objectFit:'cover', objectPosition:'center center'}}
                                                     />
                                                 </Link>
 
@@ -967,8 +980,8 @@ const AllBatches = () => {
                                                     {/* 6. Tutor Name */}
                                                     <div className="ss-tutor-row">
                                                         <span>Tutor: <strong>{data.sFName} {data.sLName}</strong></span>
+                                                        {data.sCategory && <span className="ss-cat-badge">{data.sCategory}</span>}
                                                     </div>
-
                                                     {/* 7. Footer: Price, Level & Button */}
                                                     <div className="ss-card-footer">
                                                         <div className="ss-price-area">
@@ -1225,16 +1238,16 @@ const AllBatches = () => {
                                         </svg>
                                     );
                                     return (
-                                        <div className="col-lg-6 col-md-6 col-12 mt-4" key={index} style={{padding: '8px'}}>
+                                        <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
                                             <div className="ss-card ss-card-list">
                                                 {/* Left image */}
-                                                <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} className="ss-list-img-wrap" style={{height: '280px'}}>
+                                                <Link href={`/batch-details/${EncryptData(data.nCId)}/${EncryptData(data.nTBId)}`} className="ss-list-img-wrap">
                                                     <Image
                                                         src={data.batchimg}
                                                         alt={data.sCourseTitle}
                                                         fill
                                                         sizes="(max-width: 768px) 100vw, 300px"
-                                                        style={{objectFit:'cover', objectPosition:'center top'}}
+                                                        style={{objectFit:'cover', objectPosition:'center center'}}
                                                     />
                                                 </Link>
 
