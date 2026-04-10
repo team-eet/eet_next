@@ -1,0 +1,13 @@
+# Next.js build output
+.next/
+out/
+
+# IDE
+.idea/
+
+# Node modules
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
