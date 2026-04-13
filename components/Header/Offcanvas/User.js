@@ -16,7 +16,7 @@ const User = ({fname, lname, profile}) => {
 const handleLogout = () =>{
   localStorage.removeItem('userData')
   localStorage.removeItem('userUpdateData')
-
+  localStorage.clear();
   router.push('/login')
 }
 

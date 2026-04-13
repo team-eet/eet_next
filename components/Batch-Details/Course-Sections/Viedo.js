@@ -48,7 +48,7 @@ const Viedo = ({ checkMatchCourses }) => {
     const dispatch               = useDispatch();
     const { cart }               = useSelector((state) => state.CartReducer);
     const { cartToggle, setCart } = useAppContext();
-
+    const [isAlreadyPurchased, setIsAlreadyPurchased] = useState(false);
     // ─── Days left until batch starts ─────────────────────────────────────────
     const nowDate          = new Date();
     const dBatchStartDate  = new Date(checkMatchCourses.dBatchStartDate);
@@ -117,13 +117,18 @@ const Viedo = ({ checkMatchCourses }) => {
         getFeatureCount();
         localStorage.setItem("eetData", JSON.stringify(cart));
         localStorage.setItem("cart", JSON.stringify(cart));
-        // Video preview source
-        if (checkMatchCourses.sVideoURL && checkMatchCourses.sVideoURL !== "") {
-            setvideoOpenData(checkMatchCourses.sVideoURL);
-        } else if (checkMatchCourses.sVideoPath && checkMatchCourses.sVideoPath !== "") {
-            setvideoOpenData(checkMatchCourses.sVideoPath);
+        // Update this specific block in your useEffect
+        if (checkMatchCourses.sVideoPath && checkMatchCourses.sVideoPath !== "") {
+            setvideoOpenData(checkMatchCourses.sVideoPath); // Direct MP4 first
+        } else if (checkMatchCourses.sVideoURL && checkMatchCourses.sVideoURL !== "") {
+            setvideoOpenData(checkMatchCourses.sVideoURL); // YouTube second
         } else {
             setvideoOpenData("");
+        }
+        const purchasedBatches = JSON.parse(localStorage.getItem("purchasedBatches") || "[]");
+        const decryptedBatchId = String(DecryptData(rawBatchId));
+        if (purchasedBatches.includes(decryptedBatchId)) {
+            setIsAlreadyPurchased(true);
         }
     }, [rawBatchId]);
 
@@ -309,10 +314,16 @@ const Viedo = ({ checkMatchCourses }) => {
                                     }
                                 }).then(res => {
                                     if (res.data) {
-                                        const retData = JSON.parse(res.data)
-                                        // alert(retData.payid)
-                                        if(retData.success === "1"){
-                                            router.push(`/payment-detail/${retData.payid}`)
+                                        const innerRetData = JSON.parse(res.data)
+                                        if(innerRetData.success === "1"){
+                                            // Save purchased batch to localStorage
+                                            const purchasedBatches = JSON.parse(localStorage.getItem("purchasedBatches") || "[]");
+                                            const decryptedBatchId = String(DecryptData(rawBatchId));
+                                            if (!purchasedBatches.includes(decryptedBatchId)) {
+                                                purchasedBatches.push(decryptedBatchId);
+                                                localStorage.setItem("purchasedBatches", JSON.stringify(purchasedBatches));
+                                            }
+                                            router.push(`/payment-detail/${innerRetData.payid}`)
                                         } else {
                                             rzpay.close();
                                         }
@@ -442,14 +453,31 @@ const Viedo = ({ checkMatchCourses }) => {
                         >
                             <i className="feather-x"></i>
                         </button>
-                        <Plyr
-                            source={{ type: "video", sources: [{ src: getvideoOpenData }] }}
-                            options={{ autoplay: true }}
-                        />
+
+                        {getvideoOpenData && (
+                            <Plyr
+                                source={{
+                                    type: "video",
+                                    sources: [
+                                        {
+                                            src: getvideoOpenData,
+                                            // Check if the URL is YouTube or a direct file
+                                            provider: getvideoOpenData.includes("youtube.com") || getvideoOpenData.includes("youtu.be")
+                                                ? "youtube"
+                                                : "html5",
+                                        },
+                                    ],
+                                }}
+                                options={{
+                                    autoplay: true,
+                                    hideControls: false,
+                                    resetOnEnd: true,
+                                }}
+                            />
+                        )}
                     </div>
                 </div>
             )}
-
             {/* ── Content ── */}
             <div className="content-item-content">
 
@@ -503,8 +531,15 @@ const Viedo = ({ checkMatchCourses }) => {
                         </button>
                     ) : (
                         <>
-                            {!isCartItem ? (
-                                /* Not yet in cart → Add to Cart */
+                            {isAlreadyPurchased ? (
+                                <button
+                                    className="rbt-btn btn-gradient w-100 text-center disabled"
+                                    style={{ pointerEvents: "none", opacity: 0.8, background: "linear-gradient(to right, #28a745, #218838)" }}
+                                    disabled
+                                >
+                                    <span data-text="Already Purchased">✓ Already Purchased</span>
+                                </button>
+                            ) : !isCartItem ? (
                                 <button
                                     className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${isLoading ? "disabled" : ""}`}
                                     onClick={() => addToCartFun(rawBatchId, checkMatchCourses.dAmount, checkMatchCourses)}
@@ -515,14 +550,13 @@ const Viedo = ({ checkMatchCourses }) => {
                                 >
                                     {isLoading ? (
                                         <span data-text="Loading...">
-        <i className="fa fa-spinner fa-spin p-0"></i> Loading...
-                    </span>
+                    <i className="fa fa-spinner fa-spin p-0"></i> Loading...
+                </span>
                                     ) : (
                                         <span data-text="Add to Cart">Buy Now</span>
                                     )}
                                 </button>
                             ) : (
-                                /* Already in cart → Go to Cart */
                                 isCartId !== "" ? (
                                     <button
                                         className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${isLoading ? "disabled" : ""}`}
@@ -535,7 +569,7 @@ const Viedo = ({ checkMatchCourses }) => {
                                         {isLoading ? (
                                             <span data-text="Loading...">
                         <i className="fa fa-spinner fa-spin p-0"></i> Loading...
-                      </span>
+                    </span>
                                         ) : (
                                             <span data-text="Go to Cart">Go to Cart</span>
                                         )}
@@ -547,8 +581,8 @@ const Viedo = ({ checkMatchCourses }) => {
                                     >
                                         <span className="btn-text">Go to Cart</span>
                                         <span className="btn-icon">
-                      <i className="feather-arrow-right"></i>
-                    </span>
+                    <i className="feather-arrow-right"></i>
+                </span>
                                     </Link>
                                 )
                             )}
