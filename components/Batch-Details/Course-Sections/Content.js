@@ -8,6 +8,11 @@ import {ErrorDefaultAlert} from "@/components/Services/SweetAlert";
 import { useParams} from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
+// random comments
+// random comments
+// random comments
+// random comments
+// random comments
 
 const Content = () => {
   const REACT_APP = API_URL

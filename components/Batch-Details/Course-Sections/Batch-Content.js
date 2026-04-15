@@ -15,6 +15,11 @@ const BatchContent = () => {
   const postId = parseInt(router.query.courseId);
   // console.log(router)
   // console.log(checkMatchCourses)
+  // random comments
+  // random comments
+  // random comments
+  // random comments
+
   const [getsectionItems, setsectionItems] = useState([])
 
   const getcourseContent = () => {

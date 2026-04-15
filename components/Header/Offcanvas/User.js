@@ -7,7 +7,7 @@ import {useEffect, useState} from "react";
 import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 import nouser from '../../../public/images/testimonial/default-avatar-profile-icon-of-social-media-user-vector.jpg'
 import {WEB_URL} from "@/constants/constant";
-
+// random comments
 const User = ({fname, lname, profile}) => {
   // console.log(UserData)
   const router = useRouter()

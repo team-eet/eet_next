@@ -11,6 +11,9 @@ import React, {useEffect, useState} from "react";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 
+// random comments
+// random comments
+// random comments
 
 const CourseDetailsOne = ({ checkMatchCourses }) => {
   // console.log(checkMatchCourses)
