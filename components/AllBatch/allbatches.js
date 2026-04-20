@@ -357,7 +357,7 @@ const AllBatches = () => {
 .ss-card-img-wrap {
     position: relative;
     width: calc(100% - 20px);
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 9;          /* keeps 480×270 ratio */
     flex-shrink: 0;
     display: block;
     overflow: hidden;
@@ -369,34 +369,42 @@ const AllBatches = () => {
 /* List card: horizontal */
 .ss-card-list { 
     flex-direction: row;
-    align-items: stretch;
-    min-height: 200px; 
+    align-items: center;
+    min-height: unset;
+    border-radius: 16px;
+    border: 1px solid #ebebf0;
+    box-shadow: 0 2px 12px rgba(80,60,180,0.07);
+    overflow: hidden;
 }
 .ss-list-img-wrap {
     position: relative;
-    width: 220px;
-    min-width: 220px;
+    width: 420px;
+    min-width: 420px;
+    height: auto;
+    aspect-ratio: 16 / 9;
     flex-shrink: 0;
     display: block;
-    align-self: stretch;
+    align-self: flex-start;
     overflow: hidden;
-    border: 1px solid #ebebf0;
     border-radius: 12px;
-    margin: 10px 0 10px 10px;
+    margin: 12px;
+    border: none;
+    background: transparent !important;
 }
-
 @media (max-width: 768px) {
     .ss-card-list { flex-direction: column; min-height: unset; }
-    .ss-list-img-wrap {
-        width: calc(100% - 20px);
-        min-width: unset;
-        aspect-ratio: 16 / 9;
-        height: unset;
-        min-height: unset;
-        margin: 10px 10px 0 10px;
-        align-self: auto;
-        flex-shrink: 0;
-    }
+  .ss-list-img-wrap {
+    width: calc(100% - 24px);
+    min-width: unset;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    min-height: unset;
+    margin: 12px;
+    align-self: auto;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: transparent !important;
+}
 }
 @media (max-width: 480px) {
     .ss-title { font-size: 14px; }
@@ -1242,7 +1250,8 @@ const AllBatches = () => {
                                         </svg>
                                     );
                                     return (
-                                        <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
+
+                                        <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-4" key={index} style={{padding: '8px'}}>
                                             <div className="ss-card ss-card-list">
                                                 {/* Left image */}
                                                 <Link href={data._encCId && data._encTBId ? `/batch-details/${data._encCId}/${data._encTBId}` : '#'} className="ss-list-img-wrap">
@@ -1251,7 +1260,8 @@ const AllBatches = () => {
                                                         alt={data.sCourseTitle}
                                                         fill
                                                         sizes="(max-width: 768px) 100vw, 300px"
-                                                        style={{objectFit:'cover', objectPosition:'center center'}}
+                                                        style={{objectFit:'contain', background:'transparent'}}
+
                                                     />
                                                 </Link>
 
