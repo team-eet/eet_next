@@ -438,21 +438,35 @@ const Viedo = ({ checkMatchCourses }) => {
                 <div
                     style={{
                         position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-                        backgroundColor: "rgba(0,0,0,0.8)", zIndex: 9999,
+                        backgroundColor: "rgba(0,0,0,0.6)", zIndex: 9999,
                         display: "flex", alignItems: "center", justifyContent: "center",
                     }}
                     onClick={() => setShowVideoModal(false)}
                 >
                     <div
-                        style={{ width: "70%", maxWidth: "800px", position: "relative" }}
+                        style={{
+                            position: "relative",
+                            width: "480px",
+                            maxWidth: "95vw",
+                            border: "3px solid #7c3aed",
+                            borderRadius: "14px",
+                            overflow: "hidden",
+                            boxShadow: "0 8px 40px rgba(124,58,237,0.35)",
+                            background: "#000",
+                        }}
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {/* Close button inside top-right corner of the box */}
                         <button
                             onClick={() => setShowVideoModal(false)}
                             style={{
-                                position: "absolute", top: "-40px", right: "0",
-                                background: "transparent", border: "none",
-                                color: "#fff", fontSize: "28px", cursor: "pointer", zIndex: 10,
+                                position: "absolute", top: "8px", right: "10px",
+                                background: "#7c3aed", border: "none",
+                                color: "#fff", fontSize: "16px", cursor: "pointer",
+                                zIndex: 10, borderRadius: "50%",
+                                width: "28px", height: "28px",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                lineHeight: 1,
                             }}
                         >
                             <i className="feather-x"></i>
@@ -465,7 +479,6 @@ const Viedo = ({ checkMatchCourses }) => {
                                     sources: [
                                         {
                                             src: getvideoOpenData,
-                                            // Check if the URL is YouTube or a direct file
                                             provider: getvideoOpenData.includes("youtube.com") || getvideoOpenData.includes("youtu.be")
                                                 ? "youtube"
                                                 : "html5",
