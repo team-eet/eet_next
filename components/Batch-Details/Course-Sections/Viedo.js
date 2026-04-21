@@ -95,6 +95,10 @@ const Viedo = ({ checkMatchCourses }) => {
                     console.log(batchData.nTBId, "FOUND nTBId") // CHECK THIS
                     console.log("BatchDoc nTBId ANOTHER SOURCE:", batchRes.data[0].nTBId)
                     console.log(batchData, "BatchData PASSED")
+                    // ADD THESE 3 LINES
+                    console.log("RAW batchRes.data:", batchRes.data);
+                    console.log("RAW videoRes.data:", videoRes.data);
+                    console.log("RAW pdfRes.data:", pdfRes.data);
                     setNumberCount({
                         ...batchData,
                         video_count: (batchData.video_count || 0) + videoUrlCount,
