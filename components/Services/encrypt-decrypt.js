@@ -22,6 +22,9 @@ const EncryptData = (str) => {
 }
 
 const DecryptData = (str) => {
+    // ✅ Reverse the URL-safe substitutions before decoding
+    str = str.replace(/_/g, '/').replace(/-/g, '+')
+
     const buff = Buffer.from(str, encryptionEncoding)
     const key = Buffer.from(AesKey, bufferEncryption)
     const iv = Buffer.from(AesIV, bufferEncryption)
@@ -29,6 +32,7 @@ const DecryptData = (str) => {
     const deciphered = decipher.update(buff) + decipher.final()
     return JSON.parse(deciphered)
 }
+
 
 const SHAEncryptData = (str) => {
     //creating hash object

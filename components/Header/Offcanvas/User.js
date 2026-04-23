@@ -2,23 +2,24 @@ import Image from "next/image";
 
 import UserData from "../../../data/user.json";
 import Link from "next/link";
-import {useRouter} from "next/router";
 import {useEffect, useState} from "react";
 import {EncryptData, DecryptData} from "@/components/Services/encrypt-decrypt";
 import nouser from '../../../public/images/testimonial/default-avatar-profile-icon-of-social-media-user-vector.jpg'
 import {WEB_URL} from "@/constants/constant";
+// Add this at the top of the component
+import { useRouter } from "next/router";
 // random comments
 const User = ({fname, lname, profile}) => {
   // console.log(UserData)
   const router = useRouter()
   const [userRole, setuserRole] = useState('')
   const [uuid, setuuid] = useState('')
-const handleLogout = () =>{
-  localStorage.removeItem('userData')
-  localStorage.removeItem('userUpdateData')
-  localStorage.clear();
-  router.push('/login')
-}
+  const handleLogout = () => {
+    localStorage.removeItem('userData');
+    localStorage.removeItem('userUpdateData');
+    localStorage.clear();
+    router.push('/login');
+  };
 
   useEffect(() => {
     if (localStorage.getItem('userData')){
@@ -99,12 +100,7 @@ const handleLogout = () =>{
             </ul>
             <hr className="mt--10 mb--10"/>
             <ul className="user-list-wrapper">
-              <li>
-                <Link href="/instructor/instructor-settings">
-                  <i className="feather-settings"></i>
-                  <span>Settings</span>
-                </Link>
-              </li>
+
               <li>
                 <Link href="/login" onClick={handleLogout}>
                   <i className="feather-log-out"></i>

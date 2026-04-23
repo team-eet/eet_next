@@ -7,7 +7,7 @@ import { EncryptData, DecryptData } from "@/components/Services/encrypt-decrypt"
 const OrderHistory = () => {
 
   const REACT_APP = API_URL
-  const [order, setOrder] = useState([])
+  const [order, setOrder] = useState([])  // already correct ✅
   const formatDate = (value, formatting = { month: 'short', day: 'numeric', year: 'numeric' }) => {
     if (!value) return value
     return new Intl.DateTimeFormat('en-US', formatting).format(new Date(value))
@@ -25,7 +25,8 @@ const OrderHistory = () => {
           .then(res => {
             if (res.data) {
               console.log(res.data)
-              setOrder(res.data)
+              // ✅ Ensure it's always an array
+              setOrder(Array.isArray(res.data) ? res.data : [])
             }
           })
           .catch(err => {

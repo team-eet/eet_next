@@ -34,8 +34,27 @@ const EnrolledCourses = () => {
   }, [])
   const getPurchasedCourse = () => {
     if (localStorage.getItem('userData')) {
-      const udata = DecryptData(localStorage.getItem('userData')).regid
-      // console.log('api called')
+      const rawUserData = localStorage.getItem('userData')
+      console.log('🔒 ENCRYPTED userData:', rawUserData)
+
+      const decrypted = DecryptData(rawUserData)
+      console.log('🔓 DECRYPTED raw result:', decrypted)
+      console.log('🔓 DECRYPTED type:', typeof decrypted)
+
+// Handle both string and object return
+      const parsedUser = typeof decrypted === 'string' ? JSON.parse(decrypted) : decrypted
+      console.log('📦 PARSED userData:', parsedUser)
+      console.log('👤 regid value:', parsedUser?.regid)
+
+      const udata = parsedUser?.regid
+      console.log('✅ udata final:', udata)
+      // const udata = DecryptData(rawUserData).regid
+      // console.log('👤 udata (regid):', udata)
+      // const udata = DecryptData(localStorage.getItem('userData')).regid
+      console.log('api called enrolled courses ')
+      console.log('✅ udata final:', udata)
+      console.log('api called enrolled courses ')
+      console.log('🚀 SENDING TO API - udata:', udata, '| Type:', typeof udata, '| Full URL:', `${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`)
       Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`, {
         headers: {
           ApiKey: `${API_KEY}`
@@ -43,8 +62,12 @@ const EnrolledCourses = () => {
       })
           .then(res => {
             console.log('api called 2')
+            console.log(udata, "udata value")
+            console.log( "API CALL MADE", `${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`)
             if (res.data) {
               console.log('My Learning', res.data)
+              console.log(udata, "udata value")
+              console.log( "API CALL MADE", `${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`)
               setcourse(res.data)
 
               setcrscnt(res.data.length)

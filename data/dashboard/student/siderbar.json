@@ -41,7 +41,7 @@
       "icon": "feather-settings"
     },
     {
-      "link": "/",
+      "link": "logout",
       "text": "Logout",
       "icon": "feather-log-out"
     }

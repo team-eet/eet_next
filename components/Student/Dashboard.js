@@ -22,6 +22,8 @@ const Dashboard = () => {
     if (localStorage.getItem('userData')) {
       const udata = DecryptData(localStorage.getItem('userData')).regid
       // console.log('api called')
+      console.log(udata, "udata value")
+      console.log( "API CALL MADE", `${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`)
       Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`, {
         headers: {
           ApiKey: `${API_KEY}`
@@ -30,6 +32,8 @@ const Dashboard = () => {
           .then(res => {
             if (res.data) {
               setcrscnt(res.data.length)
+              console.log(udata, "udata value")
+              console.log( "API CALL MADE", `${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`)
               console.log('My Learning', res.data)
               const count = res.data.filter(item => item.bCompleted === true).length;
               setActiveCnt(res.data.length - count)
