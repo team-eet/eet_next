@@ -54,8 +54,10 @@ const EnrolledCourses = () => {
             console.log('api called enrolled courses ')
             console.log('✅ udata final:', udata)
             console.log('api called enrolled courses ')
-            console.log('🚀 SENDING TO API - udata:', udata, '| Type:', typeof udata, '| Full URL:', `${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`)
-            Axios.get(`${API_URL}/api/purchasedBatch/GetPurchasedBatch/${udata}`, {
+            console.log('🚀 SENDING TO API - udata:', udata, '| Full URL:', `${API_URL}/api/purchasedBatch/GetPurchasedBatch/${udata}`)
+
+            // Fix the Axios call to match:
+            Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedBatch/${udata}`, {
                 headers: {
                     ApiKey: `${API_KEY}`
                 }
@@ -63,8 +65,9 @@ const EnrolledCourses = () => {
                 .then(res => {
                     console.log('api called 2')
                     console.log(udata, "udata value")
+                    console.log('api called')
                     console.log( "API CALL MADE", `${API_URL}/api/purchasedBatch/GetPurchasedBatch/${udata}`)
-                    if (res.data) {
+                    if (res.data && Array.isArray(res.data)) {
                         console.log('My Learning', res.data)
                         console.log(udata, "udata value")
                         console.log( "API CALL MADE", `${API_URL}/api/purchasedBatch/GetPurchasedBatch/${udata}`)
@@ -75,11 +78,11 @@ const EnrolledCourses = () => {
                         setActiveCnt(res.data.length - count)
                         setCompetedCnt(count)
 
-                        const activeCourse = res.data.filter(item => item.bCompleted === false);
-                        setactivecourse(activeCourse)
+                        const activeBatch = res.data.filter(item => item.bCompleted === false || item.bCompleted == null);
+                        setactivecourse(activeBatch)
 
-                        const complatedCourse = res.data.filter(item => item.bCompleted === true);
-                        setcompletecourse(complatedCourse)
+                        const complatedBatch = res.data.filter(item => item.bCompleted === true);
+                        setcompletecourse(complatedBatch)
                         setApiCall(1)
 
                     } else {
@@ -266,7 +269,7 @@ const EnrolledCourses = () => {
                             aria-labelledby="course-active-tab"
                         >
                             <div className="row g-5">
-                                {getActiveCourse.length !== 0 ? (
+                                {getApiCall === 1 && Array.isArray(getActiveCourse) && getActiveCourse.length !== 0 ? (
                                     <>
                                         {getActiveCourse.map((slide, index) => (
                                             <div
@@ -286,7 +289,7 @@ const EnrolledCourses = () => {
                                         ))}
                                     </>
                                 ) : (
-                                    <p className={'text-center'}>No Active Courses!</p>
+                                    <p className={'text-center'}>No Active Batch Courses!</p>
                                 )}
                             </div>
                         </div>
@@ -300,7 +303,7 @@ const EnrolledCourses = () => {
                         >
                             <div className="row g-5">
                                 <div className="row g-5">
-                                    {getCompleteCourse.length !== 0 ? (
+                                    {getApiCall === 1 && Array.isArray(getCompleteCourse) && getCompleteCourse.length !== 0 ? (
                                         <>
                                             {getCompleteCourse.map((slide, index) => (
                                                 <div
@@ -320,7 +323,7 @@ const EnrolledCourses = () => {
                                             ))}
                                         </>
                                     ) : (
-                                        <p className={'text-center'}>No Completed Courses!</p>
+                                        <p className={'text-center'}>No Completed Batch Courses!</p>
                                     )}
                                 </div>
                             </div>

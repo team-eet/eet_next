@@ -62,6 +62,7 @@ const CourseSuccessFile = () => {
                       });
                       // alert(res.data?.[0]?.payment_id)
                       // New Code
+                      console.log("FINAL DATA", res.data?.[0]?.payment_id, udata['regid'] )
                       Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${res.data?.[0]?.payment_id}/${udata['regid']}`, {
                           headers: {
                               ApiKey: `${API_KEY}`
