@@ -57,7 +57,7 @@ const User = ({fname, lname, profile}) => {
                 <span className="name">{fname} {lname}</span>
                 <Link
                   className="rbt-btn-link color-primary"
-                  href="/student/student-dashboard"
+                  href="/student/student-profile"
                 >
                   View Profile
                 </Link>

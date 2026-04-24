@@ -120,7 +120,7 @@ const EnrolledCourses = () => {
             <div className="rbt-dashboard-content bg-color-white rbt-shadow-box">
                 <div className="content">
                     <div className="section-title">
-                        <h4 className="rbt-title-style-3">Enrolled Courses</h4>
+                        <h4 className="rbt-title-style-3">Enrolled Batches</h4>
                     </div>
 
 

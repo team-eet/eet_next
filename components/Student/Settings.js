@@ -41,7 +41,9 @@ const Setting = () => {
     const [countryarr, setCountryArr] = useState([])
     const [statearr, setStateArr] = useState([])
     const [cityarr, setCityArr] = useState([])
-
+    const [photoBase64, setPhotoBase64] = useState(null)
+    const [photoName, setPhotoName] = useState('')
+    const [photoExt, setPhotoExt] = useState('')
     //const [currentPass, setcurrentPass] = useState('')
     //const [newPass, setnewPass] = useState('')
     //const [confirmPass, setconfirmPass] = useState('')
@@ -70,7 +72,7 @@ const Setting = () => {
             }
         })
     }
-    const onChangeImage = (event, setFieldValue) => {
+    const onChangeImage = (event) => {
         const fileext = ['image/jpeg', 'image/jpg', 'image/png']
         const file = event.target.files[0]
         if (!file) return
@@ -89,29 +91,26 @@ const Setting = () => {
         img.onload = () => {
             URL.revokeObjectURL(objectUrl)
             const canvas = document.createElement('canvas')
-            const MAX_SIZE = 300
+            const MAX_SIZE = 200  // reduced from 300 to keep base64 small
             let width = img.width
             let height = img.height
             if (width > height) {
-                if (width > MAX_SIZE) { height = (height * MAX_SIZE) / width; width = MAX_SIZE }
+                if (width > MAX_SIZE) { height = Math.round((height * MAX_SIZE) / width); width = MAX_SIZE }
             } else {
-                if (height > MAX_SIZE) { width = (width * MAX_SIZE) / height; height = MAX_SIZE }
+                if (height > MAX_SIZE) { width = Math.round((width * MAX_SIZE) / height); height = MAX_SIZE }
             }
             canvas.width = width
             canvas.height = height
             const ctx = canvas.getContext('2d')
             ctx.drawImage(img, 0, 0, width, height)
-            const compressed = canvas.toDataURL('image/jpeg', 0.7)
-
+            const compressed = canvas.toDataURL('image/jpeg', 0.5)  // quality 0.5
             const base64Clean = compressed.split(',')[1]
-            const ext = file.name.split('.').pop()
 
-            setsPhoto(compressed)        // for preview img src only
-// Do NOT call setsPhotoName here — that would trigger reinitialization
-
-            setFieldValue('sPhoto', base64Clean)
-            setFieldValue('sPhotoName', file.name)
-            setFieldValue('sPhotoExt', ext)
+            console.log('Compressed base64 length:', base64Clean.length) // should be under 30000
+            setsPhoto(compressed)
+            setPhotoBase64(base64Clean)
+            setPhotoName(file.name)
+            setPhotoExt(file.name.split('.').pop())
         }
         img.src = objectUrl
     }
@@ -411,9 +410,9 @@ const Setting = () => {
                                 // 3. Fix initialValues — remove getimg dependency
                                 initialValues={{
                                     nRegId: nRegid['regid'],
-                                    sPhoto: '',
-                                    sPhotoName: '',
-                                    sPhotoExt: '',
+                                    sPhoto: photoBase64 || null,
+                                    sPhotoName: photoName || sPhotoName || '',
+                                    sPhotoExt: photoExt || '',
                                     sFName: sFname || '',
                                     sLName: sLname || '',
                                     sEmail: sEmail || '',
@@ -427,6 +426,13 @@ const Setting = () => {
                                     console.log('Submitting values:', values)
                                     console.log('sPhoto length:', values.sPhoto?.length)
                                     console.log('sPhoto preview:', values.sPhoto?.substring(0, 50))
+                                    console.log('SENDING TO API:', {
+                                        nRegId: values.nRegId,
+                                        sPhotoLength: values.sPhoto?.length,
+                                        sPhotoStart: values.sPhoto?.substring(0, 30),
+                                        sPhotoName: values.sPhotoName,
+                                        sPhotoExt: values.sPhotoExt,
+                                    })
                                     // if (values.dDateOfBirth || values.sGender || values.sMaritalStatus || values.nCountryId || values.nStateId || values.nCityId || values.sHFBInfo || values.sStreetAddr || values.sLandmark || values.sPincode) {
 
                                     if (values.sFName && values.sLName) {
@@ -452,7 +458,9 @@ const Setting = () => {
                                                 if (gdata) {
                                                     gdata.fname = values.sFName
                                                     gdata.lname = values.sLName
-                                                    gdata.profile = values.sPhoto ? `data:image/jpeg;base64,${values.sPhoto}` : sPhoto
+                                                    gdata.profile = (values.sPhoto && values.sPhoto.length > 0)
+                                                        ? `data:image/jpeg;base64,${values.sPhoto}`
+                                                        : sPhoto
                                                 }
                                                 localStorage.setItem('userData', EncryptData(gdata))
                                                 { SuccessRedirectAlert({ title: "Updated", message: "Profile updated successfully.", rlink: "1" }) }
@@ -512,7 +520,7 @@ const Setting = () => {
                                                     }}
                                                 >
                                                     <i className="feather-camera" style={{ color: '#fff', fontSize: '16px' }}/>
-                                                    <input type="file" id="file" name="file" onChange={(e) => onChangeImage(e, setFieldValue)} accept="image/*" style={{ display: 'none' }} />
+                                                    <input type="file" id="file" name="file" onChange={(e) => onChangeImage(e)} accept="image/*" style={{ display: 'none' }} />
                                                 </label>
                                             </div>
                                         </div>
@@ -773,131 +781,221 @@ const Setting = () => {
 
                                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div className="rbt-form-group">
-                                                <FormGroup>
-                                                    <Label className="font-weight-bold f-14" htmlFor='sGender'>Gender</Label>
-                                                    <div className='mt-1'>
-                                                        <input style={{opacity: '1', position: 'relative', height: '15px', width: '25px'}}
-                                                               type='radio'
-                                                               name='sGender' value='male' onChange={handleChangeGender}
-                                                               checked={sGender === 'male'} className='ml-1 mb-0'/>
-                                                        <span className={'m-0'}>Male</span>
-
-                                                        <input style={{opacity: '1', position: 'relative', height: '15px', width: '25px'}}
-                                                               type='radio'
-                                                               name='sGender' value='female' className='ms-3 mb-0' onChange={handleChangeGender}
-                                                               checked={sGender === 'female'}/>
-                                                        <span>Female</span>
-                                                    </div>
-                                                </FormGroup>
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500'}}>Gender</label>
+                                                <div style={{display:'flex', gap:'10px'}}>
+                                                    {['male','female'].map(g => (
+                                                        <label key={g} onClick={() => setsGender(g)} style={{
+                                                            flex:1, display:'flex', alignItems:'center', justifyContent:'center',
+                                                            gap:'8px', padding:'10px 16px', borderRadius:'8px', cursor:'pointer',
+                                                            border: sGender === g ? '2px solid #6b38fb' : '1.5px solid #e0e0e0',
+                                                            background: sGender === g ? '#f3eeff' : 'transparent',
+                                                            color: sGender === g ? '#6b38fb' : 'inherit',
+                                                            fontWeight: sGender === g ? '500' : '400',
+                                                            transition:'all 0.15s'
+                                                        }}>
+                                                            <span style={{fontSize:'18px'}}>{g === 'male' ? '' : ''}</span>
+                                                            {g.charAt(0).toUpperCase() + g.slice(1)}
+                                                        </label>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div className="rbt-form-group">
-                                                <Label className="font-weight-bold f-14" htmlFor='sMaritalStatus'>Marital Status</Label>
-                                                <select name="sMaritalStatus"
-                                                        className='form-control'
-                                                        value={sMaritalStatus}
-                                                        onChange={handleChangeStatus}
-                                                >
-                                                    <option value="">Select</option>
-                                                    <option value='Married'>Married</option>
-                                                    <option value='Unmarried'>Unmarried</option>
-                                                </select>
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500'}}>Marital Status</label>
+                                                <div style={{display:'flex', gap:'10px'}}>
+                                                    {['Married','Unmarried'].map(s => (
+                                                        <label key={s} onClick={() => setsMaritalStatus(s)} style={{
+                                                            flex:1, display:'flex', alignItems:'center', justifyContent:'center',
+                                                            gap:'8px', padding:'10px 16px', borderRadius:'8px', cursor:'pointer',
+                                                            border: sMaritalStatus === s ? '2px solid #6b38fb' : '1.5px solid #e0e0e0',
+                                                            background: sMaritalStatus === s ? '#f3eeff' : 'transparent',
+                                                            color: sMaritalStatus === s ? '#6b38fb' : 'inherit',
+                                                            fontWeight: sMaritalStatus === s ? '500' : '400',
+                                                            transition:'all 0.15s'
+                                                        }}>
+                                                            <span style={{fontSize:'16px'}}>{s === 'Married' ? '' : ''}</span>
+                                                            {s}
+                                                        </label>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div className="rbt-form-group">
-                                                <Label className="font-weight-bold f-14" htmlFor='sCountry'>Country</Label>
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500'}}>Country</label>
+                                                <div style={{position:'relative'}}>
+                                                    <select name="sCountry" value={nCountryId} onChange={handleChangeCountry} style={{
+                                                        width:'100%', appearance:'none', WebkitAppearance:'none',
+                                                        padding:'10px 40px 10px 14px', borderRadius:'8px',
+                                                        border:'1.5px solid #e0e0e0', background:'transparent',
+                                                        fontSize:'14px', cursor:'pointer'
+                                                    }}>
+                                                        <option value="">Select country</option>
+                                                        {countryarr.map(e => <option key={e.nCountryId} value={e.nCountryId}>{e.sCountryname}</option>)}
+                                                    </select>
+                                                    <span style={{position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#888', fontSize:'12px'}}>▾</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/*<div className="col-lg-6 col-md-6 col-sm-6 col-12">*/}
+                                        {/*    <div className="rbt-form-group">*/}
+                                        {/*        <Label className="font-weight-bold f-14 mt-3" htmlFor='sState'>State</Label>*/}
+                                        {/*        <select name="sState"*/}
+                                        {/*                className='form-control'*/}
+                                        {/*                value={nStateId}*/}
+                                        {/*                onChange={handleChangeState}*/}
+                                        {/*        >*/}
+                                        {/*            <option value="">Select</option>*/}
+                                        {/*            {statearr.map((e) => {*/}
+                                        {/*                return <option key={e.nStateId} value={e.nStateId}>{e.sStateName}</option>*/}
+                                        {/*            })}*/}
+                                        {/*        </select>*/}
+                                        {/*    </div>*/}
+                                        {/*</div>*/}
+                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div className="rbt-form-group">
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500'}}>State</label>
+                                                <div style={{position:'relative'}}>
+                                                    <select name="sState" value={nStateId} onChange={handleChangeState} style={{
+                                                        width:'100%', appearance:'none', WebkitAppearance:'none',
+                                                        padding:'10px 40px 10px 14px', borderRadius:'8px',
+                                                        border:'1.5px solid #e0e0e0', background:'transparent',
+                                                        fontSize:'14px', cursor:'pointer'
+                                                    }}>
+                                                        <option value="">Select state</option>
+                                                        {statearr.map(e => <option key={e.nStateId} value={e.nStateId}>{e.sStateName}</option>)}
+                                                    </select>
+                                                    <span style={{position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#888', fontSize:'12px'}}>▾</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/*<div className="col-lg-6 col-md-6 col-sm-6 col-12">*/}
+                                        {/*    <div className="rbt-form-group">*/}
+                                        {/*        <Label className="font-weight-bold f-14 mt-3" htmlFor='sCity'>City</Label>*/}
+                                        {/*        <select name="sCity"*/}
+                                        {/*                className='form-control'*/}
+                                        {/*                value={nCityId}*/}
+                                        {/*                onChange={handleChangeCity}*/}
+                                        {/*        >*/}
+                                        {/*            <option value="">Select</option>*/}
+                                        {/*            {cityarr.map((e) => {*/}
+                                        {/*                return <option key={e.nCityId} value={e.nCityId}>{e.sCityName}</option>*/}
+                                        {/*            })}*/}
+                                        {/*        </select>*/}
+                                        {/*    </div>*/}
+                                        {/*</div>*/}
+                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div className="rbt-form-group">
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500'}}>City</label>
+                                                <div style={{position:'relative'}}>
+                                                    <select name="sCity" value={nCityId} onChange={handleChangeCity} style={{
+                                                        width:'100%', appearance:'none', WebkitAppearance:'none',
+                                                        padding:'10px 40px 10px 14px', borderRadius:'8px',
+                                                        border:'1.5px solid #e0e0e0', background:'transparent',
+                                                        fontSize:'14px', cursor:'pointer'
+                                                    }}>
+                                                        <option value="">Select City</option>
+                                                        {cityarr.map(e => <option key={e.nCityId} value={e.nCityId}>{e.sCityName}</option>)}
+                                                    </select>
+                                                    <span style={{position:'absolute', right:'14px', top:'50%', transform:'translateY(-50%)', pointerEvents:'none', color:'#888', fontSize:'12px'}}>▾</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div className="rbt-form-group">
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500', marginTop:'12px'}}>
+                                                    <span style={{marginRight:'6px'}}></span>House/Flat/Block No
+                                                </label>
+                                                <div style={{position:'relative'}}>
+                                                    <input
+                                                        id="hfb"
+                                                        type="text"
+                                                        value={hfb}
+                                                        onChange={handleChangeHFB}
+                                                        placeholder="e.g. B-204, Tower 3"
+                                                        style={{
+                                                            width:'100%', padding:'10px 14px', borderRadius:'8px',
+                                                            border:'1.5px solid #e0e0e0', fontSize:'14px',
+                                                            background:'transparent', outline:'none',
+                                                            transition:'border-color 0.15s'
+                                                        }}
+                                                        onFocus={e => e.target.style.borderColor='#6b38fb'}
+                                                        onBlur={e => e.target.style.borderColor='#e0e0e0'}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                                <select name="sCountry"
-                                                        className='form-control'
-                                                        value={nCountryId}
-                                                        onChange={handleChangeCountry}
-                                                >
-                                                    <option value="">Select</option>
-                                                    {countryarr.map((e) => {
-                                                        return <option key={e.nCountryId} value={e.nCountryId}>{e.sCountryname}</option>
-                                                    })}
-                                                </select>
-                                            </div>
-                                        </div>
                                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div className="rbt-form-group">
-                                                <Label className="font-weight-bold f-14 mt-3" htmlFor='sState'>State</Label>
-                                                <select name="sState"
-                                                        className='form-control'
-                                                        value={nStateId}
-                                                        onChange={handleChangeState}
-                                                >
-                                                    <option value="">Select</option>
-                                                    {statearr.map((e) => {
-                                                        return <option key={e.nStateId} value={e.nStateId}>{e.sStateName}</option>
-                                                    })}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                                            <div className="rbt-form-group">
-                                                <Label className="font-weight-bold f-14 mt-3" htmlFor='sCity'>City</Label>
-                                                <select name="sCity"
-                                                        className='form-control'
-                                                        value={nCityId}
-                                                        onChange={handleChangeCity}
-                                                >
-                                                    <option value="">Select</option>
-                                                    {cityarr.map((e) => {
-                                                        return <option key={e.nCityId} value={e.nCityId}>{e.sCityName}</option>
-                                                    })}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                                            <div className="rbt-form-group">
-                                                <label htmlFor="hfb" className={'mt-3'}>House/Flat/Block No</label>
-                                                <input
-                                                    id="hfb"
-                                                    type="text"
-                                                    value={hfb}
-                                                    onChange={handleChangeHFB}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                                            <div className="rbt-form-group">
-                                                <label htmlFor="street" className={'mt-3'}>Street/Society Address</label>
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500', marginTop:'12px'}}>
+                                                    <span style={{marginRight:'6px'}}></span>Street/Society Address
+                                                </label>
                                                 <textarea
                                                     id="street"
                                                     name="street"
                                                     value={street}
                                                     onChange={handleChangestreet}
                                                     rows="3"
-                                                    cols="30"/>
-                                            </div>
-                                        </div>
-
-                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
-                                            <div className="rbt-form-group">
-                                                <label htmlFor="street" className={'mt-3'}>Landmark</label>
-                                                <input
-                                                    id="landmark"
-                                                    type="text"
-                                                    value={sLandmark}
-                                                    onChange={handleChangeLandmark}
+                                                    placeholder="e.g. Green Park Society, MG Road"
+                                                    style={{
+                                                        width:'100%', padding:'10px 14px', borderRadius:'8px',
+                                                        border:'1.5px solid #e0e0e0', fontSize:'14px',
+                                                        background:'transparent', outline:'none', resize:'vertical',
+                                                        transition:'border-color 0.15s', fontFamily:'inherit'
+                                                    }}
+                                                    onFocus={e => e.target.style.borderColor='#6b38fb'}
+                                                    onBlur={e => e.target.style.borderColor='#e0e0e0'}
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div className="rbt-form-group">
-                                                <label htmlFor="street" className={'mt-3'}>Pincode</label>
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500', marginTop:'12px'}}>
+                                                    <span style={{marginRight:'6px'}}></span>Landmark
+                                                </label>
+                                                <input
+                                                    id="landmark"
+                                                    type="text"
+                                                    value={sLandmark}
+                                                    onChange={handleChangeLandmark}
+                                                    placeholder="e.g. Near City Mall"
+                                                    style={{
+                                                        width:'100%', padding:'10px 14px', borderRadius:'8px',
+                                                        border:'1.5px solid #e0e0e0', fontSize:'14px',
+                                                        background:'transparent', outline:'none',
+                                                        transition:'border-color 0.15s'
+                                                    }}
+                                                    onFocus={e => e.target.style.borderColor='#6b38fb'}
+                                                    onBlur={e => e.target.style.borderColor='#e0e0e0'}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div className="rbt-form-group">
+                                                <label style={{display:'block', marginBottom:'8px', fontWeight:'500', marginTop:'12px'}}>
+                                                    <span style={{marginRight:'6px'}}></span>Pincode
+                                                </label>
                                                 <input
                                                     id="pincode"
                                                     type="text"
                                                     value={sPincode}
                                                     onChange={handleChangepincode}
+                                                    placeholder="e.g. 380001"
+                                                    maxLength={6}
+                                                    style={{
+                                                        width:'100%', padding:'10px 14px', borderRadius:'8px',
+                                                        border:'1.5px solid #e0e0e0', fontSize:'14px',
+                                                        background:'transparent', outline:'none',
+                                                        transition:'border-color 0.15s'
+                                                    }}
+                                                    onFocus={e => e.target.style.borderColor='#6b38fb'}
+                                                    onBlur={e => e.target.style.borderColor='#e0e0e0'}
                                                 />
                                             </div>
                                         </div>
