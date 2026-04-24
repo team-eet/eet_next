@@ -193,7 +193,7 @@ const EnrolledCourses = () => {
                                             <>
                                                 {getCourse.map((slide, index) => (
                                                     <div
-                                                        className="col-lg-4 col-md-6 col-12"
+                                                        className="col-lg-4 col-md-6 col-12 d-flex"
                                                         key={`course-enrolled-${index}`}
                                                     >
                                                         <CourseWidgets
@@ -273,7 +273,7 @@ const EnrolledCourses = () => {
                                     <>
                                         {getActiveCourse.map((slide, index) => (
                                             <div
-                                                className="col-lg-4 col-md-6 col-12"
+                                                className="col-lg-4 col-md-6 col-12 d-flex"
                                                 key={`course-enrolled-${index}`}
                                             >
                                                 <CourseWidgets
@@ -307,7 +307,7 @@ const EnrolledCourses = () => {
                                         <>
                                             {getCompleteCourse.map((slide, index) => (
                                                 <div
-                                                    className="col-lg-4 col-md-6 col-12"
+                                                    className="col-lg-4 col-md-6 col-12 d-flex"
                                                     key={`course-enrolled-${index}`}
                                                 >
                                                     <CourseWidgets
