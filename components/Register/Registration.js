@@ -539,24 +539,30 @@ const Registration = () => {
                                 >
                                     <CardText className="mb-2">Enter OTP</CardText>
 
-                                    <div className="otpContainer">
-                                        {['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6'].map(
-                                            (field, i) => (
-                                                <input
-                                                    key={field}
-                                                    name={field}
-                                                    type="text"
-                                                    inputMode="numeric"
-                                                    autoComplete="one-time-code"
-                                                    className="otpInput"
-                                                    value={otpValues[field]}
-                                                    onChange={(e) => handleOtpChange(field, e)}
-                                                    onKeyUp={handleOtpKeyUp}
-                                                    tabIndex={i + 1}
-                                                    maxLength={1}
-                                                />
-                                            )
-                                        )}
+                                    <div style={{display:'flex', gap:'10px', justifyContent:'center', margin:'16px 0'}}>
+                                        {['otp1','otp2','otp3','otp4','otp5','otp6'].map((field, i) => (
+                                            <input
+                                                key={field}
+                                                name={field}
+                                                type="text"
+                                                inputMode="numeric"
+                                                autoComplete="one-time-code"
+                                                value={otpValues[field]}
+                                                onChange={(e) => handleOtpChange(field, e)}
+                                                onKeyUp={handleOtpKeyUp}
+                                                tabIndex={i + 1}
+                                                maxLength={1}
+                                                style={{
+                                                    width:'46px', height:'52px', textAlign:'center',
+                                                    fontSize:'20px', fontWeight:'500',
+                                                    border: otpValues[field] ? '2px solid #6b38fb' : '1.5px solid #e0e0e0',
+                                                    borderRadius:'10px', background:'transparent', outline:'none',
+                                                    transition:'border-color 0.15s'
+                                                }}
+                                                onFocus={e => e.target.style.borderColor='#6b38fb'}
+                                                onBlur={e => e.target.style.borderColor = otpValues[field] ? '#6b38fb' : '#e0e0e0'}
+                                            />
+                                        ))}
                                     </div>
 
                                     {otpError && (
@@ -565,31 +571,35 @@ const Registration = () => {
                                         </p>
                                     )}
 
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
-                                        <button
-                                            className="rbt-btn btn-gradient"
-                                            type="submit"
-                                            style={{ width: '100%' }}
-                                        >
-                                            Verify OTP
-                                        </button>
+                                    <div style={{display:'flex', flexDirection:'column', gap:'10px', marginTop:'16px'}}>
+                                        <div style={{display:'flex', flexDirection:'row', gap:'12px', marginTop:'16px'}}>
+                                            <button
+                                                className="rbt-btn btn-gradient"
+                                                type="submit"
+                                                style={{
+                                                    flex:1, padding:'13px 0', fontSize:'15px', fontWeight:'500',
+                                                    borderRadius:'10px', textAlign:'center', lineHeight:'1.2',
+                                                    display:'flex', alignItems:'center', justifyContent:'center'
+                                                }}
+                                            >
+                                                Verify OTP
+                                            </button>
 
-                                        <div style={{ minHeight: 44 }}>
                                             <button
                                                 type="button"
                                                 className="rbt-btn btn-gradient"
                                                 onClick={countdown > 0 ? undefined : handleResend}
                                                 disabled={countdown > 0}
                                                 style={{
-                                                    width: '100%',
-                                                    opacity: countdown > 0 ? 0.6 : 1,
+                                                    flex:1, padding:'13px 0', fontSize:'15px', fontWeight:'500',
+                                                    borderRadius:'10px', textAlign:'center', lineHeight:'1.2',
+                                                    display:'flex', alignItems:'center', justifyContent:'center',
+                                                    opacity: countdown > 0 ? 0.55 : 1,
                                                     cursor: countdown > 0 ? 'not-allowed' : 'pointer',
                                                     pointerEvents: countdown > 0 ? 'none' : 'auto',
                                                 }}
                                             >
-                                                {countdown > 0
-                                                    ? `Resend in ${formatCountdown(countdown)}`
-                                                    : 'Resend OTP'}
+                                                {countdown > 0 ? `Resend in ${formatCountdown(countdown)}` : 'Resend OTP'}
                                             </button>
                                         </div>
                                     </div>
