@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Courses from "../../data/dashboard/instructor/instructor.json";
-import CourseWidgets from "../Instructor/Dashboard-Section/widgets/CourseWidget";
-import BatchWidget from "@/components/Instructor/Dashboard-Section/widgets/BatchWidget";
+import BatchWidget from "../Instructor/Dashboard-Section/widgets/BatchWidget";
+//import BatchWidget from "@/components/Instructor/Dashboard-Section/widgets/BatchWidget";
 import Axios from "axios";
 import {DecryptData, EncryptData} from "@/components/Services/encrypt-decrypt";
 import {API_URL, API_KEY} from '../../constants/constant'
@@ -196,7 +196,7 @@ const EnrolledCourses = () => {
                                                         className="col-lg-4 col-md-6 col-12 d-flex"
                                                         key={`course-enrolled-${index}`}
                                                     >
-                                                        <CourseWidgets
+                                                        <BatchWidget
                                                             data={slide}
                                                             courseStyle="two"
                                                             isProgress={true}
@@ -276,7 +276,7 @@ const EnrolledCourses = () => {
                                                 className="col-lg-4 col-md-6 col-12 d-flex"
                                                 key={`course-enrolled-${index}`}
                                             >
-                                                <CourseWidgets
+                                                <BatchWidget
                                                     data={slide}
                                                     courseStyle="two"
                                                     isProgress={true}

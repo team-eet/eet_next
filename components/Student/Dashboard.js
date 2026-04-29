@@ -15,7 +15,32 @@ const Dashboard = () => {
   const [getCompetedCnt, setCompetedCnt] = useState('')
   const [getActiveCnt, setActiveCnt] = useState('')
   const [isLogin, setIsLogin] = useState(0)
+  const [getBatchCnt, setBatchCnt] = useState('')
   const [getApiCall, setApiCall] = useState(0)
+  const [getActiveBatchCnt, setActiveBatchCnt] = useState('')
+  const [getCompletedBatchCnt, setCompletedBatchCnt] = useState('')
+
+  const getPurchasedBatch = () => {
+    if (localStorage.getItem('userData')) {
+      const decrypted = DecryptData(localStorage.getItem('userData'))
+      const parsedUser = typeof decrypted === 'string' ? JSON.parse(decrypted) : decrypted
+      const udata = parsedUser?.regid
+
+      Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedBatch/${udata}`, {
+        headers: { ApiKey: `${API_KEY}` }
+      })
+          .then(res => {
+            if (res.data && Array.isArray(res.data)) {
+              setBatchCnt(res.data.length)
+              const completed = res.data.filter(item => item.bCompleted === true).length;
+              setActiveBatchCnt(res.data.length - completed)
+              setCompletedBatchCnt(completed)
+            }
+          })
+          .catch(err => { ErrorDefaultAlert(err) })
+    }
+  }
+
   const getPurchasedCourse = () => {
     // console.log(DecryptData('mUnt9JQjA_W_MMMfEAje0Q=='))
     // bhavika@123
@@ -62,6 +87,7 @@ const Dashboard = () => {
     //   getPurchasedCourse();
     // }
     getPurchasedCourse();
+    getPurchasedBatch()
   }, []);
 
   return (
@@ -198,7 +224,8 @@ const Dashboard = () => {
                         numberClass="color-pink"
                         icon="feather-book-open"
                         title="Enrolled Batches"
-                        value={0}
+                        value={getBatchCnt || 0}
+                        btnColor="bg-pink-opacity"
                     /> :
                     <div className="rbt-counterup variation-01 rbt-hover-03 rbt-border-dashed bg-pink-opacity">
                       <div className="inner">
@@ -234,8 +261,9 @@ const Dashboard = () => {
                         numberClass="color-violet"
                         icon="feather-monitor"
                         title="ACTIVE BATCHES"
-                        value={0}
-                    /> :
+                        value={getBatchCnt || 0}
+                        btnColor="bg-violet-opacity"
+                    />:
                     <div className="rbt-counterup variation-01 rbt-hover-03 rbt-border-dashed bg-violet-opacity">
                       <div className="inner">
                         <div
@@ -269,7 +297,8 @@ const Dashboard = () => {
                         numberClass="color-coral"
                         icon="feather-award"
                         title="Completed Batches"
-                        value={0}
+                        value={getCompletedBatchCnt || 0}
+                        btnColor="bg-coral-opacity"
                     />
                     :
                     <div className="rbt-counterup variation-01 rbt-hover-03 rbt-border-dashed bg-coral-opacity">

@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useInView } from "react-intersection-observer";
 import "odometer/themes/odometer-theme-default.css";
 import Image from "next/image";
-
+import Link from "next/link";
 let loadedCallback = null;
 let loaded = false;
 
@@ -20,6 +20,7 @@ const CounterWidgetBatch = ({
                            styleClass,
                            iconClass,
                            numberClass,
+                                btnColor,   // ← add this
                        }) => {
     const [odometerLoaded, setOdometerLoaded] = useState(loaded);
     const [odometerValue, setOdometerValue] = useState(0);
@@ -72,11 +73,15 @@ const CounterWidgetBatch = ({
                         <div className={`rbt-round-icon ${iconClass}`}>
                             <i className={icon} />
                         </div>
+
                         <div className="content">
                             <h3 className={`counter without-icon ${numberClass}`}>
                                 <Odometer format="d" duration={1000} value={odometerValue} />
                             </h3>
                             <span className="rbt-title-style-2 d-block">{title}</span>
+                        </div>
+                        <div className="viewMore mt--10">
+                            <Link className={`rbt-btn ${btnColor} btn-sm`} href={`/student/student-enrolled-batch`}>View Batches</Link>
                         </div>
                     </div>
                 </div>
