@@ -1,39 +1,58 @@
-// components/LessonBody.jsx
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import parse from 'html-react-parser';
 import * as Icon from 'react-feather';
 import { Card, CardBody, CardHeader, Row, Col, Progress } from 'reactstrap';
 import Link from 'next/link';
-import {EncryptData} from "@/components/Services/encrypt-decrypt";
+import Image from 'next/image';
+import { EncryptData } from "@/components/Services/encrypt-decrypt";
 
 const CourseLessonBody = ({
-                        isBatch,
-                        activeTab,
-                        sContent,
-                        tutresourcearray,
-                        quetypeItems,
-                        SepActivitylist,
-                        handleSepActivityPage,
-                        singleActivityPage,
-                        sepActivityPage,
-                        activitySeperateCard,
-                        handleBackActivity,
-                        viewActivity,
-                        userRegId,
-                        sidebar, setSidebar,handleNext,handlePrevious,isLastTab,pdfViewer
-                    }) => {
+                              isBatch,
+                              activeTab,
+                              sContent,
+                              tutresourcearray,
+                              quetypeItems,
+                              SepActivitylist,
+                              handleSepActivityPage,
+                              singleActivityPage,
+                              sepActivityPage,
+                              activitySeperateCard,
+                              handleBackActivity,
+                              viewActivity,
+                              userRegId,
+                              sidebar,
+                              setSidebar,
+                              handleNext,
+                              handlePrevious,
+                              isLastTab,
+                              openPreview
+                          }) => {
+    // State for description expansion in content tab
+    const [expandedDescriptions, setExpandedDescriptions] = useState({});
+
+    const toggleDescription = (index) => {
+        setExpandedDescriptions(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    };
+
+    // Function to get file type icon
+    const getFileTypeIcon = (item) => {
+        if (item.nPFTId === 11) return <Icon.Video size={20} className="me-2" />;
+        if (item.nPFTId === 12) return <Icon.FileText size={20} className="me-2" />;
+        return <Icon.File size={20} className="me-2" />;
+    };
+
     return (
         <div className="rbt-lesson-rightsidebar overflow-hidden lesson-video">
+            {/* Top Bar */}
             <div className="lesson-top-bar">
                 <div className="lesson-top-left">
                     <div className="rbt-lesson-toggle">
-                        {/*<button className="lesson-toggle-active btn-round-white-opacity" title="Toggle Sidebar">*/}
-                        {/*    <i className="feather-arrow-left"></i>*/}
-                        {/*</button>*/}
                         <button
-                            className={`lesson-toggle-active btn-round-white-opacity ${
-                                !sidebar ? "sidebar-hide" : ""
+                            className={`lesson-toggle-active btn-round-white-opacity ${!sidebar ? "sidebar-hide" : ""
                             }`}
                             title="Toggle Sidebar"
                             onClick={setSidebar}
@@ -47,87 +66,304 @@ const CourseLessonBody = ({
                     <div className="rbt-btn-close">
                         <a href={`/student/student-enrolled-course`} className="rbt-round-btn"
                            title="Go Back to Course">
-                        <i className="feather-x"></i>
+                            <i className="feather-x"></i>
                         </a>
                     </div>
                 </div>
             </div>
 
+            {/* Main Content Area */}
             <div className="inner content">
+                {/* Overview Tab */}
                 {activeTab.tab === 'overview' && (
-                    <div>
-                        <h5 className="pb-2">Introduction</h5>
-                        <div>{parse(sContent)}</div>
-                    </div>
-                )}
-
-                {activeTab.tab === 'content' && (
-                    <div>
-                        <h5 className="pb-2 m-0">PDF Content</h5>
-                        <div className="row" style={{marginBottom: '100px'}}>
-                            {tutresourcearray.map((pdf, index) => (
-                                <div className="col-lg-4 h-100 mt-4" key={index}>
-                                    <div className="card boxShadow border-primary cardDesignEET p-3 h-100">
-                                        <p style={{fontSize: '16px'}}>
-                                            {pdf.sFileName.length > 33 ? `${pdf.sFileName.substr(0, 33)}...` : pdf.sFileName}
-                                        </p>
-                                        <div className="row">
-                                            <div className="col">
-                                                <small>Size: {pdf.sFileSize}</small>
-                                            </div>
-                                            <div className="col text-end">
-                                                {/*<a href={pdf.sFilePath} target="_blank"*/}
-                                                {/*   className="btn btn-outline-warning icon-b-sm me-2">*/}
-                                                {/*    <Icon.Eye size={12} className="cursor-pointer"/>*/}
-                                                {/*</a>*/}
-                                                <button onClick={() => pdfViewer(pdf.sFilePath,pdf.sFileName)}
-                                                   className="btn btn-primary icon-b-sm me-2">
-                                                    <Icon.Eye size={12} className="cursor-pointer"/>
-                                                </button>
-                                                <a href={pdf.sFilePath} target="_blank"
-                                                   className="btn btn-success icon-b-sm">
-                                                    <Icon.Download size={12} className="cursor-pointer"/>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                    <div className="overview-content">
+                        <div className="section-title mb-4">
+                            <h4 className="mb-3">Introduction</h4>
+                            <div className="rbt-separator"></div>
+                        </div>
+                        <div className="overview-description">
+                            {sContent ? parse(sContent) : <span className="text-muted fst-italic">No data available</span>}
                         </div>
                     </div>
                 )}
 
+                {/* Content Tab - Modern Card Design similar to CallToAction */}
+                {activeTab.tab === 'content' && (
+                    <div className="content-section">
+                        <div className="section-title mb-4">
+                            <h4 className="mb-3">Course Content</h4>
+                            <div className="rbt-separator"></div>
+                        </div>
+
+                        <div className="row g-4">
+                            {tutresourcearray && tutresourcearray.length > 0 ? (
+                                tutresourcearray.map((item, index) => (
+                                    <div className="col-lg-6 col-xl-4" key={index}>
+                                        <div className="rbt-card modern-card bg-color-white rbt-radius shadow-1 hover-transform">
+                                            {/* Thumbnail Section with Play Overlay */}
+                                            <div className="rbt-card-img position-relative">
+                                                <div
+                                                    className="thumbnail-wrapper cursor-pointer"
+                                                    onClick={() => openPreview(item)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {item.nPFTId === 11 ? (
+                                                        // Video Thumbnail
+                                                        <>
+                                                            <Image
+                                                                src={item.sVideoThumbnailPath || '/images/video-placeholder.jpg'}
+                                                                alt={item.sFileName}
+                                                                className="w-100 rbt-radius-top"
+                                                                width={400}
+                                                                height={225}
+                                                                style={{ objectFit: 'cover', width: '100%', height: '225px' }}
+                                                            />
+                                                            <div className="video-overlay">
+                                                                <div className="play-button pulse-animation">
+                                                                    <Icon.Play size={40} color="white" fill="white" />
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    ) : item.nPFTId === 12 ? (
+                                                        // PDF Thumbnail
+                                                        <Image
+                                                            src={item.sPDFThumbnailPath || '/images/pdf-thumbnail.jpg'}
+                                                            alt={item.sFileName}
+                                                            className="w-100 rbt-radius-top"
+                                                            width={400}
+                                                            height={225}
+                                                            style={{ objectFit: 'cover', width: '100%', height: '225px' }}
+                                                        />
+                                                    ) : (
+                                                        // Default Thumbnail
+                                                        <Image
+                                                            src="/images/default-thumbnail.jpg"
+                                                            alt={item.sFileName}
+                                                            className="w-100 rbt-radius-top"
+                                                            width={400}
+                                                            height={225}
+                                                            style={{ objectFit: 'cover', width: '100%', height: '225px' }}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                {/* Category/Tag Badge */}
+                                                <div className="rbt-badge-group position-absolute top-0 start-0 m-3">
+                                                    <span className={`rbt-badge ${item.nPFTId === 11 ? 'bg-primary' : 'bg-danger'}`}>
+                                                        {getFileTypeIcon(item)}
+                                                        {item.nPFTId === 11 ? 'Video' : 'PDF'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Tutor Badge */}
+
+                                            </div>
+
+                                            <div className="rbt-card-body p-4">
+                                                {/* Package Name */}
+                                                {item.sPackageName && (
+                                                    <div className="rbt-category mb-2">
+                                                        <Link href="#" className="text-muted small">
+                                                            {item.sPackageName}
+                                                        </Link>
+                                                    </div>
+                                                )}
+
+                                                {/* File Name */}
+                                                <h5 className="rbt-card-title mb-3">
+                                                    <Link href="#" onClick={(e) => { e.preventDefault(); openPreview(item); }}>
+                                                        {item.sFileName.length > 50 ? `${item.sFileName.substring(0, 50)}...` : item.sFileName}
+                                                    </Link>
+                                                </h5>
+                                                {/* Description Section - Improved Logic */}
+                                                <div className="description-wrapper mb-3">
+                                                    <p className="text-muted small mb-2">
+                                                        <Icon.AlignLeft size={14} className="me-1" />
+                                                        Description:
+                                                    </p>
+                                                    <div className="description-text">
+                                                        {item.sContentDesc &&
+                                                        item.sContentDesc.trim() !== "" &&
+                                                        !item.sContentDesc.includes('<figure class="media">') ? (
+                                                            <>
+                                                                <div
+                                                                    className={`mb-0 ${!expandedDescriptions[index] && item.sContentDesc.length > 120 ? 'text-truncate-multi' : ''}`}
+                                                                    style={{ fontSize: '14px', lineHeight: '1.5', color: '#666' }}
+                                                                >
+                                                                    {expandedDescriptions[index]
+                                                                        ? parse(item.sContentDesc)
+                                                                        : parse(`${item.sContentDesc.substring(0, 120)}${item.sContentDesc.length > 120 ? '...' : ''}`)
+                                                                    }
+                                                                </div>
+
+                                                                {item.sContentDesc.length > 120 && (
+                                                                    <button
+                                                                        onClick={() => toggleDescription(index)}
+                                                                        className="btn-link p-0 mt-1 text-primary"
+                                                                        style={{ background: 'none', border: 'none', fontSize: '12px', fontWeight: '500' }}
+                                                                    >
+                                                                        {expandedDescriptions[index] ? 'Show Less' : 'Show More'}
+                                                                    </button>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <span className="text-muted fst-italic">No description available</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+
+
+                                                {/* File Info and Actions */}
+                                                <div className="rbt-card-footer mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+
+                                                    <div className="action-buttons">
+                                                        <button
+                                                            onClick={() => openPreview(item)}
+                                                            className="rbt-btn rounded-3 icon-hover btn-sm me-2"
+                                                            title="Preview"
+                                                        >
+                                                            <Icon.Eye size={14} />
+                                                            <span className="ms-1 d-none d-md-inline">View</span>
+                                                        </button>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="col-12">
+                                    <div className="alert alert-info text-center">
+                                        <Icon.Info size={20} className="me-2" />
+                                        No content available for this lesson.
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Activity Tab */}
                 {activeTab.tab === 'activity' && (
-                    <>
+                    <div className="activity-section">
                         {SepActivitylist && (
-                            <h5 className="pb-2 m-0">Activity</h5>
+                            <div className="section-title mb-4">
+                                <h4 className="mb-3">Activities</h4>
+                                <div className="rbt-separator"></div>
+                            </div>
                         )}
 
-                        <div className="row mt-3" id="Activity" style={{ marginBottom: '100px' }}>
-                            {quetypeItems.map((item, index) => (
-                                <Fragment key={index}>
-                                    {(item.nSQId >= 17 && item.nSQId <= 21) ? (
-                                        <div className="col-lg-6 mt-4">
-                                            <Link href="#" onClick={() => handleSepActivityPage(item.nAQId)}>
-                                                {SepActivitylist && (
-                                                    <Card className="border-primary activity-card cardDesignEET">
+                        <div className="row g-4" id="Activity" style={{ marginBottom: '100px' }}>
+                            {quetypeItems && quetypeItems.length > 0 ? (
+                                quetypeItems.map((item, index) => (
+                                    <Fragment key={index}>
+                                        {(item.nSQId >= 17 && item.nSQId <= 21) ? (
+                                            <div className="col-lg-6">
+                                                <div onClick={() => handleSepActivityPage(item.nAQId)} style={{ cursor: 'pointer' }}>
+                                                    {SepActivitylist && (
+                                                        <Card className="border-primary activity-card cardDesignEET hover-transform">
+                                                            <CardBody className="card-mobile-view p-4">
+                                                                <Row>
+                                                                    <Col lg={10}>
+                                                                        <div className="d-flex justify-content-start">
+                                                                            <div className="activity-number">
+                                                                                <span className="badge bg-primary rounded-circle p-2 me-3">
+                                                                                    {index + 1}
+                                                                                </span>
+                                                                            </div>
+                                                                            <div className="profile-user-info">
+                                                                                <h6 className="mb-1 font-weight-600 font-16">{item.sActivityName}</h6>
+                                                                                <small className="text-muted font-12">
+                                                                                    <Icon.Type size={12} className="me-1" />
+                                                                                    {item.sSubQueType}
+                                                                                </small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </Col>
+                                                                    <Col>
+                                                                        {item.sPackageName && (
+                                                                            <div className="pkgName text-end">
+                                                                                <span className="badge bg-light-success text-success">
+                                                                                    {item.sPackageName}
+                                                                                </span>
+                                                                            </div>
+                                                                        )}
+                                                                    </Col>
+                                                                </Row>
+                                                                <hr className="mt-3 mb-3" />
+                                                                <div className="card-text">
+                                                                    <div className="mb-3">
+                                                                        <div className="row align-items-center">
+                                                                            <div className="col">
+                                                                                <div className="font-weight-bolder activity-font font-14">
+                                                                                    <Icon.CheckCircle size={14} className="me-1" />
+                                                                                    Task completed = {item.act_ans_per} %
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="col text-end">
+                                                                                <span className="font-weight-bolder activity-font bg-secondary-subtle p-2 rounded-2 font-14">
+                                                                                    <Icon.HelpCircle size={12} className="me-1" />
+                                                                                    Questions: {item.act_ans}/{item.act_cnt}
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <Progress color="success" value={item.act_ans_per} animated={item.act_ans_per < 100} />
+                                                            </CardBody>
+                                                        </Card>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            singleActivityPage && (
+                                                <div className="col-lg-6">
+                                                    <Card className="border-primary activity-card cardDesignEET hover-transform">
                                                         <CardBody className="card-mobile-view p-4">
                                                             <Row>
-                                                                <Col lg={10}>
-                                                                    <div className="d-flex justify-content-start">
-                                                                        <div className="mr-1">
-                                                                            <span className="">{index + 1}</span>
+                                                                <Col lg={12}>
+                                                                    <div className="d-flex justify-content-between align-items-start">
+                                                                        <div className="d-flex">
+                                                                            <span className="badge bg-primary rounded-circle p-2 me-3">
+                                                                                {index + 1}
+                                                                            </span>
+                                                                            <div className="titleQuestion">
+                                                                                <h6 className="mb-1 font-weight-600 font-16">{item.sActivityName}</h6>
+                                                                                <small className="text-muted font-12">
+                                                                                    <Icon.Type size={12} className="me-1" />
+                                                                                    {item.sSubQueType}
+                                                                                </small>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="profile-user-info ms-3">
-                                                                            <h6 className="mb-0 font-weight-600 font-16">{item.sActivityName}</h6>
-                                                                            <small className="text-muted font-12">({item.sSubQueType})</small>
+                                                                        <div className="profile-user-info">
+                                                                            <button
+                                                                                type={"button"}
+                                                                                className={"btn btn-primary btn-sm"}
+                                                                                onClick={() => viewActivity(
+                                                                                    EncryptData(item.nAQId),
+                                                                                    EncryptData(parseInt(item.act_first)),
+                                                                                    EncryptData(1),
+                                                                                    'y',
+                                                                                    EncryptData(isBatch.nCId),
+                                                                                    userRegId,
+                                                                                    item.sActivityName,
+                                                                                    item.nSQId
+                                                                                )}
+                                                                            >
+                                                                                <Icon.Play size={12} className="me-1" />
+                                                                                Start
+                                                                            </button>
                                                                         </div>
                                                                     </div>
                                                                 </Col>
                                                                 <Col>
                                                                     {item.sPackageName && (
-                                                                        <div className="pkgName">
-                                                                            <p className="float-right" style={{ fontSize: '15px' }}>{item.sPackageName}</p>
+                                                                        <div className="pkgName text-end mt-2">
+                                                                            <span className="badge bg-light-success text-success">
+                                                                                {item.sPackageName}
+                                                                            </span>
                                                                         </div>
                                                                     )}
                                                                 </Col>
@@ -135,101 +371,69 @@ const CourseLessonBody = ({
                                                             <hr className="mt-3 mb-3" />
                                                             <div className="card-text">
                                                                 <div className="mb-3">
-                                                                    <div className="row">
+                                                                    <div className="row align-items-center">
                                                                         <div className="col">
-                                                                            <div className="font-weight-bolder activity-font font-14 p-1">
+                                                                            <div className="font-weight-bolder activity-font font-14">
+                                                                                <Icon.CheckCircle size={14} className="me-1" />
                                                                                 Task completed = {item.act_ans_per} %
                                                                             </div>
                                                                         </div>
                                                                         <div className="col text-end">
-                                      <span className="font-weight-bolder activity-font bg-secondary-subtle p-1 rounded-2 font-14">
-                                        Questions: {item.act_ans}/{item.act_cnt}
-                                      </span>
+                                                                            <span className="font-weight-bolder activity-font bg-secondary-subtle p-2 rounded-2 font-14">
+                                                                                <Icon.HelpCircle size={12} className="me-1" />
+                                                                                Questions: {item.act_ans}/{item.act_cnt}
+                                                                            </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <Progress color="success" value={item.act_ans_per} />
+                                                            <Progress color="success" value={item.act_ans_per} animated={item.act_ans_per < 100} />
                                                         </CardBody>
                                                     </Card>
-                                                )}
-                                            </Link>
-                                        </div>
-                                    ) : (
-                                        singleActivityPage && (
-                                            <div className="col-lg-6 mt-4">
-                                                <Card className="border-primary activity-card cardDesignEET">
-                                                    <CardBody className="card-mobile-view p-4">
-                                                        <Row>
-                                                            <Col lg={12}>
-                                                                <div className="d-flex justify-content-between">
-                                                                    <div className="mr-1 d-flex">
-                                                                        <span>{index + 1})</span>
-                                                                        <div className="titleQuestion ml--10">
-                                                                            <h6 className="mb-0 font-weight-600 font-16">{item.sActivityName}</h6>
-                                                                            <small
-                                                                                className="text-muted font-12">({item.sSubQueType})</small>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="profile-user-info ms-3">
-                                                                        <button type={"button"} className={"btn btn-primary"} onClick={() => viewActivity(EncryptData(item.nAQId),EncryptData(parseInt(item.act_first)),EncryptData(1),'y',EncryptData(isBatch.nCId),userRegId,item.sActivityName,item.nSQId)}>View</button>
-                                                                    </div>
-                                                                </div>
-                                                            </Col>
-                                                            <Col>
-                                                                {item.sPackageName && (
-                                                                    <div className="pkgName">
-                                                                        <p className="float-right" style={{ fontSize: '15px' }}>{item.sPackageName}</p>
-                                                                    </div>
-                                                                )}
-                                                            </Col>
-                                                        </Row>
-                                                        <hr className="mt-3 mb-3" />
-                                                        <div className="card-text">
-                                                            <div className="mb-3">
-                                                                <div className="row">
-                                                                    <div className="col">
-                                                                        <div className="font-weight-bolder activity-font font-14 p-1">
-                                                                            Task completed = {item.act_ans_per} %
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className="col text-end">
-                                    <span className="font-weight-bolder activity-font bg-secondary-subtle p-1 rounded-2 font-14">
-                                      Questions: {item.act_ans}/{item.act_cnt}
-                                    </span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <Progress color="success" value={item.act_ans_per} />
-                                                    </CardBody>
-                                                </Card>
-                                            </div>
-                                        )
-                                    )}
-                                </Fragment>
-                            ))}
+                                                </div>
+                                            )
+                                        )}
+                                    </Fragment>
+                                ))
+                            ) : (
+                                <div className="col-12">
+                                    <div className="alert alert-info text-center">
+                                        <Icon.Activity size={20} className="me-2" />
+                                        No activities available for this lesson.
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
-                        {sepActivityPage && activitySeperateCard.length !== 0 && (
-                            <div className="row">
+                        {/* Separate Activity Page */}
+                        {sepActivityPage && activitySeperateCard && activitySeperateCard.length !== 0 && (
+                            <div className="row mt-4">
+                                <div className="col-12 mb-3">
+                                    <button className="btn btn-outline-primary" onClick={handleBackActivity}>
+                                        <Icon.ArrowLeft size={16} className="me-2" />
+                                        Back to All Activities
+                                    </button>
+                                </div>
                                 {activitySeperateCard.map((item, index) => (
-                                    <div className="col-lg-6" key={index}>
-                                        <button className="btn btn-lg btn-primary" onClick={handleBackActivity}>
-                                            <i className="feather-arrow-left me-2"></i>
-                                            Back
-                                        </button>
-                                        <Card className='border mb-1 mt-3'>
-                                            <CardHeader className={`${item.sep_ans_fill === '0' ? 'bg-secondary' : 'bg-success'} p-0`}>
-                                                <div className='row w-100' style={{ display: "contents" }}>
+                                    <div className="col-lg-6 mb-3" key={index}>
+                                        <Card className='border mb-1 hover-transform'>
+                                            <CardHeader className={`${item.sep_ans_fill === '0' ? 'bg-secondary' : 'bg-success'} p-0 text-white`}>
+                                                <div className='row w-100 p-3'>
                                                     <div className='col-9'>
-                                                        <h5 className="mb-0 p-1 text-white animate shake position-relative w-100 font-weight-bolder">
-                                                            {index + 1} : {item.sActivityName}
+                                                        <h5 className="mb-0 font-weight-bolder">
+                                                            {index + 1}. {item.sActivityName}
                                                         </h5>
+                                                    </div>
+                                                    <div className='col-3 text-end'>
+                                                        {item.sep_ans_fill === '0' ? (
+                                                            <Icon.Clock size={20} />
+                                                        ) : (
+                                                            <Icon.CheckCircle size={20} />
+                                                        )}
                                                     </div>
                                                 </div>
                                             </CardHeader>
-                                            <CardBody className='p-2 inner-activity-name'>
+                                            <CardBody className='p-3 inner-activity-name'>
                                                 <div className='font-weight-bolder'>{item.sQueTitle}</div>
                                             </CardBody>
                                         </Card>
@@ -237,50 +441,185 @@ const CourseLessonBody = ({
                                 ))}
                             </div>
                         )}
-                    </>
-                )}
-
-                {activeTab.tab === 'practice' && (
-                    <div>
-                        <div className="section-title pt-5 pb-2">
-                            <h4>Practice</h4>
-                        </div>
-                        <div><p>Practice content goes here.</p></div>
                     </div>
                 )}
 
-                {activeTab.tab === 'test' && (
-                    <div>
-                        <div className="section-title pt-5 pb-2">
-                            <h4>Test</h4>
+                {/* Practice Tab */}
+                {activeTab.tab === 'practice' && (
+                    <div className="practice-section">
+                        <div className="section-title pt-3 pb-3">
+                            <h4>Practice Exercises</h4>
+                            <div className="rbt-separator"></div>
                         </div>
-                        <div><p>Test content goes here.</p></div>
+                        <div className="practice-content">
+                            <div className="alert alert-info">
+                                <Icon.Award size={20} className="me-2" />
+                                Practice content will be available soon.
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Test Tab */}
+                {activeTab.tab === 'test' && (
+                    <div className="test-section">
+                        <div className="section-title pt-3 pb-3">
+                            <h4>Assessment</h4>
+                            <div className="rbt-separator"></div>
+                        </div>
+                        <div className="test-content">
+                            <div className="alert alert-warning">
+                                <Icon.AlertTriangle size={20} className="me-2" />
+                                Test content will be available soon.
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>
 
+            {/* Footer Navigation */}
             <div className="footerBar bg-color-extra2 ptb--15 overflow-hidden position-absolute bottom-0 start-0 end-0">
-                <div className="rbt-button-group">
+                <div className="rbt-button-group d-flex justify-content-between px-4">
                     <button
                         className="rbt-btn icon-hover icon-hover-left btn-md bg-primary-opacity"
                         onClick={handlePrevious}
                     >
-                        <span className="btn-icon"><i className="feather-arrow-left"></i></span>
+                        <span className="btn-icon"><Icon.ArrowLeft size={16} /></span>
                         <span className="btn-text">Previous</span>
                     </button>
-                    {
-                        !isLastTab && (
-                            <button
-                                className="rbt-btn icon-hover btn-md"
-                                onClick={handleNext}
-                            >
-                                <span className="btn-text">Next</span>
-                                <span className="btn-icon"><i className="feather-arrow-right"></i></span>
-                            </button>
-                        )
-                    }
+                    {!isLastTab && (
+                        <button
+                            className="rbt-btn icon-hover btn-md bg-primary text-white"
+                            onClick={handleNext}
+                        >
+                            <span className="btn-text">Next</span>
+                            <span className="btn-icon"><Icon.ArrowRight size={16} /></span>
+                        </button>
+                    )}
                 </div>
             </div>
+
+            {/* Add custom CSS styles */}
+            <style jsx>{`
+                .hover-transform {
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .hover-transform:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                }
+                .video-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background 0.3s ease;
+                }
+                .thumbnail-wrapper:hover .video-overlay {
+                    background: rgba(0, 0, 0, 0.5);
+                }
+                .play-button {
+                    width: 60px;
+                    height: 60px;
+                    background-color: rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(5px);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s ease;
+                }
+                .thumbnail-wrapper:hover .play-button {
+                    transform: scale(1.1);
+                }
+                .pulse-animation {
+                    animation: pulse 2s infinite;
+                }
+                @keyframes pulse {
+                    0% {
+                        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+                    }
+                    70% {
+                        box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+                    }
+                    100% {
+                        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+                    }
+                }
+                .text-truncate-multi {
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+                .rbt-card.modern-card {
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                }
+                .rbt-card.modern-card:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+                }
+                .rbt-badge {
+                    padding: 5px 12px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: white;
+                    display: inline-flex;
+                    align-items: center;
+                }
+                .bg-primary {
+                    background-color: #0d6efd;
+                }
+                .bg-danger {
+                    background-color: #dc3545;
+                }
+                .bg-warning {
+                    background-color: #ffc107;
+                    color: #000;
+                }
+                .bg-info {
+                    background-color: #0dcaf0;
+                    color: #000;
+                }
+                .bg-light-success {
+                    background-color: #d1e7dd;
+                    color: #0f5132;
+                }
+                .cursor-pointer {
+                    cursor: pointer;
+                }
+                .activity-card {
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                }
+                .activity-card:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+                }
+                .rounded-circle {
+                    width: 32px;
+                    height: 32px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .btn-outline-primary {
+                    border: 1px solid #0d6efd;
+                    background: transparent;
+                    color: #0d6efd;
+                }
+                .btn-outline-primary:hover {
+                    background: #0d6efd;
+                    color: white;
+                }
+            `}</style>
         </div>
     );
 };

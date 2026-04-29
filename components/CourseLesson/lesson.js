@@ -10,6 +10,8 @@ import LessonSidebar from '@/components/CourseLesson/CourseLessonSidebar';
 import LessonBody from '@/components/CourseLesson/CourseLessonBody';
 import {Switch} from "@mui/material";
 import withAuth from "@/components/Utils/withAuth";
+import { Plyr } from "plyr-react";
+import "plyr/dist/plyr.css";
 
 const CourseLesson = () => {
     const REACT_APP = API_URL;
@@ -28,7 +30,8 @@ const CourseLesson = () => {
     const [singleActivityPage, setsingleActivityPage] = useState(true);
     const [SepActivitylist, setSepActivitylist] = useState(true);
     const [getShowModal, setShowModal] = useState(false);
-    const [getPDFModal, setPDFModal] = useState(false);
+    const [tutorialDocArray, setTutorialDocArray] = useState([]);
+
     const [cid, setcid] = useState('');
     const [regid, setRegid] = useState('');
     const [getEncodedId, setEncodedId] = useState('');
@@ -38,9 +41,16 @@ const CourseLesson = () => {
     const [sidebar, setSidebar] = useState(true);
     const tabSequence = ['overview', 'content', 'activity', 'practice'];
     const [isLastTab, setIsLastTab] = useState(false);
-    const [getPDFData, setPDFData] = useState({ path: '', name: '' });
-    const [isPDFLoading, setIsPDFLoading] = useState(true);
     const [isActivityLoading, setIsActivityLoading] = useState(true);
+    const [previewModal, setPreviewModal] = useState(false);
+    const [previewData, setPreviewData] = useState({
+        url: '',
+        name: '',
+        description: '',
+        type: ''   // 'video' | 'pdf'
+    });
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+    const [showFullDescription, setShowFullDescription] = useState(false);
     let getcid = '0';
 
     const handleSepActivityPage = (aqid) => {
@@ -69,8 +79,35 @@ const CourseLesson = () => {
         setSepActivitylist(true);
         document.getElementById('Activity').style.marginBottom = '100px';
     };
+    const openPreview = (item) => {
+        if (item.nPFTId === 11) {
+            // Video
+            setPreviewData({
+                url: item.sURLLink || item.sFilePath,
+                name: item.sFileName,
+                description: item.sContentDesc || '',
+                type: 'video'
+            });
+            setIsPreviewLoading(false);
+        } else if (item.nPFTId === 12) {
+            // PDF
+            const pdfSource = (item.sURLLink && item.sURLLink.trim() !== '') ? item.sURLLink : item.sFilePath;
+            setPreviewData({
+                url: `https://docs.google.com/viewer?url=${encodeURIComponent(pdfSource)}&embedded=true`,
+                name: item.sFileName,
+                description: item.sContentDesc || '',
+                type: 'pdf'
+            });
+            setIsPreviewLoading(true);
+        }
+        setShowFullDescription(false);
+        setPreviewModal(true);
+    };
 
-
+    const closePreview = () => {
+        setPreviewModal(false);
+        setPreviewData({ url: '', name: '', description: '', type: '' });
+    };
     // const handleTabClick = (tab, dayIndex) => {
     //     setActiveTab({ tab, dayIndex });
     // };
@@ -112,17 +149,8 @@ const CourseLesson = () => {
 
     }
 
-    const pdfViewer = (pdfPath,pdfName) => {
-        // alert(pdfPath + " " + pdfName)
-        setPDFData({
-            path : `https://docs.google.com/gview?url=${pdfPath}&embedded=true`,
-            name : pdfName
-        })
-        setIsPDFLoading(true)
-        setPDFModal(true)
-    }
 
-    const handlePDFClose = () => setPDFModal(false);
+
 
     const handleClose = () => setShowModal(false);
 
@@ -238,12 +266,20 @@ const CourseLesson = () => {
                 });
                 break;
             case "content":
-                Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialDocumentBatch/${EncryptData(nlid)}`, {
+                const isModule = 'yes';
+                Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialDocument/${EncryptData(nlid)}/${EncryptData(nsid)}/${EncryptData(isModule)}`, {
                     headers: { ApiKey: `${API_KEY}` }
                 }).then(res => {
-                    if (res.data && res.data.length !== 0) {
-                        settutresourcearray(res.data);
+                    console.log("📄 GetTutorialDocument RAW:", res.data);
+                    if (res.data) {
+                        const filteredData = res.data.filter(obj => obj.nPFTId === DecryptData(EncryptData(nsid)));
+                        console.log("📄 Filtered by nPFTId:", filteredData);
+                        console.log("📄 PDF items:", filteredData.filter(i => i.sFileExt === 'pdf'));
+                        console.log("🎥 Video items:", filteredData.filter(i => i.sFileExt === 'mp4' || i.sVideoThumbnailPath));
+                        setTutorialDocArray(filteredData);
+                        settutresourcearray(res.data); // keep for backward compat
                     } else {
+                        setTutorialDocArray([]);
                         settutresourcearray([]);
                     }
                 }).finally(() => {
@@ -368,6 +404,7 @@ const CourseLesson = () => {
                                 sContent={sContent}
                                 tutresourcearray={tutresourcearray}
                                 quetypeItems={quetypeItems}
+                                tutorialDocArray={tutorialDocArray}
                                 SepActivitylist={SepActivitylist}
                                 handleSepActivityPage={handleSepActivityPage}
                                 singleActivityPage={singleActivityPage}
@@ -381,7 +418,7 @@ const CourseLesson = () => {
                                 handleNext={handleNext}
                                 handlePrevious={handlePrevious}
                                 isLastTab={isLastTab}
-                                pdfViewer={pdfViewer}
+                                openPreview={openPreview}  // Add this line
                             /> :
 
                             <div
@@ -449,64 +486,162 @@ const CourseLesson = () => {
 
                     )}
 
-                    {
-                        getPDFModal &&  getPDFData.path && (
-                            <div className="modal fade show d-block" tabIndex="-1" role="dialog"
-                                 style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
-                                <div className="modal-dialog modal-fullscreen" role="document">
-                                    <div className="modal-content" style={{height: '100vh'}}>
+                    {previewModal && previewData.url && (
+                        <div className="modal fade show d-block" tabIndex="-1" role="dialog"
+                             style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+                            <div className="modal-dialog modal-fullscreen" role="document">
+                                <div className="modal-content" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
 
-                                        <div className="modal-header d-flex justify-content-between">
-                                            <h5 className="modal-title">{getPDFData.name}</h5>
-                                            <div className="lesson-top-right">
-                                                <div className="rbt-btn-close">
-                                                    <button type="button" className="rbt-round-btn btn-close"
-                                                            onClick={handlePDFClose}>
-                                                        <i className="feather-x"></i>
-                                                    </button>
-                                                </div>
+                                    {/* Header */}
+                                    <div className="modal-header d-flex justify-content-between">
+                                        <h5 className="modal-title">{previewData.name}</h5>
+                                        <div className="lesson-top-right">
+                                            <div className="rbt-btn-close">
+                                                <button type="button" className="rbt-round-btn btn-close" onClick={closePreview}>
+                                                    <i className="feather-x"></i>
+                                                </button>
                                             </div>
                                         </div>
-
-                                        <div className="modal-body p-0"
-                                             style={{height: 'calc(100vh - 120px)', overflow: 'hidden'}}>
-                                            {isPDFLoading && (
-                                                <div className="d-flex justify-content-center align-items-center"
-                                                     style={{
-                                                         position: 'absolute',
-                                                         top: 0, left: 0, right: 0, bottom: 0,
-                                                         backgroundColor: '#fff',
-                                                         zIndex: 10
-                                                     }}>
-                                                    <div className="spinner-border text-primary" role="status">
-                                                        <span className="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            <iframe
-                                                // src="https://eet-frontend.azurewebsites.net/mcqsingleact/pmgn0o-jhTq6ak1pUFrLsQ==/ZygH-gMr7Uo80oqGuiTzOg==/38reo1P9MPCaRV66Hrtl_g==/n/d1EwY7e7aY_66OTtQuHb1w==/LWnmhbJglu1Bt2SwI2JsFg=="
-                                                src={getPDFData.path}
-                                                width="100%"
-                                                height="100%"
-                                                title="Preview"
-                                                style={{border: 'none', overflow: 'hidden'}}
-                                                onLoad={() => setIsPDFLoading(false)}
-                                            ></iframe>
-                                        </div>
-
-                                        <div className="modal-footer">
-                                            <button type="button" className="btn btn-secondary"
-                                                    onClick={handlePDFClose}>Close
-                                            </button>
-                                        </div>
-
                                     </div>
+
+                                    {/* Preview Area */}
+                                    <div style={{
+                                        width: '100%',
+                                        height: '500px',
+                                        backgroundColor: '#000',
+                                        position: 'relative',
+                                        flexShrink: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        overflow: 'hidden'
+                                    }}>
+                                        {previewData.type === 'pdf' ? (
+                                            <>
+                                                {isPreviewLoading && (
+                                                    <div style={{
+                                                        position: 'absolute', top: 0, left: 0,
+                                                        width: '100%', height: '100%',
+                                                        backgroundColor: '#f6f7f8', zIndex: 5,
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                    }}>
+                                                        <div className="spinner-border text-primary" role="status">
+                                                            <span className="visually-hidden">Loading...</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <iframe
+                                                    src={previewData.url}
+                                                    title="PDF Preview"
+                                                    width="100%"
+                                                    height="100%"
+                                                    style={{ border: 'none', display: 'block' }}
+                                                    onLoad={() => setIsPreviewLoading(false)}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <style>{`
+                                .plyr-fixed-container { width: 100% !important; height: 500px !important; }
+                                .plyr-fixed-container .plyr { width: 100% !important; height: 100% !important; }
+                                .plyr-fixed-container .plyr video { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+                                .plyr-fixed-container .plyr__video-wrapper { width: 100% !important; height: 100% !important; }
+                            `}</style>
+                                                <div className="plyr-fixed-container">
+                                                    <Plyr
+                                                        source={{
+                                                            type: 'video',
+                                                            sources: [{
+                                                                src: previewData.url,
+                                                                provider: previewData.url.includes('youtube.com') || previewData.url.includes('youtu.be') ? 'youtube' : 'html5'
+                                                            }]
+                                                        }}
+                                                        options={{
+                                                            autoplay: true,
+                                                            ratio: undefined,
+                                                            controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen']
+                                                        }}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* Info Section: Title + Description */}
+                                    <div style={{
+                                        padding: '16px 20px',
+                                        backgroundColor: '#fff',
+                                        borderTop: '1px solid #e9ecef',
+                                        overflowY: 'auto'
+                                    }}>
+                                        {/* Title */}
+                                        <h5 style={{ fontWeight: '600', color: '#212529', marginBottom: '12px' }}>
+                                            {previewData.name}
+                                        </h5>
+                                        <hr style={{ margin: '0 0 12px', borderColor: '#f0f0f0' }} />
+
+                                        {/* Description - Improved with proper check */}
+                                        {previewData.description &&
+                                        previewData.description.trim() !== "" &&
+                                        !previewData.description.includes('<figure class="media">') ? (
+                                            <div>
+                                                <p style={{ fontSize: '13px', fontWeight: '600', color: '#6c757d', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                                                    Description:
+                                                </p>
+                                                <div
+                                                    style={{
+                                                        fontSize: '15px',
+                                                        color: '#495057',
+                                                        lineHeight: '1.65'
+                                                    }}
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: showFullDescription
+                                                            ? previewData.description
+                                                            : previewData.description.length > 150
+                                                                ? `${previewData.description.substring(0, 150)}...`
+                                                                : previewData.description
+                                                    }}
+                                                />
+
+                                                {previewData.description.length > 150 && (
+                                                    <button
+                                                        onClick={() => setShowFullDescription(prev => !prev)}
+                                                        style={{
+                                                            background: 'none',
+                                                            border: 'none',
+                                                            color: '#0d6efd',
+                                                            cursor: 'pointer',
+                                                            padding: '4px 0 0',
+                                                            fontSize: '13px',
+                                                            fontWeight: '600'           // Made bold
+                                                        }}
+                                                    >
+                                                        {showFullDescription ? 'Show Less' : 'Show More'}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <p style={{
+                                                fontSize: '13px',
+                                                color: '#adb5bd',
+                                                fontStyle: 'italic',
+                                                margin: 0
+                                            }}>
+                                                No description available.
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" onClick={closePreview}>Close</button>
+                                    </div>
+
                                 </div>
                             </div>
+                        </div>
+                    )}
 
-                        )
-                    }
                 </div>
             </div>
         </>
