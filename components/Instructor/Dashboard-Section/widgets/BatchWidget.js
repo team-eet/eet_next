@@ -91,7 +91,7 @@ const BatchWidget = ({
 .bw-card {
     background: #fff;
     border-radius: 10px;
-    border: 1px solid #d4d0e8;
+    border: 0.4px solid #d4d0e8;
     overflow: hidden;
     transition: box-shadow 0.22s ease, transform 0.22s ease;
     height: 100%;
