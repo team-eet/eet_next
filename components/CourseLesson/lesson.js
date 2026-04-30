@@ -224,6 +224,7 @@ const CourseLesson = () => {
                             headers: { ApiKey: `${API_KEY}` }
                         })
                             .then(res => {
+                                console.log("GetLessionAtid response for nLId:", initialNLId, res.data);
                                 if (res.data && res.data.length !== 0) {
                                     setTutorialATId(res.data[0]['nTutorialATId']);
                                     setActivityATId(res.data[0]['nActivityATId']);
@@ -279,6 +280,18 @@ const CourseLesson = () => {
 
     const handleTabClick = (tab, dayIndex,titleIndex,idArray,nsid,nlid) => {
         setApiCall(false);
+        // Re-fetch ATIds for the new lesson so Activity/Practice tabs show correctly
+        Axios.get(`${API_URL}/api/lession/GetLessionAtid/${EncryptData(nlid)}`, {
+            headers: { ApiKey: `${API_KEY}` }
+        }).then(res => {
+            console.log("handleTabClick GetLessionAtid for nLId:", nlid, res.data);
+            if (res.data && res.data.length !== 0) {
+                setTutorialATId(res.data[0]['nTutorialATId']);
+                setActivityATId(res.data[0]['nActivityATId']);
+                setPracticeATId(res.data[0]['nPracticeATId']);
+                setTestATId(res.data[0]['nTestATId']);
+            }
+        });
         switch (tab){
             case "overview":
                 Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialCourseOverview/${EncryptData(nlid)}`, {
