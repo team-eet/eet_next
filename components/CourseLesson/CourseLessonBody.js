@@ -6,7 +6,7 @@ import { Card, CardBody, CardHeader, Row, Col, Progress } from 'reactstrap';
 import Link from 'next/link';
 import Image from 'next/image';
 import { EncryptData } from "@/components/Services/encrypt-decrypt";
-//fjnjfrjfjrj
+
 const CourseLessonBody = ({
                               isBatch,
                               activeTab,
@@ -19,7 +19,6 @@ const CourseLessonBody = ({
                               sepActivityPage,
                               activitySeperateCard,
                               handleBackActivity,
-                              tutorialDocArray={tutorialDocArray},
                               viewActivity,
                               userRegId,
                               sidebar,
@@ -31,7 +30,8 @@ const CourseLessonBody = ({
                           }) => {
     // State for description expansion in content tab
     const [expandedDescriptions, setExpandedDescriptions] = useState({});
-
+  //  const [popupCard, setPopupCard] = useState(null); // NEW
+    const [activeFilter, setActiveFilter] = useState('all'); // NEW
     const toggleDescription = (index) => {
         setExpandedDescriptions(prev => ({
             ...prev,
@@ -45,6 +45,12 @@ const CourseLessonBody = ({
         if (item.nPFTId === 12) return <Icon.FileText size={20} className="me-2" />;
         return <Icon.File size={20} className="me-2" />;
     };
+    const filteredResources = tutresourcearray?.filter(item => {
+        if (activeFilter === 'all') return true;
+        if (activeFilter === 'video') return item.nPFTId === 11;
+        if (activeFilter === 'pdf') return item.nPFTId === 12;
+        return true;
+    });
 
     return (
         <div className="rbt-lesson-rightsidebar overflow-hidden lesson-video">
@@ -91,16 +97,30 @@ const CourseLessonBody = ({
                 {/* Content Tab - Modern Card Design similar to CallToAction */}
                 {activeTab.tab === 'content' && (
                     <div className="content-section">
-                        <div className="section-title mb-4">
-                            <h4 className="mb-3">Course Content</h4>
-                            <div className="rbt-separator"></div>
+                        <div className="section-title mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <h4 className="mb-0">Course Content</h4>
+                            <div className="filter-tabs d-flex gap-2">
+                                {['all', 'video', 'pdf'].map(f => (
+                                    <button
+                                        key={f}
+                                        onClick={() => setActiveFilter(f)}
+                                        className={`btn btn-sm ${activeFilter === f ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                        style={{ borderRadius: '20px', fontSize: '12px', padding: '4px 14px' }}
+                                    >
+                                        {f === 'all' ? 'All' : f === 'video' ? '🎬 Video' : '📄 PDF'}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="rbt-separator w-100"></div>
                         </div>
 
-                        <div className="row g-4">
-                            {tutresourcearray && tutresourcearray.length > 0 ? (
-                                tutresourcearray.map((item, index) => (
-                                    <div className="col-lg-6 col-xl-4" key={index}>
-                                        <div className="rbt-card modern-card bg-color-white rbt-radius shadow-1 hover-transform">
+                        <div className="row g-4 align-items-start">
+                            {filteredResources && filteredResources.length > 0 ? (
+                                filteredResources.map((item, index) => (
+                                    <div className="col-lg-4 col-xl-3" key={index}>
+                                        <div className="rbt-card modern-card bg-color-white rbt-radius shadow-1 hover-transform d-flex flex-column"
+                                             onClick={() => openPreview(item)}
+                                             style={{ cursor: 'pointer' }}>
                                             {/* Thumbnail Section with Play Overlay */}
                                             <div className="rbt-card-img position-relative">
                                                 <div
@@ -116,8 +136,8 @@ const CourseLessonBody = ({
                                                                 alt={item.sFileName}
                                                                 className="w-100 rbt-radius-top"
                                                                 width={400}
-                                                                height={225}
-                                                                style={{ objectFit: 'cover', width: '100%', height: '225px' }}
+                                                                height={160}
+                                                                style={{ objectFit: 'cover', width: '100%', height: '160px' }}
                                                             />
                                                             <div className="video-overlay">
                                                                 <div className="play-button pulse-animation">
@@ -132,8 +152,8 @@ const CourseLessonBody = ({
                                                             alt={item.sFileName}
                                                             className="w-100 rbt-radius-top"
                                                             width={400}
-                                                            height={225}
-                                                            style={{ objectFit: 'cover', width: '100%', height: '225px' }}
+                                                            height={160}
+                                                            style={{ objectFit: 'cover', width: '100%', height: '160px' }}
                                                         />
                                                     ) : (
                                                         // Default Thumbnail
@@ -142,8 +162,8 @@ const CourseLessonBody = ({
                                                             alt={item.sFileName}
                                                             className="w-100 rbt-radius-top"
                                                             width={400}
-                                                            height={225}
-                                                            style={{ objectFit: 'cover', width: '100%', height: '225px' }}
+                                                            height={160}
+                                                            style={{ objectFit: 'cover', width: '100%', height: '160px' }}
                                                         />
                                                     )}
                                                 </div>
@@ -160,8 +180,7 @@ const CourseLessonBody = ({
 
                                             </div>
 
-                                            <div className="rbt-card-body p-4">
-                                                {/* Package Name */}
+                                            <div className="rbt-card-body p-3 d-flex flex-column">
                                                 {item.sPackageName && (
                                                     <div className="rbt-category mb-2">
                                                         <Link href="#" className="text-muted small">
@@ -171,17 +190,15 @@ const CourseLessonBody = ({
                                                 )}
 
                                                 {/* File Name */}
-                                                <h5 className="rbt-card-title mb-3">
-                                                    <Link href="#" onClick={(e) => { e.preventDefault(); openPreview(item); }}>
+                                                <h5 className="rbt-card-title mb-2">
+                                                    <Link href="#" onClick={(e) => { e.preventDefault(); e.stopPropagation(); openPreview(item); }}>
                                                         {item.sFileName.length > 50 ? `${item.sFileName.substring(0, 50)}...` : item.sFileName}
                                                     </Link>
                                                 </h5>
+
                                                 {/* Description Section - Improved Logic */}
-                                                <div className="description-wrapper mb-3">
-                                                    <p className="text-muted small mb-2">
-                                                        <Icon.AlignLeft size={14} className="me-1" />
-                                                        Description:
-                                                    </p>
+                                                <div className="description-wrapper">
+
                                                     <div className="description-text">
                                                         {item.sContentDesc &&
                                                         item.sContentDesc.trim() !== "" &&
@@ -199,11 +216,11 @@ const CourseLessonBody = ({
 
                                                                 {item.sContentDesc.length > 120 && (
                                                                     <button
-                                                                        onClick={() => toggleDescription(index)}
+                                                                        onClick={(e) => { e.stopPropagation(); openPreview(item); }}
                                                                         className="btn-link p-0 mt-1 text-primary"
                                                                         style={{ background: 'none', border: 'none', fontSize: '12px', fontWeight: '500' }}
                                                                     >
-                                                                        {expandedDescriptions[index] ? 'Show Less' : 'Show More'}
+                                                                        Show More
                                                                     </button>
                                                                 )}
                                                             </>
@@ -215,21 +232,6 @@ const CourseLessonBody = ({
 
 
 
-                                                {/* File Info and Actions */}
-                                                <div className="rbt-card-footer mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
-
-                                                    <div className="action-buttons">
-                                                        <button
-                                                            onClick={() => openPreview(item)}
-                                                            className="rbt-btn rounded-3 icon-hover btn-sm me-2"
-                                                            title="Preview"
-                                                        >
-                                                            <Icon.Eye size={14} />
-                                                            <span className="ms-1 d-none d-md-inline">View</span>
-                                                        </button>
-
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -482,19 +484,21 @@ const CourseLessonBody = ({
             <div className="footerBar bg-color-extra2 ptb--15 overflow-hidden position-absolute bottom-0 start-0 end-0">
                 <div className="rbt-button-group d-flex justify-content-between px-4">
                     <button
-                        className="rbt-btn icon-hover icon-hover-left btn-md bg-primary-opacity"
+                        className="btn btn-outline-primary d-flex align-items-center gap-2"
                         onClick={handlePrevious}
+                        style={{ borderRadius: '8px', padding: '8px 18px' }}
                     >
-                        <span className="btn-icon"><Icon.ArrowLeft size={16} /></span>
-                        <span className="btn-text">Previous</span>
+                        <Icon.ArrowLeft size={16} />
+                        Previous
                     </button>
                     {!isLastTab && (
                         <button
-                            className="rbt-btn icon-hover btn-md bg-primary text-white"
+                            className="btn btn-primary d-flex align-items-center gap-2 text-white"
                             onClick={handleNext}
+                            style={{ borderRadius: '8px', padding: '8px 18px' }}
                         >
-                            <span className="btn-text">Next</span>
-                            <span className="btn-icon"><Icon.ArrowRight size={16} /></span>
+                            Next
+                            <Icon.ArrowRight size={16} />
                         </button>
                     )}
                 </div>

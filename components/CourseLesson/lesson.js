@@ -8,8 +8,7 @@ import { DecryptData, EncryptData } from "@/components/Services/encrypt-decrypt"
 import LessonSidebar from '@/components/CourseLesson/CourseLessonSidebar';
 import LessonBody from '@/components/CourseLesson/CourseLessonBody';
 import withAuth from "@/components/Utils/withAuth";
-import { Plyr } from "plyr-react";
-import "plyr/dist/plyr.css";
+import dynamic from 'next/dynamic';
 //jdjejdjed
 const CourseLesson = () => {
     const [isBatch, setIsBatch] = useState({});
@@ -70,7 +69,13 @@ const CourseLesson = () => {
                 ErrorDefaultAlert(err);
             });
     };
-
+    const Plyr = dynamic(
+        () => import('plyr-react').then((mod) => {
+            require('plyr/dist/plyr.css'); // load CSS too
+            return mod.Plyr;
+        }),
+        { ssr: false } // 👈 this is the key — disables SSR for this component
+    );
     const handleBackActivity = () => {
         setsepActivityPage(false);
         setsingleActivityPage(true);
@@ -114,7 +119,7 @@ const CourseLesson = () => {
     // };
 
     const viewActivity = (nAQId,act_first,questionNo,y,nCId,userRegId,sActivityName,nSQId) => {
-    //    alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
+        //    alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
         setShowModal(true)
@@ -381,137 +386,82 @@ const CourseLesson = () => {
 
     return (
         <>
-            <div className="rbt-lesson-area bg-color-white">
-                <div className="rbt-lesson-content-wrapper">
-                    <LessonSidebar
-                        isBatch={isBatch}
-                        LessonData={LessonData}
-                        activeTab={activeTab}
-                        handleTabClick={handleTabClick}
-                        TutorialATId={TutorialATId}
-                        ActivityATId={ActivityATId}
-                        PracticeATId={PracticeATId}
-                        TestATId={TestATId}
-                        IdArray={getEncodedId}
-                        sidebar={sidebar}
-                        setSidebar={() => setSidebar(!sidebar)}
-                        setActiveTab={setActiveTab}
-                    />
-                    {
-                        getApiCall  ?
-                            <LessonBody
-                                isBatch={isBatch}
-                                activeTab={activeTab}
-                                sContent={sContent}
-                                tutresourcearray={tutresourcearray}
-                                quetypeItems={quetypeItems}
-                                SepActivitylist={SepActivitylist}
-                                handleSepActivityPage={handleSepActivityPage}
-                                singleActivityPage={singleActivityPage}
-                                sepActivityPage={sepActivityPage}
-                                activitySeperateCard={activitySeperateCard}
-                                handleBackActivity={handleBackActivity}
-                                viewActivity={viewActivity}
-                                userRegId={regid['regid']}
-                                tutorialDocArray={tutorialDocArray}
-                                sidebar={sidebar}
-                                setSidebar={() => setSidebar(!sidebar)}
-                                handleNext={handleNext}
-                                handlePrevious={handlePrevious}
-                                isLastTab={isLastTab}
-                                openPreview={openPreview}  // Add this line
-                            /> :
+        <div className="rbt-lesson-area bg-color-white">
+            <div className="rbt-lesson-content-wrapper">
+                <LessonSidebar
+                    isBatch={isBatch}
+                    LessonData={LessonData}
+                    activeTab={activeTab}
+                    handleTabClick={handleTabClick}
+                    TutorialATId={TutorialATId}
+                    ActivityATId={ActivityATId}
+                    PracticeATId={PracticeATId}
+                    TestATId={TestATId}
+                    IdArray={getEncodedId}
+                    sidebar={sidebar}
+                    setSidebar={() => setSidebar(!sidebar)}
+                    setActiveTab={setActiveTab}
+                />
+                {
+                    getApiCall  ?
+                        <LessonBody
+                            isBatch={isBatch}
+                            activeTab={activeTab}
+                            sContent={sContent}
+                            tutresourcearray={tutresourcearray}
+                            quetypeItems={quetypeItems}
+                            SepActivitylist={SepActivitylist}
+                            handleSepActivityPage={handleSepActivityPage}
+                            singleActivityPage={singleActivityPage}
+                            sepActivityPage={sepActivityPage}
+                            activitySeperateCard={activitySeperateCard}
+                            handleBackActivity={handleBackActivity}
+                            viewActivity={viewActivity}
+                            userRegId={regid['regid']}
+                            tutorialDocArray={tutorialDocArray}
+                            sidebar={sidebar}
+                            setSidebar={() => setSidebar(!sidebar)}
+                            handleNext={handleNext}
+                            handlePrevious={handlePrevious}
+                            isLastTab={isLastTab}
+                            openPreview={openPreview}  // Add this line
+                        /> :
 
-                            <div
-                                className="d-flex flex-column justify-content-center align-items-center w-100 vh-100 bg-light">
-                                <div className="spinner-border text-primary" role="status"
-                                     style={{width: "3rem", height: "3rem"}}>
-                                    <span className="visually-hidden">Loading...</span>
-                                </div>
-                                <p className="mt-3 fs-5 fw-semibold text-dark">Loading...</p>
+                        <div
+                            className="d-flex flex-column justify-content-center align-items-center w-100 vh-100 bg-light">
+                            <div className="spinner-border text-primary" role="status"
+                                 style={{width: "3rem", height: "3rem"}}>
+                                <span className="visually-hidden">Loading...</span>
                             </div>
-                    }
-                    {getShowModal && (
-                        <div className="modal fade show d-block" tabIndex="-1" role="dialog"
-                             style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
-                            <div className="modal-dialog modal-fullscreen" role="document">
-                                <div className="modal-content" style={{height: '100vh'}}>
-
-                                <div className="modal-header d-flex justify-content-between">
-                                        <h5 className="modal-title">{getActivityName}</h5>
-                                        <div className="lesson-top-right">
-                                            <div className="rbt-btn-close">
-                                                <button type="button" className="rbt-round-btn btn-close"
-                                                        onClick={handleClose}>
-                                                    <i className="feather-x"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="modal-body p-0"
-                                         style={{height: 'calc(100vh - 120px)', overflow: 'hidden'}}>
-                                        {isActivityLoading && (
-                                            <div className="d-flex justify-content-center align-items-center"
-                                                 style={{
-                                                     position: 'absolute',
-                                                     top: 0, left: 0, right: 0, bottom: 0,
-                                                     backgroundColor: '#fff',
-                                                     zIndex: 10
-                                                 }}>
-                                                <div className="spinner-border text-primary" role="status">
-                                                    <span className="visually-hidden">Loading...</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                        <iframe
-                                            // src="https://eet-frontend.azurewebsites.net/mcqsingleact/pmgn0o-jhTq6ak1pUFrLsQ==/ZygH-gMr7Uo80oqGuiTzOg==/38reo1P9MPCaRV66Hrtl_g==/n/d1EwY7e7aY_66OTtQuHb1w==/LWnmhbJglu1Bt2SwI2JsFg=="
-                                            src={getUrlIFrame}
-                                            width="100%"
-                                            height="100%"
-                                            title="Preview"
-                                            style={{border: 'none', overflow: 'hidden'}}
-                                            onLoad={() => setIsActivityLoading(false)}
-                                        ></iframe>
-                                    </div>
-
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary"
-                                                onClick={handleClose}>Close
-                                        </button>
-                                    </div>
-
-                                </div>
-                            </div>
+                            <p className="mt-3 fs-5 fw-semibold text-dark">Loading...</p>
                         </div>
+                }
+                {previewModal && previewData.url && (
+                    <div className="modal fade show d-block" tabIndex="-1" role="dialog"
+                         style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
+                        <div className="modal-dialog modal-fullscreen" role="document">
+                            <div className="modal-content" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
 
-                    )}
-
-                    {previewModal && previewData.url && (
-                        <div className="modal fade show d-block" tabIndex="-1" role="dialog"
-                             style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
-                            <div className="modal-dialog modal-fullscreen" role="document">
-                                <div className="modal-content" style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-
-                                    {/* Header */}
-                                    <div className="modal-header d-flex justify-content-between">
-                                        <h5 className="modal-title">{previewData.name}</h5>
-                                        <div className="lesson-top-right">
-                                            <div className="rbt-btn-close">
-                                                <button type="button" className="rbt-round-btn btn-close" onClick={closePreview}>
-                                                    <i className="feather-x"></i>
-                                                </button>
-                                            </div>
+                                {/* Header */}
+                                <div className="modal-header d-flex justify-content-between">
+                                    <h5 className="modal-title">{previewData.name}</h5>
+                                    <div className="lesson-top-right">
+                                        <div className="rbt-btn-close">
+                                            <button type="button" className="rbt-round-btn btn-close" onClick={closePreview}>
+                                                <i className="feather-x"></i>
+                                            </button>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* Preview Area */}
+                                {/* Side-by-side: LEFT preview + RIGHT description */}
+                                <div style={{ display: 'flex', flexDirection: 'row', flex: 1, overflow: 'hidden', minHeight: 0 }}>
+
+                                    {/* LEFT: Video / PDF */}
                                     <div style={{
-                                        width: '100%',
-                                        height: '500px',
+                                        width: '65%',
                                         backgroundColor: '#000',
                                         position: 'relative',
-                                        flexShrink: 0,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -543,12 +493,12 @@ const CourseLesson = () => {
                                         ) : (
                                             <>
                                                 <style>{`
-                                .plyr-fixed-container { width: 100% !important; height: 500px !important; }
-                                .plyr-fixed-container .plyr { width: 100% !important; height: 100% !important; }
-                                .plyr-fixed-container .plyr video { width: 100% !important; height: 100% !important; object-fit: contain !important; }
-                                .plyr-fixed-container .plyr__video-wrapper { width: 100% !important; height: 100% !important; }
-                            `}</style>
-                                                <div className="plyr-fixed-container">
+                                    .plyr-fixed-container { width: 100% !important; height: 100% !important; }
+                                    .plyr-fixed-container .plyr { width: 100% !important; height: 100% !important; }
+                                    .plyr-fixed-container .plyr video { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+                                    .plyr-fixed-container .plyr__video-wrapper { width: 100% !important; height: 100% !important; }
+                                `}</style>
+                                                <div className="plyr-fixed-container" style={{ width: '100%', height: '100%' }}>
                                                     <Plyr
                                                         source={{
                                                             type: 'video',
@@ -568,20 +518,21 @@ const CourseLesson = () => {
                                         )}
                                     </div>
 
-                                    {/* Info Section: Title + Description */}
+                                    {/* RIGHT: Title + Description */}
                                     <div style={{
-                                        padding: '16px 20px',
+                                        width: '35%',
+                                        padding: '20px 24px',
                                         backgroundColor: '#fff',
-                                        borderTop: '1px solid #e9ecef',
-                                        overflowY: 'auto'
+                                        borderLeft: '1px solid #e9ecef',
+                                        overflowY: 'auto',
+                                        display: 'flex',
+                                        flexDirection: 'column'
                                     }}>
-                                        {/* Title */}
                                         <h5 style={{ fontWeight: '600', color: '#212529', marginBottom: '12px' }}>
                                             {previewData.name}
                                         </h5>
                                         <hr style={{ margin: '0 0 12px', borderColor: '#f0f0f0' }} />
 
-                                        {/* Description - Improved with proper check */}
                                         {previewData.description &&
                                         previewData.description.trim() !== "" &&
                                         !previewData.description.includes('<figure class="media">') ? (
@@ -590,31 +541,22 @@ const CourseLesson = () => {
                                                     Description:
                                                 </p>
                                                 <div
-                                                    style={{
-                                                        fontSize: '15px',
-                                                        color: '#495057',
-                                                        lineHeight: '1.65'
-                                                    }}
+                                                    style={{ fontSize: '15px', color: '#495057', lineHeight: '1.65' }}
                                                     dangerouslySetInnerHTML={{
                                                         __html: showFullDescription
                                                             ? previewData.description
-                                                            : previewData.description.length > 150
-                                                                ? `${previewData.description.substring(0, 150)}...`
+                                                            : previewData.description.length > 300
+                                                                ? `${previewData.description.substring(0, 300)}...`
                                                                 : previewData.description
                                                     }}
                                                 />
-
-                                                {previewData.description.length > 150 && (
+                                                {previewData.description.length > 300 && (
                                                     <button
                                                         onClick={() => setShowFullDescription(prev => !prev)}
                                                         style={{
-                                                            background: 'none',
-                                                            border: 'none',
-                                                            color: '#0d6efd',
-                                                            cursor: 'pointer',
-                                                            padding: '4px 0 0',
-                                                            fontSize: '13px',
-                                                            fontWeight: '600'           // Made bold
+                                                            background: 'none', border: 'none',
+                                                            color: '#0d6efd', cursor: 'pointer',
+                                                            padding: '4px 0 0', fontSize: '13px', fontWeight: '600'
                                                         }}
                                                     >
                                                         {showFullDescription ? 'Show Less' : 'Show More'}
@@ -622,31 +564,27 @@ const CourseLesson = () => {
                                                 )}
                                             </div>
                                         ) : (
-                                            <p style={{
-                                                fontSize: '13px',
-                                                color: '#adb5bd',
-                                                fontStyle: 'italic',
-                                                margin: 0
-                                            }}>
+                                            <p style={{ fontSize: '13px', color: '#adb5bd', fontStyle: 'italic', margin: 0 }}>
                                                 No description available.
                                             </p>
                                         )}
                                     </div>
-
-                                    {/* Footer */}
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" onClick={closePreview}>Close</button>
-                                    </div>
-
                                 </div>
+
+                                {/* Footer */}
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" onClick={closePreview}>Close</button>
+                                </div>
+
                             </div>
                         </div>
-                    )}
+                    </div>
+                )}
 
-                </div>
-            </div>
-        </>
-    );
+        </div>
+</div>
+</>
+);
 };
 
 export default withAuth(CourseLesson);
