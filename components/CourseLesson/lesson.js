@@ -171,8 +171,10 @@ const CourseLesson = () => {
         const lid =  EncryptData(urlIdArray.nCLId);
         const pnview = urlIdArray.mode;
         const cid =  EncryptData(urlIdArray.nCId);
+        const targetNLId = urlIdArray.nLId || 0;
+        const targetNSId = urlIdArray.nSId || 0;
+        const targetNTBId = urlIdArray.nTBId || 0;
         setcid(cid);
-
         if (DecryptData(acid) !== 0) {
             getcid = acid;
         } else {
@@ -195,9 +197,30 @@ const CourseLesson = () => {
                             }
                         }
                         setLessonData(res.data);
-                        console.log("setLessonData",res.data)
+                        console.log("setLessonData", res.data);
 
-                        Axios.get(`${API_URL}/api/lession/GetLessionAtid/${EncryptData(lsn[0]['nLId'])}`, {
+// Find which section and lesson index matches the targetNLId from URL
+                        let initialTitleIndex = 0;
+                        let initialDayIndex = 0;
+                        let initialNLId = lsn[0]['nLId'];
+
+                        if (targetNLId) {
+                            outer: for (let si = 0; si < res.data.length; si++) {
+                                const lessons = JSON.parse(res.data[si].lessionTbl);
+                                for (let li = 0; li < lessons.length; li++) {
+                                    if (Number(lessons[li].nLId) === Number(targetNLId)) {
+                                        initialTitleIndex = si;
+                                        initialDayIndex = li;
+                                        initialNLId = lessons[li].nLId;
+                                        break outer;
+                                    }
+                                }
+                            }
+                        }
+
+                        setActiveTab({ tab: 'overview', dayIndex: initialDayIndex, titleIndex: initialTitleIndex, nlid: initialNLId });
+
+                        Axios.get(`${API_URL}/api/lession/GetLessionAtid/${EncryptData(initialNLId)}`, {
                             headers: { ApiKey: `${API_KEY}` }
                         })
                             .then(res => {
@@ -211,7 +234,7 @@ const CourseLesson = () => {
 
 
 
-                        Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialCourseOverview/${EncryptData(lsn[0]['nLId'])}`, {
+                        Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialCourseOverview/${EncryptData(initialNLId)}`, {
                             headers: { ApiKey: `${API_KEY}` }
                         }).then(res => {
                             if (res.data && res.data.length !== 0) {
@@ -219,7 +242,7 @@ const CourseLesson = () => {
                             }
                         });
 
-                        Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(lsn[0]['nLId'])}/${udata['regid']}/${cid}`, {
+                        Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(initialNLId)}/${udata['regid']}/${cid}`, {
                             headers: { ApiKey: `${API_KEY}` }
                         }).then(res => {
                             if (res.data) {

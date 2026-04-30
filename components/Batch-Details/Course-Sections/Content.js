@@ -20,9 +20,11 @@ const Content = () => {
   const postId = parseInt(router.query.courseId);
   // console.log(router)
   // console.log(checkMatchCourses)
+  const [courseInfo, setCourseInfo] = useState(null);
   const [getsectionItems, setsectionItems] = useState([])
   const [isApiCall, setIsApiCall] = useState(0)
-
+  const [isAlreadyPurchased, setIsAlreadyPurchased] = useState(false);
+  const [isPurchaseChecking, setIsPurchaseChecking] = useState(true);
   const getcourseContent = () => {
     const url = window.location.href
     const parts = url.split("/");
@@ -32,7 +34,10 @@ const Content = () => {
     console.log("courseId",courseId)
     console.log("batchId",batchId)
     console.log("zeroid",EncryptData(0))
-
+// Store for use in links
+    const nCId = DecryptData(decodeURIComponent(parts[parts.length - 2]));
+    const nTBId = DecryptData(decodeURIComponent(parts[parts.length - 1]));
+    setCourseInfo({ nCId, nTBId, nCLId: 2 });
     Axios.get(`${API_URL}/api/section/GetBatchCourseSummaryAll/${courseId}/${EncryptData(0)}/${batchId}`, {
       headers: {
         ApiKey: `${API_KEY}`
@@ -43,6 +48,7 @@ const Content = () => {
           if (res.data.length !== 0) {
           console.log("batch Page ",res.data);
             setsectionItems(res.data)
+            setCourseInfo(prev => ({ ...prev, nCLId: res.data[0]?.nCLId || 2 }));
           }
           setIsApiCall(1)
         })
@@ -53,12 +59,41 @@ const Content = () => {
 
   useEffect(() => {
     getcourseContent();
+    checkIfAlreadyPurchased();
   }, []);
   // },[])
+
+  const checkIfAlreadyPurchased = () => {
+    if (!localStorage.getItem("userData")) {
+      setIsPurchaseChecking(false);
+      return;
+    }
+
+    const nTBId = DecryptData(decodeURIComponent(window.location.href.split("/").pop()));
+    const udata = DecryptData(localStorage.getItem("userData"));
+    const regId = typeof udata === "string" ? JSON.parse(udata).regid : udata.regid;
+
+    Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedBatch/${regId}`, {
+      headers: { ApiKey: `${API_KEY}` }
+    })
+        .then(res => {
+          if (res.data && Array.isArray(res.data)) {
+            const alreadyBought = res.data.some(
+                item => Number(item.nTBId) === Number(nTBId)
+            );
+            setIsAlreadyPurchased(alreadyBought);
+          }
+        })
+        .catch(err => console.log("Purchase check error:", err))
+        .finally(() => setIsPurchaseChecking(false));
+  };
+
+
   return (
-    <>
-      {
-        isApiCall === 0 ? <>
+      <>
+        {isPurchaseChecking ? (
+            <div className="text-center py-4"><Skeleton width={200} height={20}/></div>
+        ) : isApiCall === 0 ? <>
           <div className="rbt-course-feature-inner">
             {/* Skeleton for the Course Content title */}
             <Skeleton width={150} height={20}/>
@@ -144,25 +179,40 @@ const Content = () => {
                           <ul className="rbt-course-main-content liststyle">
                             {JSON.parse(item.lessionTbl).map((list, subIndex) => (
                                 <li key={subIndex}>
-                                  <Link href="/lesson">
-                                    <div className="course-content-left">
-
-                                      {/*<i className="feather-play-circle"></i>*/}
-                                      <span className="text">{`Day - ${subIndex + 1}`} {list.sLessionTitle}</span>
-                                    </div>
-                                    {/*{list.status ? (*/}
-                                    <div className="course-content-right">
-                                      <span className="min-lable">{list.act_cnt} Activities</span>
-                                      <span className="rbt-badge variation-03 bg-primary-opacity">
-                                        <i className="feather-eye"></i> Practise
-                                      </span>
-                                      <span className="course-lock">
-                                        <i className="feather-lock"></i>
-                                      </span>
-                                    </div>
-
-                                    {/*)}*/}
-                                  </Link>
+                                  {isAlreadyPurchased ? (
+                                      <Link href={`/courselesson/${EncryptData({
+                                        nACId: 0,
+                                        nMId: 0,
+                                        nCLId: courseInfo?.nCLId || 2,
+                                        mode: EncryptData('N'),
+                                        nCId: courseInfo?.nCId,
+                                        nLId: list.nLId,
+                                        nSId: item.nSId,
+                                        nTBId: courseInfo?.nTBId,
+                                      })}`}>
+                                        <div className="course-content-left">
+                                          <span className="text">{`Day - ${subIndex + 1}`} {list.sLessionTitle}</span>
+                                        </div>
+                                        <div className="course-content-right">
+                                          <span className="min-lable">{list.act_cnt} Activities</span>
+                                          <span className="rbt-badge variation-03 bg-primary-opacity">
+          <i className="feather-eye"></i> Practise
+        </span>
+                                        </div>
+                                      </Link>
+                                  ) : (
+                                      <a href="javascript:void(0)" style={{ cursor: 'not-allowed', opacity: 0.7 }}>
+                                        <div className="course-content-left">
+                                          <span className="text">{`Day - ${subIndex + 1}`} {list.sLessionTitle}</span>
+                                        </div>
+                                        <div className="course-content-right">
+                                          <span className="min-lable">{list.act_cnt} Activities</span>
+                                          <span className="course-lock">
+          <i className="feather-lock"></i>
+        </span>
+                                        </div>
+                                      </a>
+                                  )}
                                 </li>
                             ))}
                           </ul>
@@ -174,9 +224,8 @@ const Content = () => {
             </div>
           </div>
         </>
-      }
-
-    </>
+        }
+      </>
   );
 };
 
