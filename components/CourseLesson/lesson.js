@@ -46,7 +46,6 @@ const CourseLesson = () => {
         type: ''   // 'video' | 'pdf'
     });
     const [isPreviewLoading, setIsPreviewLoading] = useState(false);
-    const [showFullDescription, setShowFullDescription] = useState(false);
     let getcid = '0';
 
     const handleSepActivityPage = (aqid) => {
@@ -106,7 +105,7 @@ const CourseLesson = () => {
             });
             setIsPreviewLoading(true);
         }
-        setShowFullDescription(false);
+
         setPreviewModal(true);
     };
 
@@ -542,26 +541,8 @@ const CourseLesson = () => {
                                                 </p>
                                                 <div
                                                     style={{ fontSize: '15px', color: '#495057', lineHeight: '1.65' }}
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: showFullDescription
-                                                            ? previewData.description
-                                                            : previewData.description.length > 300
-                                                                ? `${previewData.description.substring(0, 300)}...`
-                                                                : previewData.description
-                                                    }}
+                                                    dangerouslySetInnerHTML={{ __html: previewData.description }}
                                                 />
-                                                {previewData.description.length > 300 && (
-                                                    <button
-                                                        onClick={() => setShowFullDescription(prev => !prev)}
-                                                        style={{
-                                                            background: 'none', border: 'none',
-                                                            color: '#0d6efd', cursor: 'pointer',
-                                                            padding: '4px 0 0', fontSize: '13px', fontWeight: '600'
-                                                        }}
-                                                    >
-                                                        {showFullDescription ? 'Show Less' : 'Show More'}
-                                                    </button>
-                                                )}
                                             </div>
                                         ) : (
                                             <p style={{ fontSize: '13px', color: '#adb5bd', fontStyle: 'italic', margin: 0 }}>

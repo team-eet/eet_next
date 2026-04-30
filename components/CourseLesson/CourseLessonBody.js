@@ -46,6 +46,7 @@ const CourseLessonBody = ({
         return <Icon.File size={20} className="me-2" />;
     };
     const filteredResources = tutresourcearray?.filter(item => {
+        if (item.nContentFor !== 2) return false; // Only show nContentFor = 2
         if (activeFilter === 'all') return true;
         if (activeFilter === 'video') return item.nPFTId === 11;
         if (activeFilter === 'pdf') return item.nPFTId === 12;
@@ -113,12 +114,11 @@ const CourseLessonBody = ({
                             </div>
                             <div className="rbt-separator w-100"></div>
                         </div>
-
-                        <div className="row g-4 align-items-start">
+                        <div className="row g-4 align-items-stretch">
                             {filteredResources && filteredResources.length > 0 ? (
                                 filteredResources.map((item, index) => (
-                                    <div className="col-lg-4 col-xl-3" key={index}>
-                                        <div className="rbt-card modern-card bg-color-white rbt-radius shadow-1 hover-transform d-flex flex-column"
+                                    <div className="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex" key={index}>
+                                        <div className="rbt-card modern-card bg-color-white rbt-radius shadow-1 hover-transform d-flex flex-column h-100"
                                              onClick={() => openPreview(item)}
                                              style={{ cursor: 'pointer' }}>
                                             {/* Thumbnail Section with Play Overlay */}
@@ -180,7 +180,7 @@ const CourseLessonBody = ({
 
                                             </div>
 
-                                            <div className="rbt-card-body p-3 d-flex flex-column">
+                                            <div className="rbt-card-body p-3 d-flex flex-column flex-grow-1">
                                                 {item.sPackageName && (
                                                     <div className="rbt-category mb-2">
                                                         <Link href="#" className="text-muted small">
@@ -197,8 +197,7 @@ const CourseLessonBody = ({
                                                 </h5>
 
                                                 {/* Description Section - Improved Logic */}
-                                                <div className="description-wrapper">
-
+                                                <div className="description-wrapper flex-grow-1">
                                                     <div className="description-text">
                                                         {item.sContentDesc &&
                                                         item.sContentDesc.trim() !== "" &&
@@ -546,29 +545,49 @@ const CourseLessonBody = ({
                     animation: pulse 2s infinite;
                 }
                 @keyframes pulse {
-                    0% {
-                        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
-                    }
-                    70% {
-                        box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
-                    }
-                    100% {
-                        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-                    }
+                    0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+                    70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
                 }
-                .text-truncate-multi {
+                .rbt-card.modern-card {
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                    width: 100%;
+                }
+                .rbt-card.modern-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+                }
+                /* Fixed thumbnail height across all devices */
+                .rbt-card-img img {
+                    height: 180px !important;
+                    object-fit: cover !important;
+                    width: 100% !important;
+                }
+                /* Description area fixed min-height so cards stay uniform */
+                .description-wrapper {
+                    min-height: 72px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                }
+                .description-text {
+                    font-size: 14px;
+                    line-height: 1.5;
+                    color: #666;
                     display: -webkit-box;
                     -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
                 }
-                .rbt-card.modern-card {
+                /* Title fixed height — 2 lines max */
+                .rbt-card-title {
+                    min-height: 48px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
                     overflow: hidden;
-                    transition: all 0.3s ease;
-                }
-                .rbt-card.modern-card:hover {
-                    transform: translateY(-10px);
-                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+                    font-size: 15px;
                 }
                 .rbt-badge {
                     padding: 5px 12px;
@@ -579,27 +598,11 @@ const CourseLessonBody = ({
                     display: inline-flex;
                     align-items: center;
                 }
-                .bg-primary {
-                    background-color: #0d6efd;
-                }
-                .bg-danger {
-                    background-color: #dc3545;
-                }
-                .bg-warning {
-                    background-color: #ffc107;
-                    color: #000;
-                }
-                .bg-info {
-                    background-color: #0dcaf0;
-                    color: #000;
-                }
                 .bg-light-success {
                     background-color: #d1e7dd;
                     color: #0f5132;
                 }
-                .cursor-pointer {
-                    cursor: pointer;
-                }
+                .cursor-pointer { cursor: pointer; }
                 .activity-card {
                     transition: all 0.3s ease;
                     cursor: pointer;
@@ -623,6 +626,29 @@ const CourseLessonBody = ({
                 .btn-outline-primary:hover {
                     background: #0d6efd;
                     color: white;
+                }
+
+                /* ── Responsive breakpoints ── */
+
+                /* Mobile (up to 575px): 1 column */
+                @media (max-width: 575px) {
+                    .rbt-card-img img { height: 200px !important; }
+                    .rbt-card-title { font-size: 14px; min-height: 42px; }
+                }
+
+                /* Tablet / iPad (576px – 991px): 2 columns */
+                @media (min-width: 576px) and (max-width: 991px) {
+                    .rbt-card-img img { height: 170px !important; }
+                }
+
+                /* Laptop (992px – 1399px): 3 columns */
+                @media (min-width: 992px) and (max-width: 1399px) {
+                    .rbt-card-img img { height: 160px !important; }
+                }
+
+                /* Large / dual monitor (1400px+): 4 columns */
+                @media (min-width: 1400px) {
+                    .rbt-card-img img { height: 180px !important; }
                 }
             `}</style>
         </div>
