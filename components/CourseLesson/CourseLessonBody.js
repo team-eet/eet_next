@@ -72,7 +72,8 @@ const CourseLessonBody = ({
                 </div>
                 <div className="lesson-top-right">
                     <div className="rbt-btn-close">
-                        <a href={`/student/student-enrolled-course`} className="rbt-round-btn"
+                        <a href={isBatch.bIsWithBatch === 'yes' ? '/student/student-enrolled-batch' : '/student/student-enrolled-course'}
+                           className="rbt-round-btn"
                            title="Go Back to Course">
                             <i className="feather-x"></i>
                         </a>

@@ -16,16 +16,13 @@ import Swal from "sweetalert2";
 import Skeleton from "react-loading-skeleton";
 import InquiryPopup from "@/components/Inquiry/InquiryPopup";
 import useRazorpay from "react-razorpay";
-
-
 const MySwal = withReactContent(Swal);
 
 const Viedo = ({ checkMatchCourses }) => {
     console.log("Batch Data Check", checkMatchCourses);
     console.log("checkMatchCourses FULL DATA:", checkMatchCourses);
     const router = useRouter();
-    // batchId comes from URL — e.g. /batch-details/[courseId]/[batchId]
-    // Adjust the query key names to match your actual Next.js route params.
+    const [isPurchaseChecking, setIsPurchaseChecking] = useState(true); // true by default
     const rawBatchId = router.query.batchId;   // encrypted batch id from URL
     const rawCourseId = router.query.courseId; // encrypted course id from URL
 
@@ -56,7 +53,7 @@ const Viedo = ({ checkMatchCourses }) => {
     dBatchStartDate.setHours(0, 0, 0, 0);
     const timeDifference   = dBatchStartDate - nowDate;
     const daysLeft         = Math.max(0, Math.ceil(timeDifference / (1000 * 60 * 60 * 24)) - 1);
-
+    const decryptedBatchId = String(DecryptData(rawBatchId));
     // ─── Fetch feature counts ─────────────────────────────────────────────────
     const getFeatureCount = () => {
         const batchId = rawBatchId;       // already encrypted from router.query
@@ -109,6 +106,44 @@ const Viedo = ({ checkMatchCourses }) => {
             )
             .catch((err) => ErrorDefaultAlert(err));
     };
+    const checkIfAlreadyPurchased = useCallback(() => {
+        if (!localStorage.getItem("userData")) {
+            setIsPurchaseChecking(false);
+            return;
+        }
+
+        // ✅ Use nTBId directly from prop — no decryption needed, no router dependency
+        const currentNTBId = checkMatchCourses?.nTBId;
+        if (!currentNTBId) {
+            setIsPurchaseChecking(false);
+            return;
+        }
+
+        const udata = DecryptData(localStorage.getItem("userData"));
+        const regId = typeof udata === "string" ? JSON.parse(udata).regid : udata.regid;
+
+        console.log("Checking purchase for nTBId:", currentNTBId, "regId:", regId);
+
+        Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedBatch/${regId}`, {
+            headers: { ApiKey: `${API_KEY}` }
+        })
+            .then(res => {
+                console.log("Purchased batches:", res.data);
+                if (res.data && Array.isArray(res.data)) {
+                    const alreadyBought = res.data.some(
+                        item => Number(item.nTBId) === Number(currentNTBId)
+                    );
+                    console.log("alreadyBought:", alreadyBought);
+                    setIsAlreadyPurchased(alreadyBought);
+                }
+            })
+            .catch(err => console.log("Purchase check error:", err))
+            .finally(() => {
+                setIsPurchaseChecking(false);
+            });
+    }, [checkMatchCourses?.nTBId]);
+
+
 
     useEffect(() => {
         if (checkMatchCourses?.nTBId) {
@@ -116,25 +151,23 @@ const Viedo = ({ checkMatchCourses }) => {
         }
     }, [checkMatchCourses]);
 
-    // ─── useEffect ────────────────────────────────────────────────────────────
     useEffect(() => {
+        if (!router.query.batchId) return;
+        if (!checkMatchCourses?.nTBId) return; // wait for prop too
+
         getFeatureCount();
+        checkIfAlreadyPurchased();
         localStorage.setItem("eetData", JSON.stringify(cart));
         localStorage.setItem("cart", JSON.stringify(cart));
-        // Update this specific block in your useEffect
+
         if (checkMatchCourses.sVideoPath && checkMatchCourses.sVideoPath !== "") {
-            setvideoOpenData(checkMatchCourses.sVideoPath); // Direct MP4 first
+            setvideoOpenData(checkMatchCourses.sVideoPath);
         } else if (checkMatchCourses.sVideoURL && checkMatchCourses.sVideoURL !== "") {
-            setvideoOpenData(checkMatchCourses.sVideoURL); // YouTube second
+            setvideoOpenData(checkMatchCourses.sVideoURL);
         } else {
             setvideoOpenData("");
         }
-        const purchasedBatches = JSON.parse(localStorage.getItem("purchasedBatches") || "[]");
-        const decryptedBatchId = String(DecryptData(rawBatchId));
-        if (purchasedBatches.includes(decryptedBatchId)) {
-            setIsAlreadyPurchased(true);
-        }
-    }, [rawBatchId]);
+    }, [router.query.batchId, checkMatchCourses?.nTBId]);
 
     // ─── Add to Cart ──────────────────────────────────────────────────────────
     const addToCartFun = (batchId, amount,  product) => {
@@ -160,6 +193,8 @@ const Viedo = ({ checkMatchCourses }) => {
                 }
             });
         }
+
+
 
         const getamt = parseInt(checkMatchCourses.dAmount) || 0;
         const udata  = DecryptData(localStorage.getItem("userData"));
@@ -320,13 +355,7 @@ const Viedo = ({ checkMatchCourses }) => {
                                     if (res.data) {
                                         const innerRetData = JSON.parse(res.data)
                                         if(innerRetData.success === "1"){
-                                            // Save purchased batch to localStorage
-                                            const purchasedBatches = JSON.parse(localStorage.getItem("purchasedBatches") || "[]");
-                                            const decryptedBatchId = String(DecryptData(rawBatchId));
-                                            if (!purchasedBatches.includes(decryptedBatchId)) {
-                                                purchasedBatches.push(decryptedBatchId);
-                                                localStorage.setItem("purchasedBatches", JSON.stringify(purchasedBatches));
-                                            }
+                                            checkIfAlreadyPurchased(); // refresh purchased state after payment
                                             router.push(`/payment-detail/${innerRetData.payid}`)
                                         } else {
                                             rzpay.close();
@@ -548,7 +577,16 @@ const Viedo = ({ checkMatchCourses }) => {
                         </button>
                     ) : (
                         <>
-                            {isAlreadyPurchased ? (
+                            {isPurchaseChecking ? (
+                                // Blocks the button until API responds — no flash
+                                <button
+                                    className="rbt-btn btn-gradient w-100 text-center disabled"
+                                    style={{ pointerEvents: "none", opacity: 0.6 }}
+                                    disabled
+                                >
+                                    <span><i className="fa fa-spinner fa-spin p-0"></i> Checking...</span>
+                                </button>
+                            ) : isAlreadyPurchased ? (
                                 <button
                                     className="rbt-btn btn-gradient w-100 text-center disabled"
                                     style={{ pointerEvents: "none", opacity: 0.8, background: "linear-gradient(to right, #28a745, #218838)" }}
