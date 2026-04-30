@@ -19,6 +19,7 @@ const CourseLessonBody = ({
                               sepActivityPage,
                               activitySeperateCard,
                               handleBackActivity,
+                              tutorialDocArray={tutorialDocArray},
                               viewActivity,
                               userRegId,
                               sidebar,

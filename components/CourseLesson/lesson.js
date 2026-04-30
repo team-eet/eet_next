@@ -2,19 +2,16 @@
 
 import React, { Fragment, useState, useEffect } from 'react';
 import Axios from 'axios';
-import parse from 'html-react-parser';
 import { SuccessAlert, ErrorDefaultAlert } from "@/components/Services/SweetAlert";
 import { API_URL, API_KEY, WEB_URL } from "../../constants/constant";
 import { DecryptData, EncryptData } from "@/components/Services/encrypt-decrypt";
 import LessonSidebar from '@/components/CourseLesson/CourseLessonSidebar';
 import LessonBody from '@/components/CourseLesson/CourseLessonBody';
-import {Switch} from "@mui/material";
 import withAuth from "@/components/Utils/withAuth";
 import { Plyr } from "plyr-react";
 import "plyr/dist/plyr.css";
 
 const CourseLesson = () => {
-    const REACT_APP = API_URL;
     const [isBatch, setIsBatch] = useState({});
     const [LessonData, setLessonData] = useState([]);
     const [TutorialATId, setTutorialATId] = useState(0);
@@ -58,8 +55,9 @@ const CourseLesson = () => {
         setsingleActivityPage(false);
         setSepActivitylist(false);
 
-        document.getElementById('Activity').style.marginBottom = '0';
-
+        // ✅ Safe DOM access
+        const el = document.getElementById('Activity');
+        if (el) el.style.marginBottom = '0';
         Axios.get(`${API_URL}/api/activityQue/GetActivityQueListSeparateViewActivity/${EncryptData(aqid)}/${regid['regid']}/${cid}`, {
             headers: { ApiKey: `${API_KEY}` }
         })
@@ -77,7 +75,10 @@ const CourseLesson = () => {
         setsepActivityPage(false);
         setsingleActivityPage(true);
         setSepActivitylist(true);
-        document.getElementById('Activity').style.marginBottom = '100px';
+
+        // ✅ Safe DOM access
+        const el = document.getElementById('Activity');
+        if (el) el.style.marginBottom = '100px';
     };
     const openPreview = (item) => {
         if (item.nPFTId === 11) {
@@ -113,7 +114,7 @@ const CourseLesson = () => {
     // };
 
     const viewActivity = (nAQId,act_first,questionNo,y,nCId,userRegId,sActivityName,nSQId) => {
-        alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
+    //    alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
         setShowModal(true)
@@ -404,7 +405,6 @@ const CourseLesson = () => {
                                 sContent={sContent}
                                 tutresourcearray={tutresourcearray}
                                 quetypeItems={quetypeItems}
-                                tutorialDocArray={tutorialDocArray}
                                 SepActivitylist={SepActivitylist}
                                 handleSepActivityPage={handleSepActivityPage}
                                 singleActivityPage={singleActivityPage}
@@ -413,6 +413,7 @@ const CourseLesson = () => {
                                 handleBackActivity={handleBackActivity}
                                 viewActivity={viewActivity}
                                 userRegId={regid['regid']}
+                                tutorialDocArray={tutorialDocArray}
                                 sidebar={sidebar}
                                 setSidebar={() => setSidebar(!sidebar)}
                                 handleNext={handleNext}
