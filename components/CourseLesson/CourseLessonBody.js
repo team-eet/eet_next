@@ -6,7 +6,7 @@ import { Card, CardBody, CardHeader, Row, Col, Progress } from 'reactstrap';
 import Link from 'next/link';
 import Image from 'next/image';
 import { EncryptData } from "@/components/Services/encrypt-decrypt";
-
+//fjnjfrjfjrj
 const CourseLessonBody = ({
                               isBatch,
                               activeTab,

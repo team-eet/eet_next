@@ -10,7 +10,7 @@ import LessonBody from '@/components/CourseLesson/CourseLessonBody';
 import withAuth from "@/components/Utils/withAuth";
 import { Plyr } from "plyr-react";
 import "plyr/dist/plyr.css";
-
+//jdjejdjed
 const CourseLesson = () => {
     const [isBatch, setIsBatch] = useState({});
     const [LessonData, setLessonData] = useState([]);
