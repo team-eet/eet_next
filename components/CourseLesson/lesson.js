@@ -46,7 +46,9 @@ const CourseLesson = () => {
     const [getActivityName, setActivityName] = useState('');
     const [getApiCall, setApiCall] = useState(true);
     const [sidebar, setSidebar] = useState(true);
-    const tabSequence = ['overview', 'content', 'activity', 'practice'];
+    const tabSequence = ['overview', 'content', 'activity', 'practice', 'lectures'];
+    const [lectureSchedules, setLectureSchedules] = useState({});
+    const [batchMeta, setBatchMeta] = useState(null);
     const [isLastTab, setIsLastTab] = useState(false);
     const [isActivityLoading, setIsActivityLoading] = useState(true);
     const [previewModal, setPreviewModal] = useState(false);
@@ -174,6 +176,7 @@ const CourseLesson = () => {
         const encodedId = parts[4]; // index 2 par hoga actual ID
 
         const urlIdArray = DecryptData(encodedId);
+        const nTBId = urlIdArray.nTBId;
         const acid = EncryptData(urlIdArray.nACId);
         const mid =  EncryptData(urlIdArray.nMId);
         const lid =  EncryptData(urlIdArray.nCLId);
@@ -300,10 +303,10 @@ const CourseLesson = () => {
                 setTestATId(res.data[0]['nTestATId']);
             }
         });
-        switch (tab){
+        switch (tab) {
             case "overview":
                 Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialCourseOverview/${EncryptData(nlid)}`, {
-                    headers: { ApiKey: `${API_KEY}` }
+                    headers: {ApiKey: `${API_KEY}`}
                 }).then(res => {
                     if (res.data && res.data.length !== 0) {
                         setsContent(res.data[0]['sContent']);
@@ -317,7 +320,7 @@ const CourseLesson = () => {
             case "content": {
                 const isModule = 'yes';
                 Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialDocument/${EncryptData(nlid)}/${EncryptData(nsid)}/${EncryptData(isModule)}`, {
-                    headers: { ApiKey: `${API_KEY}` }
+                    headers: {ApiKey: `${API_KEY}`}
                 }).then(res => {
                     console.log("📄 GetTutorialDocument RAW:", res.data);
                     if (res.data) {
@@ -338,14 +341,14 @@ const CourseLesson = () => {
             }
             case "activity":
                 Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(nlid)}/${regid['regid']}/${cid}`, {
-                    headers: { ApiKey: `${API_KEY}` }
+                    headers: {ApiKey: `${API_KEY}`}
                 }).then(res => {
-                    console.log("activity",res.data)
+                    console.log("activity", res.data)
                     console.log("Activity URL" + " AQID" + EncryptData(411) + " ACT FIrst " + EncryptData(890), " Question Number" + EncryptData(1) + " Course Id " + cid)
-                    console.log("URL",`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(nlid)}/${regid['regid']}/${cid}`)
+                    console.log("URL", `${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(nlid)}/${regid['regid']}/${cid}`)
                     if (res.data) {
                         setquetypeItems(res.data);
-                    }else {
+                    } else {
                         setquetypeItems([])
                     }
                 }).finally(() => {
@@ -358,8 +361,124 @@ const CourseLesson = () => {
             case "test":
                 setApiCall(true);
                 break;
-        }
+            case "lectures": {
+                // Mirror exactly how content.js extracts courseId and batchId from URL
+                // content.js URL: /batch-details/{courseId}/{batchId}
+                // lesson.js URL:  /courselesson/{encodedSegment}
+                // The encodedSegment contains nCId and nTBId inside it — we must
+                // re-encrypt each individually exactly like content.js does
 
+                const urlParts = window.location.href.split("/");
+                const encodedSegment = urlParts[4];
+                const urlIdArray = DecryptData(encodedSegment);
+
+                const nTBId = urlIdArray?.nTBId;   // raw number
+                const nCId = urlIdArray?.nCId;    // raw number
+
+                if (!nTBId || !nCId) {
+                    console.warn("nTBId or nCId missing, cannot load lectures");
+                    setApiCall(true);
+                    break;
+                }
+
+                // Re-encrypt exactly like content.js does for its API calls
+                const encCId = EncryptData(nCId);   // content.js: EncryptData(nCId)
+                const encTBId = EncryptData(nTBId);  // content.js: EncryptData(nTBId)
+
+                // Step 1: batchMeta — content.js passes raw encoded batchId segment
+                // but Show_activity_count just needs the encrypted nTBId
+                Axios.get(`${API_URL}/api/package/Show_activity_count/${encTBId}`, {
+                    headers: {ApiKey: `${API_KEY}`}
+                }).then(res => {
+                    if (res.data) {
+                        const meta = Array.isArray(res.data) ? res.data[0] : res.data;
+                        setBatchMeta(meta);
+                        console.log("📦 Batch Meta (lectures):", meta);
+                    }
+                });
+
+                // Step 2: GetBatchCourseSummaryAll — exactly like content.js
+                // content.js: GetBatchCourseSummaryAll/${courseId}/${EncryptData(0)}/${batchId}
+                // courseId and batchId there are already-encrypted strings from URL parts
+                // Here we use encCId and encTBId which are the same thing
+                Axios.get(`${API_URL}/api/section/GetBatchCourseSummaryAll/${encCId}/${EncryptData(0)}/${encTBId}`, {
+                    headers: {ApiKey: `${API_KEY}`}
+                }).then(summaryRes => {
+                    console.log("✅ Lectures GetBatchCourseSummaryAll:", summaryRes.data);
+                    const sections = summaryRes.data;
+                    if (!sections || sections.length === 0) {
+                        setApiCall(true);
+                        return;
+                    }
+
+                    const schedules = {};
+                    const promises = [];
+                    let globalLessonIndex = 0;
+                    const lessonIndexMap = {};
+
+                    sections.forEach(section => {
+                        const lessons = JSON.parse(section.lessionTbl || "[]");
+                        lessons.forEach(lesson => {
+                            lessonIndexMap[lesson.nLId] = globalLessonIndex;
+                            globalLessonIndex++;
+                        });
+                    });
+
+                    sections.forEach(section => {
+                        const lessons = JSON.parse(section.lessionTbl || "[]");
+                        lessons.forEach(lesson => {
+                            if (!lesson.nLId) return;
+
+                            // Step 3: fetchAllScheduledLinks — exactly like content.js
+                            // content.js: GetTutorBatchSchedule/${EncryptData(nTBId)}/${EncryptData(nLId)}
+                            // nTBId and nLId are raw numbers there — same here
+                            const p = Axios.get(
+                                `${API_URL}/api/tutorBatchSchedule/GetTutorBatchSchedule/${EncryptData(nTBId)}/${EncryptData(lesson.nLId)}`,
+                                {headers: {ApiKey: `${API_KEY}`}}
+                            ).then(res => {
+                                console.log("📅 Schedule for lesson", lesson.nLId, res.data?.[0]);
+                                if (res.data && res.data.length > 0 && res.data[0].sBatchLink?.trim()) {
+                                    schedules[lesson.nLId] = {
+                                        isScheduled: true,
+                                        sBatchLink: res.data[0].sBatchLink,
+                                        sBatchDate: res.data[0].sBatchDate,
+                                        sBatchTime: res.data[0].sBatchTime,
+                                        sLessionTitle: lesson.sLessionTitle,
+                                        globalIndex: lessonIndexMap[lesson.nLId],
+                                        act_cnt: lesson.act_cnt,
+                                    };
+                                } else {
+                                    schedules[lesson.nLId] = {
+                                        isScheduled: false,
+                                        sLessionTitle: lesson.sLessionTitle,
+                                        globalIndex: lessonIndexMap[lesson.nLId],
+                                        act_cnt: lesson.act_cnt,
+                                    };
+                                }
+                            }).catch(() => {
+                                schedules[lesson.nLId] = {
+                                    isScheduled: false,
+                                    sLessionTitle: lesson.sLessionTitle,
+                                    globalIndex: lessonIndexMap[lesson.nLId],
+                                };
+                            });
+
+                            promises.push(p);
+                        });
+                    });
+
+                    Promise.all(promises).then(() => {
+                        setLectureSchedules(schedules);
+                        setApiCall(true);
+                    });
+                }).catch(err => {
+                    console.error("Lectures summary fetch error:", err);
+                    setApiCall(true);
+                });
+
+                break;
+            }
+        }
         console.log("Tabing",tab,dayIndex,titleIndex,idArray,nsid,nlid)
         setActiveTab({ tab, dayIndex, titleIndex,nlid});
 
@@ -469,6 +588,9 @@ const CourseLesson = () => {
                             handlePrevious={handlePrevious}
                             isLastTab={isLastTab}
                             openPreview={openPreview}  // Add this line
+                            lectureSchedules={lectureSchedules}
+                            batchMeta={batchMeta}
+                            LessonData={LessonData}
                         /> :
 
                         <div

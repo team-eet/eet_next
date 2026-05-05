@@ -6,7 +6,6 @@ import { Card, CardBody, CardHeader, Row, Col, Progress } from 'reactstrap';
 import Link from 'next/link';
 import Image from 'next/image';
 import { EncryptData } from "@/components/Services/encrypt-decrypt";
-
 const CourseLessonBody = ({
                               isBatch,
                               activeTab,
@@ -26,7 +25,10 @@ const CourseLessonBody = ({
                               handleNext,
                               handlePrevious,
                               isLastTab,
-                              openPreview
+                              openPreview,
+                              lectureSchedules = {},
+                              batchMeta = null,
+                              LessonData = []
                           }) => {
     // State for description expansion in content tab
     const [expandedDescriptions, setExpandedDescriptions] = useState({});
@@ -481,7 +483,140 @@ const CourseLessonBody = ({
                     </div>
                 )}
             </div>
+            {activeTab.tab === "lectures" && (
+                <div className="rbt-lesson-content-inner">
+                    <div className="section-title mb--20">
+                        <h4 className="rbt-title-style-3">Live Lectures</h4>
+                    </div>
 
+                    {LessonData.map((section, sIdx) => {
+                        const lessons = JSON.parse(section.lessionTbl || "[]");
+                        const totalActivities = lessons.reduce((sum, lesson) => sum + (Number(lesson.act_cnt) || 0), 0);
+
+                        return (
+                            <div key={sIdx} className="mb--30">
+                                <h6 className="fw-bold text-muted mb--10" style={{ textTransform: 'uppercase', fontSize: '12px', letterSpacing: '1px' }}>
+                                    {section.sSectionTitle} <span className="text-primary">{totalActivities} Activities</span>
+                                </h6>
+
+                                {lessons.map((lesson, lIdx) => {
+                                    const schedule = lectureSchedules[lesson.nLId] || {};
+                                    const { sBatchLink, sBatchDate, sBatchTime } = schedule;
+
+                                    const isScheduled = !!(schedule.isScheduled || sBatchLink);
+                                    const now = new Date();
+                                    let isCompleted = false;
+                                    let isLive = false;
+
+                                    const displayDate = sBatchDate || null;
+                                    const displayStartTime = sBatchTime || batchMeta?.sBatchStartTime || null;
+                                    const displayEndTime = schedule.sBatchEndTime || batchMeta?.sBatchEndTime || null;
+
+                                    // Time Logic
+                                    if (displayDate && displayEndTime) {
+                                        try {
+                                            const lessonEnd = new Date(displayDate);
+                                            let hours = 0, minutes = 0;
+                                            const endTimeStr = displayEndTime.trim();
+
+                                            const noSpaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})(am|pm)$/i);
+                                            const spaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/i);
+                                            const match = noSpaceMatch || spaceMatch;
+
+                                            if (match) {
+                                                hours = parseInt(match[1]);
+                                                minutes = parseInt(match[2]);
+                                                const meridiem = match[3].toLowerCase();
+                                                if (meridiem === 'pm' && hours !== 12) hours += 12;
+                                                if (meridiem === 'am' && hours === 12) hours = 0;
+                                            } else {
+                                                const parts = endTimeStr.split(':');
+                                                hours = parseInt(parts[0]);
+                                                minutes = parseInt(parts[1]);
+                                            }
+
+                                            lessonEnd.setHours(hours, minutes, 0, 0);
+
+                                            const lessonStart = new Date(lessonEnd);
+                                            if (displayStartTime) {
+                                                const startMatch = displayStartTime.trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/i);
+                                                if (startMatch) {
+                                                    let sh = parseInt(startMatch[1]);
+                                                    const sm = parseInt(startMatch[2]);
+                                                    if (startMatch[3] === 'pm' && sh !== 12) sh += 12;
+                                                    if (startMatch[3] === 'am' && sh === 12) sh = 0;
+                                                    lessonStart.setHours(sh, sm, 0, 0);
+                                                }
+                                            }
+
+                                            isCompleted = now > lessonEnd;
+                                            isLive = now >= lessonStart && now <= lessonEnd;
+                                        } catch (e) {
+                                            console.error("Date parsing error", e);
+                                        }
+                                    }
+
+                                    const activityCount = Number(lesson.act_cnt) || 0;
+
+                                    return (
+                                        <div key={lIdx} className="d-flex justify-content-between align-items-start p-3 mb-2"
+                                             style={{
+                                                 border: '1px solid #e9ecef',
+                                                 borderRadius: '10px',
+                                                 background: isCompleted ? '#f0fff4' : isLive ? '#e6f4ea' : isScheduled ? '#fffbf0' : '#fafafa'
+                                             }}>
+
+                                            <div style={{ flex: 1 }}>
+                                                <div className="fw-semibold" style={{ fontSize: '15px', color: '#212529' }}>
+                                                    Day - {lIdx + 1} {lesson.sLessionTitle}
+                                                </div>
+                                                <div style={{ fontSize: '12px', color: '#6c757d', marginTop: '4px' }}>
+                                                    {displayDate && <span>📅 {displayDate}</span>}
+                                                    {displayStartTime && (
+                                                        <span className="ms-2">🕐 {displayStartTime}{displayEndTime ? ` — ${displayEndTime}` : ''}</span>
+                                                    )}
+                                                </div>
+
+                                                <div style={{ fontSize: '13px', marginTop: '6px', color: '#6c757d' }}>
+                                                    {activityCount} Activities
+                                                </div>
+                                            </div>
+
+                                            <div className="ms-3 d-flex align-items-center">
+                                                {isCompleted ? (
+                                                    <span style={{ backgroundColor: '#28a745', color: '#fff', borderRadius: '6px', padding: '6px 16px', fontWeight: 600, fontSize: '13px' }}>
+                                            ✅ Completed
+                                        </span>
+                                                ) : isScheduled ? (
+                                                    <button
+                                                        onClick={() => window.open(sBatchLink, '_blank', 'noopener,noreferrer')}
+                                                        style={{
+                                                            backgroundColor: isLive ? '#28a745' : '#fd7e14',
+                                                            color: '#fff',
+                                                            border: 'none',
+                                                            borderRadius: '6px',
+                                                            padding: '6px 16px',
+                                                            fontWeight: 600,
+                                                            fontSize: '13px',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        {isLive ? '● Live Now' : '● Scheduled'}
+                                                    </button>
+                                                ) : (
+                                                    <span style={{ backgroundColor: '#e9ecef', color: '#6c757d', borderRadius: '6px', padding: '6px 16px', fontWeight: 600, fontSize: '13px' }}>
+                                            ○ Not Scheduled
+                                        </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
             {/* Footer Navigation */}
             <div className="footerBar bg-color-extra2 ptb--15 overflow-hidden position-absolute bottom-0 start-0 end-0">
                 <div className="rbt-button-group d-flex justify-content-between px-4">

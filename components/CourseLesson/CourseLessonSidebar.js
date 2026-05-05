@@ -214,6 +214,15 @@ const CourseLessonSidebar = ({ isBatch, LessonData, activeTab, handleTabClick, T
                                                             </div>
                                                         </li>
                                                     )}
+                                                    {isBatch.bIsWithBatch === 'yes' && (
+                                                        <li className={activeTab.tab === 'lectures' && activeTab.dayIndex === lessonIndex && activeTab.titleIndex === index ? 'active' : ''}
+                                                            onClick={() => handleTabClick('lectures', lessonIndex, index, IdArray, item.nSId, lesson.nLId)}>
+                                                            <div className="course-content-left">
+                                                                <i className="feather-video text-dark"></i>
+                                                                <span className="text text-dark">Lectures</span>
+                                                            </div>
+                                                        </li>
+                                                    )}
                                                 </ul>
                                             </div>
                                         </div>
