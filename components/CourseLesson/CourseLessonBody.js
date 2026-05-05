@@ -263,110 +263,34 @@ const CourseLessonBody = ({
                                 quetypeItems.map((item, index) => (
                                     <Fragment key={index}>
                                         {(item.nSQId >= 17 && item.nSQId <= 21) ? (
+                                            // ✅ FIX 1: Card always renders; no longer gated behind SepActivitylist
                                             <div className="col-lg-6">
                                                 <div onClick={() => handleSepActivityPage(item.nAQId)} style={{ cursor: 'pointer' }}>
-                                                    {SepActivitylist && (
-                                                        <Card className="border-primary activity-card cardDesignEET hover-transform">
-                                                            <CardBody className="card-mobile-view p-4">
-                                                                <Row>
-                                                                    <Col lg={10}>
-                                                                        <div className="d-flex justify-content-start">
-                                                                            <div className="activity-number">
-                                                                                <span className="badge bg-primary rounded-circle p-2 me-3">
-                                                                                    {index + 1}
-                                                                                </span>
-                                                                            </div>
-                                                                            <div className="profile-user-info">
-                                                                                <h6 className="mb-1 font-weight-600 font-16">{item.sActivityName}</h6>
-                                                                                <small className="text-muted font-12">
-                                                                                    <Icon.Type size={12} className="me-1" />
-                                                                                    {item.sSubQueType}
-                                                                                </small>
-                                                                            </div>
-                                                                        </div>
-                                                                    </Col>
-                                                                    <Col>
-                                                                        {item.sPackageName && (
-                                                                            <div className="pkgName text-end">
-                                                                                <span className="badge bg-light-success text-success">
-                                                                                    {item.sPackageName}
-                                                                                </span>
-                                                                            </div>
-                                                                        )}
-                                                                    </Col>
-                                                                </Row>
-                                                                <hr className="mt-3 mb-3" />
-                                                                <div className="card-text">
-                                                                    <div className="mb-3">
-                                                                        <div className="row align-items-center">
-                                                                            <div className="col">
-                                                                                <div className="font-weight-bolder activity-font font-14">
-                                                                                    <Icon.CheckCircle size={14} className="me-1" />
-                                                                                    Task completed = {item.act_ans_per} %
-                                                                                </div>
-                                                                            </div>
-                                                                            <div className="col text-end">
-                                                                                <span className="font-weight-bolder activity-font bg-secondary-subtle p-2 rounded-2 font-14">
-                                                                                    <Icon.HelpCircle size={12} className="me-1" />
-                                                                                    Questions: {item.act_ans}/{item.act_cnt}
-                                                                                </span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <Progress color="success" value={item.act_ans_per} animated={item.act_ans_per < 100} />
-                                                            </CardBody>
-                                                        </Card>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            singleActivityPage && (
-                                                <div className="col-lg-6">
                                                     <Card className="border-primary activity-card cardDesignEET hover-transform">
                                                         <CardBody className="card-mobile-view p-4">
                                                             <Row>
-                                                                <Col lg={12}>
-                                                                    <div className="d-flex justify-content-between align-items-start">
-                                                                        <div className="d-flex">
-                                                                            <span className="badge bg-primary rounded-circle p-2 me-3">
-                                                                                {index + 1}
-                                                                            </span>
-                                                                            <div className="titleQuestion">
-                                                                                <h6 className="mb-1 font-weight-600 font-16">{item.sActivityName}</h6>
-                                                                                <small className="text-muted font-12">
-                                                                                    <Icon.Type size={12} className="me-1" />
-                                                                                    {item.sSubQueType}
-                                                                                </small>
-                                                                            </div>
+                                                                <Col lg={10}>
+                                                                    <div className="d-flex justify-content-start">
+                                                                        <div className="activity-number">
+                                                <span className="badge bg-primary rounded-circle p-2 me-3">
+                                                    {index + 1}
+                                                </span>
                                                                         </div>
                                                                         <div className="profile-user-info">
-                                                                            <button
-                                                                                type={"button"}
-                                                                                className={"btn btn-primary btn-sm"}
-                                                                                onClick={() => viewActivity(
-                                                                                    EncryptData(item.nAQId),
-                                                                                    EncryptData(parseInt(item.act_first)),
-                                                                                    EncryptData(1),
-                                                                                    'y',
-                                                                                    EncryptData(isBatch.nCId),
-                                                                                    userRegId,
-                                                                                    item.sActivityName,
-                                                                                    item.nSQId
-                                                                                )}
-                                                                            >
-                                                                                <Icon.Play size={12} className="me-1" />
-                                                                                Start
-                                                                            </button>
+                                                                            <h6 className="mb-1 font-weight-600 font-16">{item.sActivityName}</h6>
+                                                                            <small className="text-muted font-12">
+                                                                                <Icon.Type size={12} className="me-1" />
+                                                                                {item.sSubQueType}
+                                                                            </small>
                                                                         </div>
                                                                     </div>
                                                                 </Col>
                                                                 <Col>
                                                                     {item.sPackageName && (
-                                                                        <div className="pkgName text-end mt-2">
-                                                                            <span className="badge bg-light-success text-success">
-                                                                                {item.sPackageName}
-                                                                            </span>
+                                                                        <div className="pkgName text-end">
+                                                <span className="badge bg-light-success text-success">
+                                                    {item.sPackageName}
+                                                </span>
                                                                         </div>
                                                                     )}
                                                                 </Col>
@@ -382,10 +306,10 @@ const CourseLessonBody = ({
                                                                             </div>
                                                                         </div>
                                                                         <div className="col text-end">
-                                                                            <span className="font-weight-bolder activity-font bg-secondary-subtle p-2 rounded-2 font-14">
-                                                                                <Icon.HelpCircle size={12} className="me-1" />
-                                                                                Questions: {item.act_ans}/{item.act_cnt}
-                                                                            </span>
+                                                <span className="font-weight-bolder activity-font bg-secondary-subtle p-2 rounded-2 font-14">
+                                                    <Icon.HelpCircle size={12} className="me-1" />
+                                                    Questions: {item.act_ans}/{item.act_cnt}
+                                                </span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -394,7 +318,85 @@ const CourseLessonBody = ({
                                                         </CardBody>
                                                     </Card>
                                                 </div>
-                                            )
+                                            </div>
+                                        ) : (
+                                            // ✅ FIX 2: Removed `singleActivityPage &&` gate — cards always render
+                                            <div className="col-lg-6">
+                                                <Card className="border-primary activity-card cardDesignEET hover-transform">
+                                                    <CardBody className="card-mobile-view p-4">
+                                                        <Row>
+                                                            <Col lg={12}>
+                                                                <div className="d-flex justify-content-between align-items-start">
+                                                                    <div className="d-flex">
+                                            <span className="badge bg-primary rounded-circle p-2 me-3">
+                                                {index + 1}
+                                            </span>
+                                                                        <div className="titleQuestion">
+                                                                            <h6 className="mb-1 font-weight-600 font-16">{item.sActivityName}</h6>
+                                                                            <small className="text-muted font-12">
+                                                                                <Icon.Type size={12} className="me-1" />
+                                                                                {item.sSubQueType}
+                                                                            </small>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="profile-user-info">
+                                                                        {/* ✅ FIX 3: Added e.stopPropagation() so card click doesn't interfere */}
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-primary btn-sm"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                viewActivity(
+                                                                                    EncryptData(item.nAQId),
+                                                                                    EncryptData(parseInt(item.act_first)),
+                                                                                    EncryptData(1),
+                                                                                    'y',
+                                                                                    EncryptData(isBatch.nCId),
+                                                                                    userRegId,
+                                                                                    item.sActivityName,
+                                                                                    item.nSQId
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <Icon.Play size={12} className="me-1" />
+                                                                            Start
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </Col>
+                                                            <Col>
+                                                                {item.sPackageName && (
+                                                                    <div className="pkgName text-end mt-2">
+                                            <span className="badge bg-light-success text-success">
+                                                {item.sPackageName}
+                                            </span>
+                                                                    </div>
+                                                                )}
+                                                            </Col>
+                                                        </Row>
+                                                        <hr className="mt-3 mb-3" />
+                                                        <div className="card-text">
+                                                            <div className="mb-3">
+                                                                <div className="row align-items-center">
+                                                                    <div className="col">
+                                                                        <div className="font-weight-bolder activity-font font-14">
+                                                                            <Icon.CheckCircle size={14} className="me-1" />
+                                                                            Task completed = {item.act_ans_per} %
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col text-end">
+                                            <span className="font-weight-bolder activity-font bg-secondary-subtle p-2 rounded-2 font-14">
+                                                <Icon.HelpCircle size={12} className="me-1" />
+                                                Questions: {item.act_ans}/{item.act_cnt}
+                                            </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <Progress color="success" value={item.act_ans_per} animated={item.act_ans_per < 100} />
+                                                    </CardBody>
+                                                </Card>
+                                            </div>
                                         )}
                                     </Fragment>
                                 ))

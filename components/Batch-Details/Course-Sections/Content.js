@@ -7,8 +7,7 @@ import Axios from "axios";
 import { ErrorDefaultAlert } from "@/components/Services/SweetAlert";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css';
-
-const Content = () => {
+const Content = ({ batchStartTime, batchEndTime, batchStartDate, batchEndDate, batchDays }) => {
   const REACT_APP = API_URL;
   const router = useRouter();
   const postId = parseInt(router.query.courseId);
@@ -17,6 +16,8 @@ const Content = () => {
   const [getsectionItems, setsectionItems] = useState([]);
   const [isApiCall, setIsApiCall] = useState(0);
   const [isAlreadyPurchased, setIsAlreadyPurchased] = useState(false);
+  const [batchScheduleInfo, setBatchScheduleInfo] = useState(null);
+  const [batchMeta, setBatchMeta] = useState(null);
   const [isPurchaseChecking, setIsPurchaseChecking] = useState(true);
 
   // Scheduled Links: nLId → { sBatchLink, isScheduled }
@@ -26,7 +27,6 @@ const Content = () => {
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [currentLink, setCurrentLink] = useState("");
   const [currentLessonTitle, setCurrentLessonTitle] = useState("");
-
   const getcourseContent = () => {
     const url = window.location.href;
     const parts = url.split("/");
@@ -38,6 +38,13 @@ const Content = () => {
 
     setCourseInfo({ nCId, nTBId, nCLId: 2 });
 
+    // Fetch batch meta for date/time/days
+    Axios.get(`${API_URL}/api/package/Show_activity_count/${batchId}`, {
+      headers: { ApiKey: `${API_KEY}` }
+    }).then(res => {
+      console.log("📦 Batch Meta:", res.data);
+      if (res.data) setBatchMeta(Array.isArray(res.data) ? res.data[0] : res.data);
+    }).catch(err => console.log("Batch meta error:", err));
     Axios.get(`${API_URL}/api/section/GetBatchCourseSummaryAll/${courseId}/${EncryptData(0)}/${batchId}`, {
       headers: { ApiKey: `${API_KEY}` }
     })
@@ -56,7 +63,47 @@ const Content = () => {
           setIsApiCall(1);
         });
   };
+  const isLessonCompleted = (lessonIndex) => {
+    try {
+      const lessonDate = getDateForLesson(lessonIndex);
+      if (!lessonDate) return false;
 
+      const endTime = batchEndTime || batchMeta?.sBatchEndTime;
+      if (!endTime) return false;
+
+      let hours = 0, minutes = 0;
+      const endTimeStr = endTime.trim();
+
+      // Handle "7:15am" / "8:55pm" format (no space)
+      const noSpaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})(am|pm)$/i);
+      // Handle "07:15 AM" / "08:55 PM" format (with space)
+      const spaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+      const match = noSpaceMatch || spaceMatch;
+      if (match) {
+        hours = parseInt(match[1]);
+        minutes = parseInt(match[2]);
+        const meridiem = match[3].toLowerCase();
+        if (meridiem === 'pm' && hours !== 12) hours += 12;
+        if (meridiem === 'am' && hours === 12) hours = 0;
+      } else {
+        // Handle 24hr format "HH:mm"
+        const parts = endTimeStr.split(':');
+        hours = parseInt(parts[0]);
+        minutes = parseInt(parts[1]);
+      }
+
+      const lessonEnd = new Date(lessonDate);
+      lessonEnd.setHours(hours, minutes, 0, 0);
+
+      console.log(`📌 Lesson ${lessonIndex + 1} end: ${lessonEnd}, now: ${new Date()}, completed: ${new Date() > lessonEnd}`);
+
+      return new Date() > lessonEnd;
+    } catch (e) {
+      console.error("isLessonCompleted error:", e);
+      return false;
+    }
+  };
   // Fetch scheduled link for every lesson
   const fetchAllScheduledLinks = (sections, nTBId) => {
     sections.forEach(section => {
@@ -69,11 +116,14 @@ const Content = () => {
           headers: { ApiKey: `${API_KEY}` }
         })
             .then(res => {
+              console.log("📅 Schedule API Response:", res.data[0]); // Check field names here
               if (res.data && res.data.length > 0 && res.data[0].sBatchLink?.trim()) {
                 setScheduledLinks(prev => ({
                   ...prev,
                   [nLId]: {
                     sBatchLink: res.data[0].sBatchLink,
+                    sBatchDate: res.data[0].sBatchDate,   // 👈 add this
+                    sBatchTime: res.data[0].sBatchTime,   // 👈 add this
                     isScheduled: true
                   }
                 }));
@@ -110,8 +160,11 @@ const Content = () => {
     })
         .then(res => {
           if (res.data && Array.isArray(res.data)) {
-            const alreadyBought = res.data.some(item => Number(item.nTBId) === Number(nTBId));
+            const matchedBatch = res.data.find(item => Number(item.nTBId) === Number(nTBId));
+            console.log("🔍 Matched Batch Data:", matchedBatch);
+            const alreadyBought = !!matchedBatch;
             setIsAlreadyPurchased(alreadyBought);
+            if (matchedBatch) setBatchScheduleInfo(matchedBatch);
           }
         })
         .catch(err => console.log("Purchase check error:", err))
@@ -148,7 +201,41 @@ const Content = () => {
     getcourseContent();
     checkIfAlreadyPurchased();
   }, []);
+  console.log("🧪 Content Props Check:", { batchStartTime, batchEndTime, batchStartDate, batchEndDate, batchDays });
+  const getDateForLesson = (lessonIndex) => {
+    try {
+      const rawDays = batchDays || batchMeta?.sDays;
+      const rawStart = batchStartDate || batchMeta?.dBatchStartDate;
+      const rawEnd = batchEndDate || batchMeta?.dBatchEndDate;
 
+      const days = JSON.parse(rawDays || "[]");
+      if (!days.length || !rawStart) return null;
+
+      const dayNameToIndex = {
+        Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3,
+        Thursday: 4, Friday: 5, Saturday: 6
+      };
+
+      const parseLocal = (d) => {
+        const dt = new Date(d);
+        return new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate());
+      };
+      const start = parseLocal(rawStart);
+      const end = parseLocal(rawEnd);
+      const activeDayIndices = days.map(d => dayNameToIndex[d]);
+
+      let count = 0;
+      const cur = new Date(start);
+      while (cur <= end) {
+        if (activeDayIndices.includes(cur.getDay())) {
+          if (count === lessonIndex) return new Date(cur);
+          count++;
+        }
+        cur.setDate(cur.getDate() + 1);
+      }
+      return null;
+    } catch { return null; }
+  };
   return (
       <>
         {isPurchaseChecking ? (
@@ -217,11 +304,14 @@ const Content = () => {
                                 const schedule = scheduledLinks[list.nLId] || { isScheduled: false };
                                 const isScheduled = schedule.isScheduled;
                                 const link = schedule.sBatchLink;
-
+                                const lessonDate = getDateForLesson(subIndex);
+                                const lessonDateStr = lessonDate
+                                    ? lessonDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                                    : null;
                                 return (
                                     <li key={subIndex}>
                                       {isAlreadyPurchased ? (
-                                          <div className="d-flex justify-content-between align-items-center w-100">
+                                          <div className="d-flex justify-content-between align-items-center w-100" style={{ flexWrap: 'nowrap', gap: '8px' }}>
                                             {/* Lesson Link */}
                                             <Link
                                                 href={`/courselesson/${EncryptData({
@@ -234,27 +324,41 @@ const Content = () => {
                                                   nSId: item.nSId,
                                                   nTBId: courseInfo?.nTBId,
                                                 })}`}
-                                                className="flex-grow-1 text-decoration-none"
+                                                className="flex-grow-1 text-decoration-none" style={{ minWidth: 0 }}
                                             >
                                               <div className="course-content-left">
-                                                                            <span className="text">
-                                                                                Day - {subIndex + 1} {list.sLessionTitle}
-                                                                            </span>
+    <span className="text">
+        Day - {subIndex + 1} {list.sLessionTitle}
+    </span>
+                                                {(lessonDateStr || batchStartTime) && (
+                                                    <div style={{ fontSize: '11px', color: '#888', marginTop: '2px', display: 'inline-flex', gap: '6px', alignItems: 'center', flexWrap: 'nowrap' }}>
+                                                      {lessonDateStr && <span>📅 {lessonDateStr}</span>}
+                                                      {(batchStartTime || batchMeta?.sBatchStartTime) && (
+                                                          <span>🕐 {batchStartTime || batchMeta?.sBatchStartTime} — {batchEndTime || batchMeta?.sBatchEndTime}</span>
+                                                      )}
+                                                    </div>
+                                                )}
                                               </div>
                                               <div className="course-content-right">
                                                 <span className="min-lable">{list.act_cnt} Activities</span>
-                                                <span className="rbt-badge variation-03 bg-primary-opacity">
-                                                                                <i className="feather-eye"></i> Practice
-                                                                            </span>
                                               </div>
                                             </Link>
 
                                             {/* Scheduled Button */}
                                             <div className="ms-3">
-                                              {isScheduled ? (
+                                              {isLessonCompleted(subIndex) ? (
+                                                  <a
+                                                      href="#"
+                                                      onClick={(e) => e.preventDefault()}
+                                                      className="schedule-btn"
+                                                      style={{ backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 14px', fontWeight: 600, textDecoration: 'none', display: 'inline-block' }}
+                                                  >
+                                                    ✅ Completed
+                                                  </a>
+                                              ) : isScheduled ? (
                                                   <button
                                                       className="schedule-btn scheduled immersive-btn"
-                                                      onClick={() => openLinkModal(link, `Day ${subIndex + 1}: ${list.sLessionTitle}`)}
+                                                      onClick={() => window.open(link, '_blank', 'noopener,noreferrer')}
                                                   >
                                                     ● Scheduled
                                                   </button>
@@ -270,10 +374,24 @@ const Content = () => {
                                           </div>
                                       ) : (
                                           <a href="javascript:void(0)" style={{ cursor: 'not-allowed', opacity: 0.7 }}>
-                                            <div className="course-content-left">
-                                                                        <span className="text">
-                                                                            Day - {subIndex + 1} {list.sLessionTitle}
-                                                                        </span>
+                                            <div className="course-content-left" style={{ display: 'flex', alignItems: 'center', flexWrap: 'nowrap', gap: '8px' }}>
+   <span className="text" style={{
+     fontWeight: 600,
+     transition: 'color 0.2s'
+   }}
+         onMouseEnter={e => { e.currentTarget.style.color = '#5078ff'; e.currentTarget.style.fontWeight = '700'; }}
+         onMouseLeave={e => { e.currentTarget.style.color = ''; e.currentTarget.style.fontWeight = '600'; }}
+   >
+    Day - {subIndex + 1} {list.sLessionTitle}
+</span>
+                                              {(lessonDateStr || batchStartTime) && (
+                                                  <div style={{ fontSize: '11px', color: '#888', marginTop: '2px', display: 'inline-flex', gap: '6px', alignItems: 'center', flexWrap: 'nowrap' }}>
+                                                    {lessonDateStr && <span>📅 {lessonDateStr}</span>}
+                                                    {(batchStartTime || batchMeta?.sBatchStartTime) && (
+                                                        <span>🕐 {batchStartTime || batchMeta?.sBatchStartTime} — {batchEndTime || batchMeta?.sBatchEndTime}</span>
+                                                    )}
+                                                  </div>
+                                              )}
                                             </div>
                                             <div className="course-content-right">
                                               <span className="min-lable">{list.act_cnt} Activities</span>

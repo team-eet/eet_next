@@ -174,9 +174,9 @@ const BatchWidget = ({
 
 .bw-card-footer {
     display: flex; align-items: center;
-    justify-content: space-between; gap: 8px;
+    justify-content: flex-end; gap: 8px;
     padding-top: 12px; border-top: 1px solid #f0eef8;
-    margin-top: auto; flex-wrap: wrap;
+    margin-top: auto; flex-wrap: nowrap;
 }
 .bw-price-area { display: flex; align-items: center; gap: 7px; }
 .bw-free-badge {
@@ -192,10 +192,11 @@ const BatchWidget = ({
 .bw-learn-btn {
     background: #7c3aed; color: #fff;
     border: none; border-radius: 22px;
-    padding: 8px 16px; font-size: 12px; font-weight: 600;
+    padding: 7px 14px; font-size: 11px; font-weight: 600;
     cursor: pointer; text-decoration: none;
     display: inline-flex; align-items: center; gap: 4px;
     white-space: nowrap; transition: background 0.18s;
+    flex-shrink: 0;
 }
 .bw-learn-btn:hover { background: #5b21b6; color: #fff; }
 
@@ -313,12 +314,13 @@ const BatchWidget = ({
                     )}
 
                     {/* 7. Tutor & Category */}
-                    {(data.sFName || data.sCategory) && (
+                    {(data.sFName || data.sCategory || data.sLevel) && (
                         <div className="bw-tutor-row">
                             {(data.sFName || data.sLName) && (
                                 <span>Tutor: <strong>{data.sFName} {data.sLName}</strong></span>
                             )}
                             {data.sCategory && <span className="bw-cat-badge">{data.sCategory}</span>}
+                            {data.sLevel && <span className="bw-level-badge">{data.sLevel}</span>}
                         </div>
                     )}
 
@@ -339,20 +341,25 @@ const BatchWidget = ({
                     )}
 
                     {/* 9. Footer */}
-                    <div className="bw-card-footer">
-                        <div className="bw-price-area">
-                            {data.sLevel && <span className="bw-level-badge">{data.sLevel}</span>}
-                        </div>
+                    <div className="bw-card-footer" style={isProgress ? { justifyContent: 'flex-end', flexWrap: 'nowrap' } : {}}>
                         {/* View Batch button (retained from original) */}
                         {isProgress && (
-                            <Link
-                                className="bw-learn-btn"
-                                href={`/courselesson/${getIdArray}`}
-                            >
-                                View Batch →
-                            </Link>
+                            <>
+                                <Link
+                                    className="bw-learn-btn"
+                                    href={_encCId && _encTBId ? `/batch-details/${_encCId}/${_encTBId}` : `/course-details/${data.nCId}`}
+                                    style={{ background: '#5b21b6' }}
+                                >
+                                    View Batch →
+                                </Link>
+                                <Link
+                                    className="bw-learn-btn"
+                                    href={`/courselesson/${getIdArray}`}
+                                >
+                                    Continue Learning →
+                                </Link>
+                            </>
                         )}
-
                         {/* Register Now for non-progress cards */}
                         {!isProgress && (
                             <Link

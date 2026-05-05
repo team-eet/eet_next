@@ -95,13 +95,13 @@ const CourseDetailsOne = ({ checkMatchCourses }) => {
           >
             {/*{console.log(getsectionItems)}*/}
 
-            <Content/>
-
-            {/*{checkMatchCourses ?*/}
-            {/*  checkMatchCourses.map((data, index) => (*/}
-            {/*    <Content {...data} key={index} checkMatchCourses={data} />*/}
-            {/*  )) : ''*/}
-            {/*}*/}
+            <Content
+                batchStartTime={checkMatchCourses.sBatchStartTime}
+                batchEndTime={checkMatchCourses.sBatchEndTime}
+                batchStartDate={checkMatchCourses.dBatchStartDate}
+                batchEndDate={checkMatchCourses.dBatchEndDate}
+                batchDays={checkMatchCourses.sDays}
+            />
           </div>
 
           <div
