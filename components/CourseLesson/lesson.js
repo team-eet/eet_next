@@ -9,6 +9,17 @@ import LessonSidebar from '@/components/CourseLesson/CourseLessonSidebar';
 import LessonBody from '@/components/CourseLesson/CourseLessonBody';
 import withAuth from "@/components/Utils/withAuth";
 import dynamic from 'next/dynamic';
+
+
+// ✅ MOVE THIS outside the CourseLesson component, at the top of the file
+const Plyr = dynamic(
+    () => import('plyr-react').then((mod) => {
+        require('plyr/dist/plyr.css');
+        return mod.Plyr;
+    }),
+    { ssr: false }
+);
+
 //jdjejdjed
 const CourseLesson = () => {
     const [isBatch, setIsBatch] = useState({});
@@ -68,13 +79,7 @@ const CourseLesson = () => {
                 ErrorDefaultAlert(err);
             });
     };
-    const Plyr = dynamic(
-        () => import('plyr-react').then((mod) => {
-            require('plyr/dist/plyr.css'); // load CSS too
-            return mod.Plyr;
-        }),
-        { ssr: false } // 👈 this is the key — disables SSR for this component
-    );
+
     const handleBackActivity = () => {
         setsepActivityPage(false);
         setsingleActivityPage(true);
@@ -146,7 +151,10 @@ const CourseLesson = () => {
             case 14:
             case 15:
             case 16:
-                setUrlIFrame(`${WEB_URL}/mcqmultipleoptionact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+            case 26:
+            case 27:
+            case 28:
+                setUrlIFrame(`${WEB_URL}/speakingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
                 break;
             default:
                 setUrlIFrame(`${WEB_URL}/frame_error`)
@@ -306,7 +314,7 @@ const CourseLesson = () => {
                     setApiCall(true);
                 });
                 break;
-            case "content":
+            case "content": {
                 const isModule = 'yes';
                 Axios.get(`${API_URL}/api/tutorialDocument/GetTutorialDocument/${EncryptData(nlid)}/${EncryptData(nsid)}/${EncryptData(isModule)}`, {
                     headers: { ApiKey: `${API_KEY}` }
@@ -327,6 +335,7 @@ const CourseLesson = () => {
                     setApiCall(true);
                 });
                 break;
+            }
             case "activity":
                 Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(nlid)}/${regid['regid']}/${cid}`, {
                     headers: { ApiKey: `${API_KEY}` }
@@ -471,6 +480,59 @@ const CourseLesson = () => {
                             <p className="mt-3 fs-5 fw-semibold text-dark">Loading...</p>
                         </div>
                 }
+                {getShowModal && (
+                    <div className="modal fade show d-block" tabIndex="-1" role="dialog"
+                         style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1060 }}>
+                        <div className="modal-dialog modal-fullscreen" role="document">
+                            <div className="modal-content" style={{ height: '100vh' }}>
+
+                                <div className="modal-header d-flex justify-content-between">
+                                    <h5 className="modal-title">{getActivityName}</h5>
+                                    <div className="lesson-top-right">
+                                        <div className="rbt-btn-close">
+                                            <button type="button" className="rbt-round-btn btn-close"
+                                                    onClick={handleClose}>
+                                                <i className="feather-x"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="modal-body p-0"
+                                     style={{ height: 'calc(100vh - 120px)', overflow: 'hidden', position: 'relative' }}>
+                                    {isActivityLoading && (
+                                        <div className="d-flex justify-content-center align-items-center"
+                                             style={{
+                                                 position: 'absolute',
+                                                 top: 0, left: 0, right: 0, bottom: 0,
+                                                 backgroundColor: '#fff',
+                                                 zIndex: 10
+                                             }}>
+                                            <div className="spinner-border text-primary" role="status">
+                                                <span className="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <iframe
+                                        src={getUrlIFrame}
+                                        width="100%"
+                                        height="100%"
+                                        title="Activity Preview"
+                                        style={{ border: 'none', overflow: 'hidden' }}
+                                        onLoad={() => setIsActivityLoading(false)}
+                                    />
+                                </div>
+
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary"
+                                            onClick={handleClose}>Close
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {previewModal && previewData.url && (
                     <div className="modal fade show d-block" tabIndex="-1" role="dialog"
                          style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
