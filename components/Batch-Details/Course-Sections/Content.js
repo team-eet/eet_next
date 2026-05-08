@@ -322,7 +322,7 @@ const Content = ({ batchStartTime, batchEndTime, batchStartDate, batchEndDate, b
                                                   nCId: courseInfo?.nCId,
                                                   nLId: list.nLId,
                                                   nSId: item.nSId,
-                                                  nTBId: courseInfo?.nTBId,
+                                                  nTBId: courseInfo?.nTBId || nTBId   // fallbac
                                                 })}`}
                                                 className="flex-grow-1 text-decoration-none" style={{ minWidth: 0 }}
                                             >

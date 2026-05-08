@@ -1,4 +1,3 @@
-
 import React, { Fragment, useState } from 'react';
 import parse from 'html-react-parser';
 import * as Icon from 'react-feather';
@@ -483,140 +482,156 @@ const CourseLessonBody = ({
                     </div>
                 )}
             </div>
-            {activeTab.tab === "lectures" && (
-                <div className="rbt-lesson-content-inner">
-                    <div className="section-title mb--20">
-                        <h4 className="rbt-title-style-3">Live Lectures</h4>
-                    </div>
 
-                    {LessonData.map((section, sIdx) => {
-                        const lessons = JSON.parse(section.lessionTbl || "[]");
-                        const totalActivities = lessons.reduce((sum, lesson) => sum + (Number(lesson.act_cnt) || 0), 0);
+            {/* Lectures Tab - Small Cards */}
+            {activeTab.tab === "lectures" && (() => {
+                const getDateForLesson = (lessonIndex) => {
+                    try {
+                        const rawDays = batchMeta?.sDays || batchMeta?.batchDays || batchMeta?.days || null;
+                        const rawStart = batchMeta?.dBatchStartDate || batchMeta?.batchStartDate || batchMeta?.startDate || null;
+                        const rawEnd = batchMeta?.dBatchEndDate || batchMeta?.batchEndDate || batchMeta?.endDate || null;
 
-                        return (
-                            <div key={sIdx} className="mb--30">
-                                <h6 className="fw-bold text-muted mb--10" style={{ textTransform: 'uppercase', fontSize: '12px', letterSpacing: '1px' }}>
-                                    {section.sSectionTitle} <span className="text-primary">{totalActivities} Activities</span>
-                                </h6>
+                        if (!rawDays || !rawStart) return null;
 
-                                {lessons.map((lesson, lIdx) => {
-                                    const schedule = lectureSchedules[lesson.nLId] || {};
-                                    const { sBatchLink, sBatchDate, sBatchTime } = schedule;
+                        const days = JSON.parse(rawDays || "[]");
+                        if (!days.length) return null;
 
-                                    const isScheduled = !!(schedule.isScheduled || sBatchLink);
-                                    const now = new Date();
-                                    let isCompleted = false;
-                                    let isLive = false;
+                        const dayNameToIndex = {
+                            Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3,
+                            Thursday: 4, Friday: 5, Saturday: 6
+                        };
 
-                                    const displayDate = sBatchDate || null;
-                                    const displayStartTime = sBatchTime || batchMeta?.sBatchStartTime || null;
-                                    const displayEndTime = schedule.sBatchEndTime || batchMeta?.sBatchEndTime || null;
+                        const parseLocal = (d) => {
+                            const dt = new Date(d);
+                            return new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate());
+                        };
 
-                                    // Time Logic
-                                    if (displayDate && displayEndTime) {
-                                        try {
-                                            const lessonEnd = new Date(displayDate);
-                                            let hours = 0, minutes = 0;
-                                            const endTimeStr = displayEndTime.trim();
+                        const start = parseLocal(rawStart);
+                        const end = parseLocal(rawEnd);
+                        const activeDayIndices = days.map(d => dayNameToIndex[d]);
 
-                                            const noSpaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})(am|pm)$/i);
-                                            const spaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/i);
-                                            const match = noSpaceMatch || spaceMatch;
+                        let count = 0;
+                        const cur = new Date(start);
+                        while (cur <= end) {
+                            if (activeDayIndices.includes(cur.getDay())) {
+                                if (count === lessonIndex) return new Date(cur);
+                                count++;
+                            }
+                            cur.setDate(cur.getDate() + 1);
+                        }
+                        return null;
+                    } catch (e) {
+                        console.error("getDateForLesson error:", e);
+                        return null;
+                    }
+                };
 
-                                            if (match) {
-                                                hours = parseInt(match[1]);
-                                                minutes = parseInt(match[2]);
-                                                const meridiem = match[3].toLowerCase();
-                                                if (meridiem === 'pm' && hours !== 12) hours += 12;
-                                                if (meridiem === 'am' && hours === 12) hours = 0;
-                                            } else {
-                                                const parts = endTimeStr.split(':');
-                                                hours = parseInt(parts[0]);
-                                                minutes = parseInt(parts[1]);
-                                            }
+                const isLessonCompleted = (lessonIndex) => {
+                    try {
+                        const lessonDate = getDateForLesson(lessonIndex);
+                        if (!lessonDate) return false;
+                        const endTime = batchMeta?.sBatchEndTime;
+                        if (!endTime) return false;
 
-                                            lessonEnd.setHours(hours, minutes, 0, 0);
+                        const endTimeStr = endTime.trim();
+                        const match = endTimeStr.match(/^(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+                        let hours = 0, minutes = 0;
+                        if (match) {
+                            hours = parseInt(match[1]);
+                            minutes = parseInt(match[2]);
+                            if (match[3]?.toLowerCase() === 'pm' && hours !== 12) hours += 12;
+                            if (match[3]?.toLowerCase() === 'am' && hours === 12) hours = 0;
+                        }
+                        const lessonEnd = new Date(lessonDate);
+                        lessonEnd.setHours(hours, minutes, 0, 0);
+                        return new Date() > lessonEnd;
+                    } catch (e) { return false; }
+                };
 
-                                            const lessonStart = new Date(lessonEnd);
-                                            if (displayStartTime) {
-                                                const startMatch = displayStartTime.trim().toLowerCase().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?$/i);
-                                                if (startMatch) {
-                                                    let sh = parseInt(startMatch[1]);
-                                                    const sm = parseInt(startMatch[2]);
-                                                    if (startMatch[3] === 'pm' && sh !== 12) sh += 12;
-                                                    if (startMatch[3] === 'am' && sh === 12) sh = 0;
-                                                    lessonStart.setHours(sh, sm, 0, 0);
-                                                }
-                                            }
+                return (
+                    <div className="rbt-lesson-content-inner">
+                        <div className="section-title mb-4">
+                            <h4 className="rbt-title-style-3">Live Lectures</h4>
+                            <div className="rbt-separator"></div>
+                        </div>
 
-                                            isCompleted = now > lessonEnd;
-                                            isLive = now >= lessonStart && now <= lessonEnd;
-                                        } catch (e) {
-                                            console.error("Date parsing error", e);
-                                        }
-                                    }
+                        {LessonData.map((section, sIdx) => {
+                            const lessons = JSON.parse(section.lessionTbl || "[]");
+                            return (
+                                <div key={sIdx} className="mb-5">
+                                    <h6 className="fw-bold text-muted mb-3" style={{ textTransform: 'uppercase', fontSize: '13px', letterSpacing: '1px' }}>
+                                        {section.sSectionTitle} <span className="text-primary">({lessons.length} Lectures)</span>
+                                    </h6>
 
-                                    const activityCount = Number(lesson.act_cnt) || 0;
+                                    <div className="row g-3">
+                                        {lessons.map((lesson, lIdx) => {
+                                            const schedule = lectureSchedules[lesson.nLId] || {};
+                                            const isScheduled = !!schedule.sBatchLink || schedule.isScheduled;
+                                            const link = schedule.sBatchLink;
 
-                                    return (
-                                        <div key={lIdx} className="d-flex justify-content-between align-items-start p-3 mb-2"
-                                             style={{
-                                                 border: '1px solid #e9ecef',
-                                                 borderRadius: '10px',
-                                                 background: isCompleted ? '#f0fff4' : isLive ? '#e6f4ea' : isScheduled ? '#fffbf0' : '#fafafa'
-                                             }}>
+                                            const lessonDate = getDateForLesson(lIdx);
+                                            const displayDate = lessonDate
+                                                ? lessonDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                                                : null;
 
-                                            <div style={{ flex: 1 }}>
-                                                <div className="fw-semibold" style={{ fontSize: '15px', color: '#212529' }}>
-                                                    Day - {lIdx + 1} {lesson.sLessionTitle}
-                                                </div>
-                                                <div style={{ fontSize: '12px', color: '#6c757d', marginTop: '4px' }}>
-                                                    {displayDate && <span>📅 {displayDate}</span>}
-                                                    {displayStartTime && (
-                                                        <span className="ms-2">🕐 {displayStartTime}{displayEndTime ? ` — ${displayEndTime}` : ''}</span>
-                                                    )}
-                                                </div>
+                                            const completed = isLessonCompleted(lIdx);
 
-                                                <div style={{ fontSize: '13px', marginTop: '6px', color: '#6c757d' }}>
-                                                    {activityCount} Activities
-                                                </div>
-                                            </div>
-
-                                            <div className="ms-3 d-flex align-items-center">
-                                                {isCompleted ? (
-                                                    <span style={{ backgroundColor: '#28a745', color: '#fff', borderRadius: '6px', padding: '6px 16px', fontWeight: 600, fontSize: '13px' }}>
-                                            ✅ Completed
-                                        </span>
-                                                ) : isScheduled ? (
-                                                    <button
-                                                        onClick={() => window.open(sBatchLink, '_blank', 'noopener,noreferrer')}
+                                            return (
+                                                <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={lIdx}>
+                                                    <div
+                                                        className="card h-100 shadow-sm border-0 hover-transform"
                                                         style={{
-                                                            backgroundColor: isLive ? '#28a745' : '#fd7e14',
-                                                            color: '#fff',
-                                                            border: 'none',
-                                                            borderRadius: '6px',
-                                                            padding: '6px 16px',
-                                                            fontWeight: 600,
-                                                            fontSize: '13px',
-                                                            cursor: 'pointer'
+                                                            minHeight: "148px",
+                                                            borderRadius: "12px",
+                                                            cursor: isScheduled && link ? "pointer" : "default"
                                                         }}
+                                                        onClick={() => isScheduled && link && window.open(link, '_blank')}
                                                     >
-                                                        {isLive ? '● Live Now' : '● Scheduled'}
-                                                    </button>
-                                                ) : (
-                                                    <span style={{ backgroundColor: '#e9ecef', color: '#6c757d', borderRadius: '6px', padding: '6px 16px', fontWeight: 600, fontSize: '13px' }}>
-                                            ○ Not Scheduled
-                                        </span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+                                                        <div className="card-body d-flex flex-column p-3 text-center">
+                                                            {/* Day Number */}
+                                                            <div className="mb-2">
+                                                    <span className="badge bg-primary rounded-pill px-3 py-1 fs-6">
+                                                        Day {lIdx + 1}
+                                                    </span>
+                                                            </div>
+
+                                                            {/* Title */}
+                                                            <h6 className="fw-semibold mb-2 flex-grow-1" style={{ fontSize: "14px", lineHeight: "1.3" }}>
+                                                                {lesson.sLessionTitle}
+                                                            </h6>
+
+                                                            {/* Date & Time */}
+                                                            {(displayDate || batchMeta?.sBatchStartTime) && (
+                                                                <div className="text-muted small mb-3" style={{ fontSize: "12px" }}>
+                                                                    {displayDate && <div>📅 {displayDate}</div>}
+                                                                    {batchMeta?.sBatchStartTime && (
+                                                                        <div>🕒 {batchMeta.sBatchStartTime}</div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            {/* Status */}
+                                                            <div>
+                                                                {completed ? (
+                                                                    <span className="badge bg-success px-3 py-1">✅ Completed</span>
+                                                                ) : isScheduled ? (
+                                                                    <span className="badge bg-warning px-3 py-1 text-dark">● Scheduled</span>
+                                                                ) : (
+                                                                    <span className="badge bg-secondary px-3 py-1">○ Not Scheduled</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+            })()}
             {/* Footer Navigation */}
             <div className="footerBar bg-color-extra2 ptb--15 overflow-hidden position-absolute bottom-0 start-0 end-0">
                 <div className="rbt-button-group d-flex justify-content-between px-4">

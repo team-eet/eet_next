@@ -176,7 +176,10 @@ const CourseLesson = () => {
         const encodedId = parts[4]; // index 2 par hoga actual ID
 
         const urlIdArray = DecryptData(encodedId);
+        console.log("🔍 Initial URL Decrypt (has nTBId?):", urlIdArray);
         const nTBId = urlIdArray.nTBId;
+        const globalNTBId = urlIdArray?.nTBId;
+
         const acid = EncryptData(urlIdArray.nACId);
         const mid =  EncryptData(urlIdArray.nMId);
         const lid =  EncryptData(urlIdArray.nCLId);
@@ -186,6 +189,18 @@ const CourseLesson = () => {
         const targetNSId = urlIdArray.nSId || 0;
         const targetNTBId = urlIdArray.nTBId || 0;
         setcid(cid);
+        // ADD right after setcid(cid):
+// Fetch batch meta with full schedule info for lectures tab
+        if (urlIdArray.nTBId) {
+            const encTBId = EncryptData(urlIdArray.nTBId);
+            Axios.get(`${API_URL}/api/package/Show_activity_count/${encTBId}`, {
+                headers: { ApiKey: `${API_KEY}` }
+            }).then(res => {
+                const meta = Array.isArray(res.data) ? res.data[0] : res.data;
+                console.log("🚀 Initial batchMeta loaded:", JSON.stringify(meta));
+                setBatchMeta(meta);
+            }).catch(err => console.log("Initial batchMeta error:", err));
+        }
         if (DecryptData(acid) !== 0) {
             getcid = acid;
         } else {
@@ -269,7 +284,7 @@ const CourseLesson = () => {
             }).then(res => {
                 if (res.data && res.data[0]) {
                     setIsBatch(res.data[0]);
-                    console.log("Course Data",res.data[0])
+                    console.log("✅ isBatch Loaded with nTBId:", res.data[0]?.nTBId);
                 }
             });
         }
@@ -362,117 +377,117 @@ const CourseLesson = () => {
                 setApiCall(true);
                 break;
             case "lectures": {
-                // Mirror exactly how content.js extracts courseId and batchId from URL
-                // content.js URL: /batch-details/{courseId}/{batchId}
-                // lesson.js URL:  /courselesson/{encodedSegment}
-                // The encodedSegment contains nCId and nTBId inside it — we must
-                // re-encrypt each individually exactly like content.js does
+                const url = window.location.href;
+                const parts = url.split("/");
+                const encodedSegment = parts[4];
 
-                const urlParts = window.location.href.split("/");
-                const encodedSegment = urlParts[4];
-                const urlIdArray = DecryptData(encodedSegment);
-
-                const nTBId = urlIdArray?.nTBId;   // raw number
-                const nCId = urlIdArray?.nCId;    // raw number
-
-                if (!nTBId || !nCId) {
-                    console.warn("nTBId or nCId missing, cannot load lectures");
+                let urlIdArray;
+                try {
+                    urlIdArray = DecryptData(encodedSegment);
+                    console.log("🔍 Decrypted Object:", urlIdArray);
+                } catch (e) {
+                    console.error("Decrypt failed", e);
                     setApiCall(true);
                     break;
                 }
 
-                // Re-encrypt exactly like content.js does for its API calls
-                const encCId = EncryptData(nCId);   // content.js: EncryptData(nCId)
-                const encTBId = EncryptData(nTBId);  // content.js: EncryptData(nTBId)
+                let nCId = urlIdArray?.nCId;
+                let nTBId = urlIdArray?.nTBId;
 
-                // Step 1: batchMeta — content.js passes raw encoded batchId segment
-                // but Show_activity_count just needs the encrypted nTBId
-                Axios.get(`${API_URL}/api/package/Show_activity_count/${encTBId}`, {
+                // NEW: Stronger fallback from initial URL parsing
+                if (!nTBId) {
+                    try {
+                        const initialDecrypt = DecryptData(parts[4]);
+                        nTBId = initialDecrypt?.nTBId || initialDecrypt?.TBId;
+                    } catch (e) {}
+                }
+                // Final safety check
+                if (!nCId || !nTBId) {
+                    console.error("❌ Still missing nCId or nTBId", {
+                        nCId,
+                        nTBId,
+                        isBatch_nTBId: isBatch?.nTBId
+                    });
+                    setApiCall(true);
+                    break;
+                }
+
+                const encCId = EncryptData(nCId);
+                const encTBId = EncryptData(nTBId);
+
+                console.log("✅ Lectures proceeding with:", {nCId, nTBId});
+
+                // Batch Meta
+                // REPLACE with:
+                // REPLACE with — fetch from the batch package details API that has full info:
+                Axios.get(`${API_URL}/api/package/GetTutorBatchById/${encTBId}`, {
                     headers: {ApiKey: `${API_KEY}`}
                 }).then(res => {
-                    if (res.data) {
-                        const meta = Array.isArray(res.data) ? res.data[0] : res.data;
-                        setBatchMeta(meta);
-                        console.log("📦 Batch Meta (lectures):", meta);
-                    }
+                    const data = Array.isArray(res.data) ? res.data[0] : res.data;
+                    console.log("📦 Batch Full Meta:", JSON.stringify(data));
+                    setBatchMeta(data);
+                }).catch(() => {
+                    // Fallback: try GetPurchasedBatch to extract schedule info
+                    const udata = DecryptData(localStorage.getItem('userData'));
+                    const regId = udata?.regid || udata;
+                    Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedBatch/${regId}`, {
+                        headers: {ApiKey: `${API_KEY}`}
+                    }).then(res => {
+                        if (res.data && Array.isArray(res.data)) {
+                            const matched = res.data.find(item => Number(item.nTBId) === Number(nTBId));
+                            console.log("📦 Batch Meta from PurchasedBatch:", JSON.stringify(matched));
+                            if (matched) setBatchMeta(matched);
+                        }
+                    }).catch(err => console.log("Batch meta fallback error:", err));
                 });
 
-                // Step 2: GetBatchCourseSummaryAll — exactly like content.js
-                // content.js: GetBatchCourseSummaryAll/${courseId}/${EncryptData(0)}/${batchId}
-                // courseId and batchId there are already-encrypted strings from URL parts
-                // Here we use encCId and encTBId which are the same thing
+                // Get Sections + Schedules
                 Axios.get(`${API_URL}/api/section/GetBatchCourseSummaryAll/${encCId}/${EncryptData(0)}/${encTBId}`, {
                     headers: {ApiKey: `${API_KEY}`}
                 }).then(summaryRes => {
-                    console.log("✅ Lectures GetBatchCourseSummaryAll:", summaryRes.data);
-                    const sections = summaryRes.data;
-                    if (!sections || sections.length === 0) {
-                        setApiCall(true);
-                        return;
-                    }
+                    const sections = summaryRes?.data || [];
+                    console.log("✅ Sections Response:", sections.length, "sections");
 
                     const schedules = {};
                     const promises = [];
-                    let globalLessonIndex = 0;
-                    const lessonIndexMap = {};
 
                     sections.forEach(section => {
                         const lessons = JSON.parse(section.lessionTbl || "[]");
                         lessons.forEach(lesson => {
-                            lessonIndexMap[lesson.nLId] = globalLessonIndex;
-                            globalLessonIndex++;
-                        });
-                    });
+                            promises.push(
+                                Axios.get(
+                                    `${API_URL}/api/tutorBatchSchedule/GetTutorBatchSchedule/${EncryptData(nTBId)}/${EncryptData(lesson.nLId)}`,
+                                    {headers: {ApiKey: `${API_KEY}`}}
+                                ).then(res => {
+                                    const sch = res.data?.[0];
+                                    console.log(`📅 Schedule for nLId ${lesson.nLId}:`, sch);
 
-                    sections.forEach(section => {
-                        const lessons = JSON.parse(section.lessionTbl || "[]");
-                        lessons.forEach(lesson => {
-                            if (!lesson.nLId) return;
-
-                            // Step 3: fetchAllScheduledLinks — exactly like content.js
-                            // content.js: GetTutorBatchSchedule/${EncryptData(nTBId)}/${EncryptData(nLId)}
-                            // nTBId and nLId are raw numbers there — same here
-                            const p = Axios.get(
-                                `${API_URL}/api/tutorBatchSchedule/GetTutorBatchSchedule/${EncryptData(nTBId)}/${EncryptData(lesson.nLId)}`,
-                                {headers: {ApiKey: `${API_KEY}`}}
-                            ).then(res => {
-                                console.log("📅 Schedule for lesson", lesson.nLId, res.data?.[0]);
-                                if (res.data && res.data.length > 0 && res.data[0].sBatchLink?.trim()) {
-                                    schedules[lesson.nLId] = {
-                                        isScheduled: true,
-                                        sBatchLink: res.data[0].sBatchLink,
-                                        sBatchDate: res.data[0].sBatchDate,
-                                        sBatchTime: res.data[0].sBatchTime,
-                                        sLessionTitle: lesson.sLessionTitle,
-                                        globalIndex: lessonIndexMap[lesson.nLId],
-                                        act_cnt: lesson.act_cnt,
-                                    };
-                                } else {
-                                    schedules[lesson.nLId] = {
-                                        isScheduled: false,
-                                        sLessionTitle: lesson.sLessionTitle,
-                                        globalIndex: lessonIndexMap[lesson.nLId],
-                                        act_cnt: lesson.act_cnt,
-                                    };
-                                }
-                            }).catch(() => {
-                                schedules[lesson.nLId] = {
-                                    isScheduled: false,
-                                    sLessionTitle: lesson.sLessionTitle,
-                                    globalIndex: lessonIndexMap[lesson.nLId],
-                                };
-                            });
-
-                            promises.push(p);
+                                    // REPLACE with:
+                                    if (sch && sch.sBatchLink?.trim()) {
+                                        schedules[lesson.nLId] = {
+                                            isScheduled: true,
+                                            sBatchLink: sch.sBatchLink,
+                                            sBatchDate: sch.sBatchDate || sch.dBatchDate || sch.dScheduleDate || null,
+                                            sBatchTime: sch.sBatchTime || sch.sStartTime || sch.sBatchStartTime || batchMeta?.sBatchStartTime || null,
+                                            sBatchEndTime: sch.sBatchEndTime || sch.sEndTime || sch.sBatchEndTime || batchMeta?.sBatchEndTime || null
+                                        };
+                                    } else {
+                                        schedules[lesson.nLId] = {isScheduled: false};
+                                    }
+                                }).catch(() => {
+                                    schedules[lesson.nLId] = {isScheduled: false};
+                                })
+                            );
                         });
                     });
 
                     Promise.all(promises).then(() => {
                         setLectureSchedules(schedules);
+                        console.log("✅ Final lectureSchedules:", schedules);
                         setApiCall(true);
                     });
                 }).catch(err => {
-                    console.error("Lectures summary fetch error:", err);
+                    console.error("GetBatchCourseSummaryAll Error:", err);
                     setApiCall(true);
                 });
 
