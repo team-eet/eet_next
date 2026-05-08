@@ -74,15 +74,27 @@ const EnrolledCourses = () => {
                         setcourse(res.data)
 
                         setcrscnt(res.data.length)
-                        const count = res.data.filter(item => item.bCompleted === true).length;
-                        setActiveCnt(res.data.length - count)
-                        setCompetedCnt(count)
+                        // ADD THIS:
+                        const now = new Date();
+                        const completedCount = res.data.filter(item => item.dBatchEndDate && new Date(item.dBatchEndDate) < now).length;
+                        setActiveCnt(res.data.length - completedCount);
+                        setCompetedCnt(completedCount);
 
-                        const activeBatch = res.data.filter(item => item.bCompleted === false || item.bCompleted == null);
-                        setactivecourse(activeBatch)
+                        const activeBatch = res.data.filter(item => {
+                            if (!item.dBatchEndDate) return true; // no end date = treat as active
+                            return new Date(item.dBatchEndDate) >= now;
+                        });
+                        setactivecourse(activeBatch);
 
-                        const complatedBatch = res.data.filter(item => item.bCompleted === true);
-                        setcompletecourse(complatedBatch)
+                        // ADD THIS:
+                        const complatedBatch = res.data.filter(item => {
+                            if (!item.dBatchEndDate) return false;
+                            const endDate = new Date(item.dBatchEndDate);                //student to access the batch untill 30 days from the batch end date
+                            const thirtyDaysAfterEnd = new Date(endDate);
+                            thirtyDaysAfterEnd.setDate(thirtyDaysAfterEnd.getDate() + 30);
+                            return endDate < now && now <= thirtyDaysAfterEnd;
+                        });
+                        setcompletecourse(complatedBatch);
                         setApiCall(1)
 
                     } else {
@@ -133,20 +145,7 @@ const EnrolledCourses = () => {
                             id="settinsTab-4"
                             role="tablist"
                         >
-                            <li role="presentation">
-                                <Link
-                                    href="#"
-                                    className="tab-button active"
-                                    id="course-tab"
-                                    data-bs-toggle="tab"
-                                    data-bs-target="#course"
-                                    role="tab"
-                                    aria-controls="course"
-                                    aria-selected="true"
-                                >
-                                    <span className="title">Enrolled <div className="badge bg-primary-opacity">{crscnt}</div></span>
-                                </Link>
-                            </li>
+
                             <li role="presentation">
                                 <Link
                                     href="#"
@@ -159,6 +158,20 @@ const EnrolledCourses = () => {
                                     aria-selected="false"
                                 >
                                     <span className="title">Active <div className="badge bg-primary-opacity">{getActiveCnt}</div></span>
+                                </Link>
+                            </li>
+                            <li role="presentation">
+                                <Link
+                                    href="#"
+                                    className="tab-button active"
+                                    id="course-tab"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#course"
+                                    role="tab"
+                                    aria-controls="course"
+                                    aria-selected="true"
+                                >
+                                    <span className="title">Enrolled <div className="badge bg-primary-opacity">{crscnt}</div></span>
                                 </Link>
                             </li>
                             <li role="presentation">
@@ -186,7 +199,7 @@ const EnrolledCourses = () => {
                             role="tabpanel"
                             aria-labelledby="course-tab"
                         >
-                            <div className="row g-5">
+                            <div className="row g-3">
                                 {
                                     getApiCall === 1 ?
                                         getCourse.length !== 0 ? (
@@ -268,7 +281,7 @@ const EnrolledCourses = () => {
                             role="tabpanel"
                             aria-labelledby="course-active-tab"
                         >
-                            <div className="row g-5">
+                            <div className="row g-3">
                                 {getApiCall === 1 && Array.isArray(getActiveCourse) && getActiveCourse.length !== 0 ? (
                                     <>
                                         {getActiveCourse.map((slide, index) => (
@@ -301,8 +314,17 @@ const EnrolledCourses = () => {
                             role="tabpanel"
                             aria-labelledby="course-completed-tab"
                         >
-                            <div className="row g-5">
-                                <div className="row g-5">
+
+                            <div className="row g-3">
+                                {getApiCall === 1 && getCompleteCourse.length !== 0 && (
+                                    <div className="col-14">
+                                        <div className="alert alert-info d-flex align-items-center gap-2 mb--10" role="alert">
+                                            <i className="feather-info"></i>
+                                            <span>You have access to completed batches for <strong>30 days</strong> after the batch end date.</span>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="row g-3">
                                     {getApiCall === 1 && Array.isArray(getCompleteCourse) && getCompleteCourse.length !== 0 ? (
                                         <>
                                             {getCompleteCourse.map((slide, index) => (
@@ -310,11 +332,11 @@ const EnrolledCourses = () => {
                                                     className="col-lg-4 col-md-6 col-12 d-flex"
                                                     key={`course-enrolled-${index}`}
                                                 >
-                                                    <CourseWidgets
+                                                    <BatchWidget
                                                         data={slide}
                                                         courseStyle="two"
                                                         isProgress={true}
-                                                        isCompleted={false}
+                                                        isCompleted={true}
                                                         isEdit={false}
                                                         showDescription={false}
                                                         showAuthor={false}
