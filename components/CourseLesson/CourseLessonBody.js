@@ -577,12 +577,12 @@ const CourseLessonBody = ({
                                             const completed = isLessonCompleted(lIdx);
 
                                             return (
-                                                <div className="col-6 col-sm-4 col-md-3 col-lg-2" key={lIdx}>
+                                                <div className="col-6 col-sm-4 col-md-3 col-lg-3" key={lIdx}>
                                                     <div
                                                         className="card h-100 shadow-sm border-0 hover-transform"
                                                         style={{
-                                                            minHeight: "148px",
-                                                            borderRadius: "12px",
+                                                            minHeight: "200px",
+                                                            borderRadius: "16px",
                                                             cursor: isScheduled && link ? "pointer" : "default"
                                                         }}
                                                         onClick={() => isScheduled && link && window.open(link, '_blank')}

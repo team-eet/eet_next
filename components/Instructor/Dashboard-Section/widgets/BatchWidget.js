@@ -53,13 +53,13 @@ const BatchWidget = ({
         const courseInfo = {
             nACId: data.nACId,
             nMId: data.nMId,
-            nCLId: data.nCLId,
+            nCLId: data.nCLId || 2,
             mode: EncryptData('N'),
             nCId: data.nCId,
+            nTBId: data.nTBId,   // ✅ ADD THIS
         };
         setIdArray(EncryptData(courseInfo));
     });
-
     // Derived values (same logic as AllBatches grid)
     const { totalHours, remainingMinutes } = getTimeDifference(
         data.sBatchStartTime, data.sBatchEndTime, data.batchdays
