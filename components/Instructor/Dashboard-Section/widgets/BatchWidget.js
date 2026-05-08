@@ -171,34 +171,51 @@ const BatchWidget = ({
     font-size: 12px; color: #666; margin-bottom: 10px; flex-wrap: wrap;
 }
 .bw-ls-item { display: flex; align-items: center; gap: 4px; }
-
 .bw-card-footer {
-    display: flex; align-items: center;
-    justify-content: flex-end; gap: 8px;
-    padding-top: 12px; border-top: 1px solid #f0eef8;
-    margin-top: auto; flex-wrap: nowrap;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #f0eef8;
+  margin-top: auto;
+  flex-wrap: nowrap;
+  width: 100%;
 }
-.bw-price-area { display: flex; align-items: center; gap: 7px; }
-.bw-free-badge {
-    background: #22c55e; color: #fff;
-    font-size: 11px; font-weight: 700;
-    padding: 4px 11px; border-radius: 20px; letter-spacing: 0.4px;
-}
-.bw-level-badge {
-    background: #fff4e5; color: #b45309;
-    font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 20px;
-}
+
 .bw-learn-btn {
-    background: #7c3aed; color: #fff;
-    border: none; border-radius: 22px;
-    padding: 7px 14px; font-size: 11px; font-weight: 600;
-    cursor: pointer; text-decoration: none;
-    display: inline-flex; align-items: center; gap: 4px;
-    white-space: nowrap; transition: background 0.18s;
-    flex-shrink: 0;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 59px;
+  padding: 9px 19px;
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex: 1 1 50%;         /* each button takes exactly 50% */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.2);
 }
-.bw-learn-btn:hover { background: #5b21b6; color: #fff; }
+.bw-learn-btn:hover {
+  background: #6d28d9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.bw-learn-btn:first-child {
+  background: #6d28d9;
+}
+
+.bw-learn-btn:first-child:hover {
+  background: #42c273;
+}
 
 /* Progress bar */
 .bw-progress-wrap { margin: 10px 0 14px; }

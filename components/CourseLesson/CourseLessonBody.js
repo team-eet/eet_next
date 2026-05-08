@@ -32,7 +32,7 @@ const CourseLessonBody = ({
                           }) => {
     // State for description expansion in content tab
     const [expandedDescriptions, setExpandedDescriptions] = useState({});
-  //  const [popupCard, setPopupCard] = useState(null); // NEW
+    //  const [popupCard, setPopupCard] = useState(null); // NEW
     const [activeFilter, setActiveFilter] = useState('all'); // NEW
     const toggleDescription = (index) => {
         setExpandedDescriptions(prev => ({
