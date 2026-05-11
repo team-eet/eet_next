@@ -613,8 +613,8 @@ const CourseLessonBody = ({
 
                                                             return (
                                                                 <div
-                                                                    className="card h-100 shadow-sm border-0 hover-transform"
-                                                                    style={{ minHeight: "200px", borderRadius: "16px", cursor: "default" }}
+                                                                    className={`lecture-card h-100 hover-transform ${completed ? 'lecture-card--completed' : !isScheduled ? 'lecture-card--unscheduled' : isJoinNowActive ? 'lecture-card--live' : 'lecture-card--scheduled'}`}
+                                                                    style={{ minHeight: "200px", borderRadius: "16px", cursor: "default", backgroundColor: "#f8f9fa" }}
                                                                 >
                                                                     <div className="card-body d-flex flex-column p-3 text-center">
                                                                         {/* Day badge */}
@@ -881,6 +881,7 @@ const CourseLessonBody = ({
                     background: #0d6efd;
                     color: white;
                 }
+                
 
                 /* ── Responsive breakpoints ── */
 
