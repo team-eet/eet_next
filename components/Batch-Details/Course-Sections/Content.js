@@ -63,46 +63,59 @@ const Content = ({ batchStartTime, batchEndTime, batchStartDate, batchEndDate, b
           setIsApiCall(1);
         });
   };
+  const parseBatchTime = (timeStr) => {
+    if (!timeStr) return null;
+    const s = timeStr.trim();
+    const noSpace = s.match(/^(\d{1,2}):(\d{2})(am|pm)$/i);
+    const withSpace = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    const match = noSpace || withSpace;
+    let hours, minutes;
+    if (match) {
+      hours = parseInt(match[1]);
+      minutes = parseInt(match[2]);
+      const mer = match[3].toLowerCase();
+      if (mer === 'pm' && hours !== 12) hours += 12;
+      if (mer === 'am' && hours === 12) hours = 0;
+    } else {
+      const parts = s.split(':');
+      hours = parseInt(parts[0]);
+      minutes = parseInt(parts[1]);
+    }
+    return { hours, minutes };
+  };
+
   const isLessonCompleted = (lessonIndex) => {
     try {
       const lessonDate = getDateForLesson(lessonIndex);
       if (!lessonDate) return false;
-
       const endTime = batchEndTime || batchMeta?.sBatchEndTime;
       if (!endTime) return false;
-
-      let hours = 0, minutes = 0;
-      const endTimeStr = endTime.trim();
-
-      // Handle "7:15am" / "8:55pm" format (no space)
-      const noSpaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})(am|pm)$/i);
-      // Handle "07:15 AM" / "08:55 PM" format (with space)
-      const spaceMatch = endTimeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-
-      const match = noSpaceMatch || spaceMatch;
-      if (match) {
-        hours = parseInt(match[1]);
-        minutes = parseInt(match[2]);
-        const meridiem = match[3].toLowerCase();
-        if (meridiem === 'pm' && hours !== 12) hours += 12;
-        if (meridiem === 'am' && hours === 12) hours = 0;
-      } else {
-        // Handle 24hr format "HH:mm"
-        const parts = endTimeStr.split(':');
-        hours = parseInt(parts[0]);
-        minutes = parseInt(parts[1]);
-      }
-
+      const parsed = parseBatchTime(endTime);
+      if (!parsed) return false;
       const lessonEnd = new Date(lessonDate);
-      lessonEnd.setHours(hours, minutes, 0, 0);
-
-      console.log(`📌 Lesson ${lessonIndex + 1} end: ${lessonEnd}, now: ${new Date()}, completed: ${new Date() > lessonEnd}`);
-
+      lessonEnd.setHours(parsed.hours, parsed.minutes, 0, 0);
       return new Date() > lessonEnd;
-    } catch (e) {
-      console.error("isLessonCompleted error:", e);
-      return false;
-    }
+    } catch (e) { return false; }
+  };
+
+  const isJoinEnabled = (lessonIndex) => {
+    try {
+      const lessonDate = getDateForLesson(lessonIndex);
+      if (!lessonDate) return false;
+      const startTime = batchStartTime || batchMeta?.sBatchStartTime;
+      const endTime = batchEndTime || batchMeta?.sBatchEndTime;
+      if (!startTime || !endTime) return false;
+      const parsedStart = parseBatchTime(startTime);
+      const parsedEnd = parseBatchTime(endTime);
+      if (!parsedStart || !parsedEnd) return false;
+      const lessonStart = new Date(lessonDate);
+      lessonStart.setHours(parsedStart.hours, parsedStart.minutes, 0, 0);
+      const lessonEnd = new Date(lessonDate);
+      lessonEnd.setHours(parsedEnd.hours, parsedEnd.minutes, 0, 0);
+      const now = new Date();
+      const fifteenMinBefore = new Date(lessonStart.getTime() - 15 * 60 * 1000);
+      return now >= fifteenMinBefore && now <= lessonEnd;
+    } catch (e) { return false; }
   };
   // Fetch scheduled link for every lesson
   const fetchAllScheduledLinks = (sections, nTBId) => {
@@ -347,27 +360,49 @@ const Content = ({ batchStartTime, batchEndTime, batchStartDate, batchEndDate, b
                                             {/* Scheduled Button */}
                                             <div className="ms-3">
                                               {isLessonCompleted(subIndex) ? (
-                                                  <a
-                                                      href="#"
-                                                      onClick={(e) => e.preventDefault()}
-                                                      className="schedule-btn"
-                                                      style={{ backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 14px', fontWeight: 600, textDecoration: 'none', display: 'inline-block' }}
-                                                  >
-                                                    ✅ Completed
-                                                  </a>
-                                              ) : isScheduled ? (
                                                   <button
-                                                      className="schedule-btn scheduled immersive-btn"
-                                                      onClick={() => window.open(link, '_blank', 'noopener,noreferrer')}
+                                                      className="schedule-btn"
+                                                      disabled
+                                                      style={{ backgroundColor: '#e6f9ed', color: '#1a7a3c', border: '1.5px solid #52c97a', borderRadius: '20px', padding: '5px 14px', fontWeight: 600, cursor: 'not-allowed', fontSize: '12px', whiteSpace: 'nowrap', minWidth: '120px' }}
                                                   >
-                                                    ● Scheduled
+                                                    Completed
                                                   </button>
+                                              ) : isScheduled ? (
+                                                  isJoinEnabled(subIndex) ? (
+                                                      <button
+                                                          className="schedule-btn scheduled immersive-btn"
+                                                          style={{ backgroundColor: '#cc0000', color: '#fff', border: 'none', borderRadius: '20px', padding: '5px 14px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', minWidth: '120px', boxShadow: '0 2px 8px rgba(204,0,0,0.25)' }}
+                                                          onClick={() => window.open(link, '_blank', 'noopener,noreferrer')}
+                                                      >
+                                                        Join Now
+                                                      </button>
+                                                  ) : (
+                                                      <>
+                                                        <button
+                                                            className="schedule-btn scheduled"
+                                                            style={{ backgroundColor: '#eef3ff', color: '#3b5bdb', border: '1.5px solid #748ffc', borderRadius: '20px', padding: '5px 14px', fontWeight: 600, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', minWidth: '120px' }}
+                                                            onClick={() => {
+                                                              const toast = document.getElementById('batch-schedule-toast');
+                                                              if (toast) { toast.style.display = 'flex'; clearTimeout(window._toastTimer); window._toastTimer = setTimeout(() => toast.style.display = 'none', 4000); }
+                                                            }}
+                                                        >
+                                                          Scheduled
+                                                        </button>
+
+                                                        {/* Toast — place once, outside loops ideally, but works here too */}
+                                                        <div id="batch-schedule-toast" style={{ display: 'none', position: 'fixed', bottom: '28px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#d1fae5', color: '#065f46', border: '1px solid #6ee7b7', borderRadius: '10px', padding: '10px 20px', zIndex: 9999, alignItems: 'center', gap: '10px', boxShadow: '0 4px 16px rgba(0,0,0,0.10)', fontSize: '13px', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                                                          <span><strong>Class Not Started Yet.</strong> Join Now button appears 15 min before class starts.</span>
+                                                          <span onClick={() => document.getElementById('batch-schedule-toast').style.display = 'none'} style={{ marginLeft: '10px', cursor: 'pointer', fontWeight: 700, color: '#065f46' }}>✕</span>
+                                                        </div>
+                                                      </>
+                                                  )
                                               ) : (
                                                   <button
                                                       className="schedule-btn not-scheduled"
                                                       disabled
+                                                      style={{ backgroundColor: '#f8f9fa', color: '#adb5bd', border: '1.5px solid #dee2e6', borderRadius: '20px', padding: '5px 14px', fontWeight: 600, cursor: 'not-allowed', fontSize: '12px', whiteSpace: 'nowrap', minWidth: '120px' }}
                                                   >
-                                                    ○ Not Scheduled
+                                                    Not Scheduled
                                                   </button>
                                               )}
                                             </div>

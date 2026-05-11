@@ -681,31 +681,33 @@ const CourseLessonBody = ({
         ● Scheduled
     </span>
                                                                             )}
-                                                                            {/* Scheduled Warning Modal */}
                                                                             {showScheduledWarning && (
                                                                                 <div
                                                                                     style={{
-                                                                                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
-                                                                                        zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                                                        position: 'fixed', inset: 0,
+                                                                                        background: 'rgba(0,0,0,0.4)',
+                                                                                        zIndex: 99999,
+                                                                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                                                     }}
                                                                                     onClick={() => setShowScheduledWarning(false)}
                                                                                 >
                                                                                     <div
                                                                                         style={{
-                                                                                            background: '#fff', borderRadius: '16px', padding: '32px 28px',
-                                                                                            maxWidth: '380px', width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
+                                                                                            background: '#fff', borderRadius: '16px',
+                                                                                            padding: '28px 24px', maxWidth: '340px',
+                                                                                            width: '90%', textAlign: 'center',
+                                                                                            boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
                                                                                         }}
                                                                                         onClick={e => e.stopPropagation()}
                                                                                     >
-                                                                                        <div style={{ fontSize: '40px', marginBottom: '12px' }}>⏰</div>
-                                                                                        <h5 style={{ fontWeight: 700, marginBottom: '10px' }}>Class Not Started Yet</h5>
-                                                                                        <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
-                                                                                            You can join the class <strong>15 minutes before</strong> the scheduled start time.
-                                                                                            The <em>Join Now</em> button will appear automatically when the window opens.
+                                                                                        <div style={{ fontSize: '36px', marginBottom: '10px' }}>⏰</div>
+                                                                                        <h5 style={{ fontWeight: 700, marginBottom: '8px' }}>Class Not Started Yet</h5>
+                                                                                        <p style={{ color: '#666', fontSize: '13px', marginBottom: '18px' }}>
+                                                                                            Join opens <strong>15 min before</strong> class. The <em>Join Now</em> button appears automatically.
                                                                                         </p>
                                                                                         <button
                                                                                             className="btn btn-primary"
-                                                                                            style={{ borderRadius: '20px', padding: '8px 28px' }}
+                                                                                            style={{ borderRadius: '20px', padding: '7px 26px' }}
                                                                                             onClick={() => setShowScheduledWarning(false)}
                                                                                         >
                                                                                             Got it
