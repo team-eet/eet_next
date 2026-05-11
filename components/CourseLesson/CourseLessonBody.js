@@ -32,6 +32,7 @@ const CourseLessonBody = ({
     // State for description expansion in content tab
     const [expandedDescriptions, setExpandedDescriptions] = useState({});
     //  const [popupCard, setPopupCard] = useState(null); // NEW
+    const [showScheduledWarning, setShowScheduledWarning] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all'); // NEW
     const toggleDescription = (index) => {
         setExpandedDescriptions(prev => ({
@@ -481,157 +482,255 @@ const CourseLessonBody = ({
                         </div>
                     </div>
                 )}
-            </div>
 
-            {/* Lectures Tab - Small Cards */}
-            {activeTab.tab === "lectures" && (() => {
-                const getDateForLesson = (lessonIndex) => {
-                    try {
-                        const rawDays = batchMeta?.sDays || batchMeta?.batchDays || batchMeta?.days || null;
-                        const rawStart = batchMeta?.dBatchStartDate || batchMeta?.batchStartDate || batchMeta?.startDate || null;
-                        const rawEnd = batchMeta?.dBatchEndDate || batchMeta?.batchEndDate || batchMeta?.endDate || null;
+                {/* Lectures Tab */}
+                {activeTab.tab === "lectures" && (() => {
+                    const getDateForLesson = (lessonIndex) => {
+                        try {
+                            const rawDays = batchMeta?.sDays || batchMeta?.batchDays || batchMeta?.days || null;
+                            const rawStart = batchMeta?.dBatchStartDate || batchMeta?.batchStartDate || batchMeta?.startDate || null;
+                            const rawEnd = batchMeta?.dBatchEndDate || batchMeta?.batchEndDate || batchMeta?.endDate || null;
 
-                        if (!rawDays || !rawStart) return null;
+                            if (!rawDays || !rawStart) return null;
 
-                        const days = JSON.parse(rawDays || "[]");
-                        if (!days.length) return null;
+                            const days = JSON.parse(rawDays || "[]");
+                            if (!days.length) return null;
 
-                        const dayNameToIndex = {
-                            Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3,
-                            Thursday: 4, Friday: 5, Saturday: 6
-                        };
+                            const dayNameToIndex = {
+                                Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3,
+                                Thursday: 4, Friday: 5, Saturday: 6
+                            };
 
-                        const parseLocal = (d) => {
-                            const dt = new Date(d);
-                            return new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate());
-                        };
+                            const parseLocal = (d) => {
+                                const dt = new Date(d);
+                                return new Date(dt.getUTCFullYear(), dt.getUTCMonth(), dt.getUTCDate());
+                            };
 
-                        const start = parseLocal(rawStart);
-                        const end = parseLocal(rawEnd);
-                        const activeDayIndices = days.map(d => dayNameToIndex[d]);
+                            const start = parseLocal(rawStart);
+                            const end = parseLocal(rawEnd);
+                            const activeDayIndices = days.map(d => dayNameToIndex[d]);
 
-                        let count = 0;
-                        const cur = new Date(start);
-                        while (cur <= end) {
-                            if (activeDayIndices.includes(cur.getDay())) {
-                                if (count === lessonIndex) return new Date(cur);
-                                count++;
+                            let count = 0;
+                            const cur = new Date(start);
+                            while (cur <= end) {
+                                if (activeDayIndices.includes(cur.getDay())) {
+                                    if (count === lessonIndex) return new Date(cur);
+                                    count++;
+                                }
+                                cur.setDate(cur.getDate() + 1);
                             }
-                            cur.setDate(cur.getDate() + 1);
+                            return null;
+                        } catch (e) {
+                            console.error("getDateForLesson error:", e);
+                            return null;
                         }
-                        return null;
-                    } catch (e) {
-                        console.error("getDateForLesson error:", e);
-                        return null;
+                    };
+
+                    const isLessonCompleted = (lessonIndex) => {
+                        try {
+                            const lessonDate = getDateForLesson(lessonIndex);
+                            if (!lessonDate) return false;
+                            const endTime = batchMeta?.sBatchEndTime;
+                            if (!endTime) return false;
+
+                            const endTimeStr = endTime.trim();
+                            const match = endTimeStr.match(/^(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+                            let hours = 0, minutes = 0;
+                            if (match) {
+                                hours = parseInt(match[1]);
+                                minutes = parseInt(match[2]);
+                                if (match[3]?.toLowerCase() === 'pm' && hours !== 12) hours += 12;
+                                if (match[3]?.toLowerCase() === 'am' && hours === 12) hours = 0;
+                            }
+                            const lessonEnd = new Date(lessonDate);
+                            lessonEnd.setHours(hours, minutes, 0, 0);
+                            return new Date() > lessonEnd;
+                        } catch (e) { return false; }
+                    };
+
+                    // Calculate the global index offset for the current section+lesson
+                    let globalLessonIndex = 0;
+                    for (let si = 0; si < activeTab.titleIndex; si++) {
+                        globalLessonIndex += JSON.parse(LessonData[si].lessionTbl || "[]").length;
                     }
-                };
+                    globalLessonIndex += activeTab.dayIndex;
+                    return (
+                        <div className="rbt-lesson-content-inner" style={{ paddingTop: '20px' }}>
+                            <div className="section-title mb-4">
+                                <h4 className="rbt-title-style-3">Live Lectures</h4>
+                                <div className="rbt-separator"></div>
+                            </div>
 
-                const isLessonCompleted = (lessonIndex) => {
-                    try {
-                        const lessonDate = getDateForLesson(lessonIndex);
-                        if (!lessonDate) return false;
-                        const endTime = batchMeta?.sBatchEndTime;
-                        if (!endTime) return false;
+                            {LessonData.filter((_, sIdx) => sIdx === activeTab.titleIndex).map((section, sIdx) => {
+                                const lessons = JSON.parse(section.lessionTbl || "[]").filter((_, lIdx) => lIdx === activeTab.dayIndex);
+                                const actualSIdx = activeTab.titleIndex;
+                                return (
+                                    <div key={actualSIdx} className="mb-5">
+                                        <h6 className="fw-bold text-muted mb-3" style={{ textTransform: 'uppercase', fontSize: '13px', letterSpacing: '1px' }}>
+                                            {section.sSectionTitle} <span className="text-primary">({lessons.length} Lectures)</span>
+                                        </h6>
+                                        <div className="row g-3">
+                                            {lessons.map((lesson, lIdx) => {
+                                                const currentGlobalIndex = globalLessonIndex;
+                                                const schedule = lectureSchedules[lesson.nLId] || {};
+                                                const isScheduled = !!schedule.sBatchLink || schedule.isScheduled;
+                                                const link = schedule.sBatchLink;
 
-                        const endTimeStr = endTime.trim();
-                        const match = endTimeStr.match(/^(\d{1,2}):(\d{2})\s*(am|pm)?/i);
-                        let hours = 0, minutes = 0;
-                        if (match) {
-                            hours = parseInt(match[1]);
-                            minutes = parseInt(match[2]);
-                            if (match[3]?.toLowerCase() === 'pm' && hours !== 12) hours += 12;
-                            if (match[3]?.toLowerCase() === 'am' && hours === 12) hours = 0;
-                        }
-                        const lessonEnd = new Date(lessonDate);
-                        lessonEnd.setHours(hours, minutes, 0, 0);
-                        return new Date() > lessonEnd;
-                    } catch (e) { return false; }
-                };
+                                                const lessonDate = getDateForLesson(currentGlobalIndex);
+                                                const displayDate = lessonDate
+                                                    ? lessonDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                                                    : null;
 
-                return (
-                    <div className="rbt-lesson-content-inner">
-                        <div className="section-title mb-4">
-                            <h4 className="rbt-title-style-3">Live Lectures</h4>
-                            <div className="rbt-separator"></div>
-                        </div>
+                                                const completed = isLessonCompleted(currentGlobalIndex);
 
-                        {LessonData.map((section, sIdx) => {
-                            const lessons = JSON.parse(section.lessionTbl || "[]");
-                            return (
-                                <div key={sIdx} className="mb-5">
-                                    <h6 className="fw-bold text-muted mb-3" style={{ textTransform: 'uppercase', fontSize: '13px', letterSpacing: '1px' }}>
-                                        {section.sSectionTitle} <span className="text-primary">({lessons.length} Lectures)</span>
-                                    </h6>
+                                                return (
+                                                    <div className="col-6 col-sm-4 col-md-3 col-lg-3" key={lIdx}>
+                                                        {/* ---- NEW CARD BLOCK ---- */}
+                                                        {(() => {
+                                                            // Compute "join now" window: 15 min before scheduled class time
+                                                            const parseTime = (timeStr, date) => {
+                                                                if (!timeStr || !date) return null;
+                                                                const match = timeStr.trim().match(/^(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+                                                                if (!match) return null;
+                                                                let h = parseInt(match[1]), m = parseInt(match[2]);
+                                                                if (match[3]?.toLowerCase() === 'pm' && h !== 12) h += 12;
+                                                                if (match[3]?.toLowerCase() === 'am' && h === 12) h = 0;
+                                                                const dt = new Date(date);
+                                                                dt.setHours(h, m, 0, 0);
+                                                                return dt;
+                                                            };
 
-                                    <div className="row g-3">
-                                        {lessons.map((lesson, lIdx) => {
-                                            const schedule = lectureSchedules[lesson.nLId] || {};
-                                            const isScheduled = !!schedule.sBatchLink || schedule.isScheduled;
-                                            const link = schedule.sBatchLink;
+                                                            const classStart = parseTime(batchMeta?.sBatchStartTime, lessonDate);
+                                                            const classEnd = parseTime(batchMeta?.sBatchEndTime, lessonDate);
+                                                            const now = new Date();
+                                                            const openFrom = classStart ? new Date(classStart.getTime() - 15 * 60 * 1000) : null;
 
-                                            const lessonDate = getDateForLesson(lIdx);
-                                            const displayDate = lessonDate
-                                                ? lessonDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
-                                                : null;
+                                                            const isJoinNowActive = isScheduled && link && openFrom && classEnd
+                                                                ? (now >= openFrom && now <= classEnd)
+                                                                : false;
 
-                                            const completed = isLessonCompleted(lIdx);
+                                                            const recordingLink = schedule?.sRecordingLink || null; // adjust key as needed
 
-                                            return (
-                                                <div className="col-6 col-sm-4 col-md-3 col-lg-3" key={lIdx}>
-                                                    <div
-                                                        className="card h-100 shadow-sm border-0 hover-transform"
-                                                        style={{
-                                                            minHeight: "200px",
-                                                            borderRadius: "16px",
-                                                            cursor: isScheduled && link ? "pointer" : "default"
-                                                        }}
-                                                        onClick={() => isScheduled && link && window.open(link, '_blank')}
-                                                    >
-                                                        <div className="card-body d-flex flex-column p-3 text-center">
-                                                            {/* Day Number */}
-                                                            <div className="mb-2">
-                                                    <span className="badge bg-primary rounded-pill px-3 py-1 fs-6">
-                                                        Day {lIdx + 1}
-                                                    </span>
-                                                            </div>
+                                                            return (
+                                                                <div
+                                                                    className="card h-100 shadow-sm border-0 hover-transform"
+                                                                    style={{ minHeight: "200px", borderRadius: "16px", cursor: "default" }}
+                                                                >
+                                                                    <div className="card-body d-flex flex-column p-3 text-center">
+                                                                        {/* Day badge */}
+                                                                        <div className="mb-2">
+          <span className="badge bg-primary rounded-pill px-3 py-1 fs-6">
+            Day {currentGlobalIndex + 1}
+          </span>
+                                                                        </div>
 
-                                                            {/* Title */}
-                                                            <h6 className="fw-semibold mb-2 flex-grow-1" style={{ fontSize: "14px", lineHeight: "1.3" }}>
-                                                                {lesson.sLessionTitle}
-                                                            </h6>
+                                                                        {/* Lesson title */}
+                                                                        <h6 className="fw-semibold mb-2 flex-grow-1" style={{ fontSize: "14px", lineHeight: "1.3" }}>
+                                                                            {lesson.sLessionTitle}
+                                                                        </h6>
 
-                                                            {/* Date & Time */}
-                                                            {(displayDate || batchMeta?.sBatchStartTime) && (
-                                                                <div className="text-muted small mb-3" style={{ fontSize: "12px" }}>
-                                                                    {displayDate && <div>📅 {displayDate}</div>}
-                                                                    {batchMeta?.sBatchStartTime && (
-                                                                        <div>🕒 {batchMeta.sBatchStartTime}</div>
-                                                                    )}
+                                                                        {/* Date & time */}
+                                                                        {(displayDate || batchMeta?.sBatchStartTime) && (
+                                                                            <div className="text-muted small mb-3" style={{ fontSize: "12px" }}>
+                                                                                {displayDate && <div>📅 {displayDate}</div>}
+                                                                                {(batchMeta?.sBatchStartTime || batchMeta?.sBatchEndTime) && (
+                                                                                    <div>🕒 {batchMeta.sBatchStartTime} {batchMeta?.sBatchEndTime ? `- ${batchMeta.sBatchEndTime}` : ''}</div>
+                                                                                )}
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Status + action */}
+                                                                        <div className="d-flex flex-column align-items-center gap-2">
+                                                                            {completed ? (
+                                                                                <>
+        <span className="badge bg-success px-3 py-1">
+            ✅ Completed
+        </span>
+                                                                                    {recordingLink && (
+                                                                                        <button
+                                                                                            className="btn btn-sm btn-outline-primary mt-1"
+                                                                                            style={{ borderRadius: "20px", fontSize: "12px" }}
+                                                                                            onClick={() => window.open(recordingLink.startsWith('http') ? recordingLink : `https://${recordingLink}`, '_blank')}
+                                                                                        >
+                                                                                            <Icon.Video size={13} className="me-1" />
+                                                                                            View Recording
+                                                                                        </button>
+                                                                                    )}
+                                                                                </>
+                                                                            ) : !isScheduled ? (
+                                                                                <span className="badge bg-secondary px-3 py-1">
+        ○ Not Scheduled
+    </span>
+                                                                            ) : isJoinNowActive ? (
+                                                                                <button
+                                                                                    className="btn btn-sm btn-success text-white"
+                                                                                    style={{ borderRadius: "20px", fontSize: "12px", fontWeight: "600" }}
+                                                                                    onClick={() => window.open(link.startsWith('http') ? link : `https://${link}`, '_blank', 'noopener,noreferrer')}
+                                                                                >
+                                                                                    <Icon.Video size={13} className="me-1" />
+                                                                                    Join Now
+                                                                                </button>
+                                                                            ) : (
+                                                                                // Scheduled but window not open yet — show warning on click
+                                                                                <span
+                                                                                    className="badge bg-warning px-3 py-1 text-dark"
+                                                                                    style={{ cursor: 'pointer' }}
+                                                                                    onClick={() => setShowScheduledWarning(true)}
+                                                                                    title="Click for info"
+                                                                                >
+        ● Scheduled
+    </span>
+                                                                            )}
+                                                                            {/* Scheduled Warning Modal */}
+                                                                            {showScheduledWarning && (
+                                                                                <div
+                                                                                    style={{
+                                                                                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
+                                                                                        zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                                                                    }}
+                                                                                    onClick={() => setShowScheduledWarning(false)}
+                                                                                >
+                                                                                    <div
+                                                                                        style={{
+                                                                                            background: '#fff', borderRadius: '16px', padding: '32px 28px',
+                                                                                            maxWidth: '380px', width: '90%', textAlign: 'center', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'
+                                                                                        }}
+                                                                                        onClick={e => e.stopPropagation()}
+                                                                                    >
+                                                                                        <div style={{ fontSize: '40px', marginBottom: '12px' }}>⏰</div>
+                                                                                        <h5 style={{ fontWeight: 700, marginBottom: '10px' }}>Class Not Started Yet</h5>
+                                                                                        <p style={{ color: '#666', fontSize: '14px', marginBottom: '20px' }}>
+                                                                                            You can join the class <strong>15 minutes before</strong> the scheduled start time.
+                                                                                            The <em>Join Now</em> button will appear automatically when the window opens.
+                                                                                        </p>
+                                                                                        <button
+                                                                                            className="btn btn-primary"
+                                                                                            style={{ borderRadius: '20px', padding: '8px 28px' }}
+                                                                                            onClick={() => setShowScheduledWarning(false)}
+                                                                                        >
+                                                                                            Got it
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+
+                                                                    </div>
                                                                 </div>
-                                                            )}
-
-                                                            {/* Status */}
-                                                            <div>
-                                                                {completed ? (
-                                                                    <span className="badge bg-success px-3 py-1">✅ Completed</span>
-                                                                ) : isScheduled ? (
-                                                                    <span className="badge bg-warning px-3 py-1 text-dark">● Scheduled</span>
-                                                                ) : (
-                                                                    <span className="badge bg-secondary px-3 py-1">○ Not Scheduled</span>
-                                                                )}
-                                                            </div>
-                                                        </div>
+                                                            );
+                                                        })()}
+                                                        {/* ---- END NEW CARD BLOCK ---- */}
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                );
-            })()}
+                                );
+                            })}
+                        </div>
+                    );
+                })()}
+            </div>{/* closes inner content */}
             {/* Footer Navigation */}
             <div className="footerBar bg-color-extra2 ptb--15 overflow-hidden position-absolute bottom-0 start-0 end-0">
                 <div className="rbt-button-group d-flex justify-content-between px-4">
