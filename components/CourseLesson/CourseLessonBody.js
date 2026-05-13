@@ -886,7 +886,7 @@ const CourseLessonBody = ({
                     background: #0d6efd;
                     color: white;
                 }
-                
+
 
                 /* ── Responsive breakpoints ── */
 
