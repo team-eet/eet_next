@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader, Row, Col, Progress } from 'reactstrap';
 import Link from 'next/link';
 import Image from 'next/image';
 import { EncryptData } from "@/components/Services/encrypt-decrypt";
+import { DecryptData } from "@/components/Services/encrypt-decrypt";
 const CourseLessonBody = ({
                               isBatch,
                               activeTab,
@@ -264,7 +265,7 @@ const CourseLessonBody = ({
                             {quetypeItems && quetypeItems.length > 0 ? (
                                 quetypeItems.map((item, index) => (
                                     <Fragment key={index}>
-                                        {(item.nSQId >= 17 && item.nSQId <= 21) ? (
+                                        {(item.nSQId >= 20 && item.nSQId <= 21)? (
                                             // ✅ FIX 1: Card always renders; no longer gated behind SepActivitylist
                                             <div className="col-lg-6">
                                                 <div onClick={() => handleSepActivityPage(item.nAQId)} style={{ cursor: 'pointer' }}>
@@ -342,19 +343,23 @@ const CourseLessonBody = ({
                                                                         </div>
                                                                     </div>
                                                                     <div className="profile-user-info">
-                                                                        {/* ✅ FIX 3: Added e.stopPropagation() so card click doesn't interfere */}
                                                                         <button
                                                                             type="button"
                                                                             className="btn btn-primary btn-sm"
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
+                                                                                // userRegId prop is already passed — use it directly
+                                                                                // No need for the inline require/decrypt fallback
+                                                                                const safeRegId = userRegId
+                                                                                    || DecryptData(localStorage.getItem('userData'))?.regid;
+
                                                                                 viewActivity(
                                                                                     EncryptData(item.nAQId),
                                                                                     EncryptData(parseInt(item.act_first)),
                                                                                     EncryptData(1),
                                                                                     'y',
                                                                                     EncryptData(isBatch.nCId),
-                                                                                    userRegId,
+                                                                                    safeRegId,
                                                                                     item.sActivityName,
                                                                                     item.nSQId
                                                                                 );

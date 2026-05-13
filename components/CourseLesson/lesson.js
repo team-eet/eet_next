@@ -69,6 +69,7 @@ const CourseLesson = () => {
         // ✅ Safe DOM access
         const el = document.getElementById('Activity');
         if (el) el.style.marginBottom = '0';
+        const safeReg = regid?.regid || regid?.nRegId || regid?.['regid'] || regid?.['nRegId'];
         Axios.get(`${API_URL}/api/activityQue/GetActivityQueListSeparateViewActivity/${EncryptData(aqid)}/${regid['regid']}/${cid}`, {
             headers: { ApiKey: `${API_KEY}` }
         })
@@ -124,7 +125,18 @@ const CourseLesson = () => {
     //     setActiveTab({ tab, dayIndex });
     // };
 
-    const viewActivity = (nAQId,act_first,questionNo,y,nCId,userRegId,sActivityName,nSQId) => {
+    const viewActivity = (nAQId, act_first, questionNo, y, nCId, userRegId, sActivityName, nSQId) => {
+        if (!userRegId) {
+            try {
+                const udata = DecryptData(localStorage.getItem('userData'));
+
+                userRegId = udata?.regid || udata?.['regid'];
+            } catch(e) {}
+        }
+        if (!userRegId) {
+            console.error("viewActivity: userRegId is undefined");
+            return;
+        }
         //    alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
@@ -141,7 +153,7 @@ const CourseLesson = () => {
             case 6:
             case 7:
             case 8:
-                setUrlIFrame(`${WEB_URL}/mcqsingleoptionact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
                 break;
             case 9:
             case 10:
@@ -157,6 +169,11 @@ const CourseLesson = () => {
             case 27:
             case 28:
                 setUrlIFrame(`${WEB_URL}/speakingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                break;
+            case 17:
+            case 18:
+            case 19:  // add whatever other writing nSQIds exist
+                setUrlIFrame(`${WEB_URL}/writingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
                 break;
             default:
                 setUrlIFrame(`${WEB_URL}/frame_error`)
@@ -209,6 +226,7 @@ const CourseLesson = () => {
         setEncodedId(encodedId);
         if (localStorage.getItem('userData')) {
             const udata = DecryptData(localStorage.getItem('userData'));
+            console.log("🔑 udata keys:", Object.keys(udata), "full:", udata);
             setRegid(udata);
 
             Axios.get(`${API_URL}/api/section/GetSectionLessionData/${cid}/${mid}`, {
@@ -292,7 +310,10 @@ const CourseLesson = () => {
 
     useEffect(() => {
         if (!getShowModal && activeTab.tab === "activity") {
-            Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(activeTab.nlid)}/${regid['regid']}/${cid}`, {
+            const udata = DecryptData(localStorage.getItem('userData'));
+            console.log("🔑 udata keys:", Object.keys(udata), "full:", udata);
+            const safeRegId = regid?.['regid'] || udata?.['regid'];
+            Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(activeTab.nlid)}/${safeRegId}/${cid}`, {
                 headers: { ApiKey: `${API_KEY}` }
             }).then(res => {
                 if (res.data) {
@@ -354,8 +375,10 @@ const CourseLesson = () => {
                 });
                 break;
             }
-            case "activity":
-                Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(nlid)}/${regid['regid']}/${cid}`, {
+            case "activity": {
+                const udata = DecryptData(localStorage.getItem('userData'));
+                const safeRegId = regid?.['regid'] || udata?.['regid'] || udata?.regid;
+                Axios.get(`${API_URL}/api/activityMember/GetActivityQueTypeMemAct/${EncryptData(nlid)}/${safeRegId}/${cid}`, {
                     headers: {ApiKey: `${API_KEY}`}
                 }).then(res => {
                     console.log("activity", res.data)
@@ -370,6 +393,7 @@ const CourseLesson = () => {
                     setApiCall(true);
                 });
                 break;
+            }
             case "practice":
                 setApiCall(true);
                 break;
@@ -595,7 +619,7 @@ const CourseLesson = () => {
                                 activitySeperateCard={activitySeperateCard}
                                 handleBackActivity={handleBackActivity}
                                 viewActivity={viewActivity}
-                                userRegId={regid['regid']}
+                                userRegId={regid?.['regid'] || regid?.regid || regid?.nRegId || regid?.['nRegId'] || ''}
                                 tutorialDocArray={tutorialDocArray}
                                 sidebar={sidebar}
                                 setSidebar={() => setSidebar(!sidebar)}
