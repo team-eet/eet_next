@@ -66,25 +66,33 @@ const UserReg = () => {
             validationSchema={UserValidationSchema}
             initialValues={{
                 nRoleId: roleID,
-                sFName,
-                sLName,
-                sPassword,
-                confirmPassword,
+                sFName: sFName,
+                sLName: sLName,
+                sPassword: sPassword,
+                confirmPassword: confirmPassword,
                 sEmail: localStorage.getItem('userRegData')
                     ? (JSON.parse(localStorage.getItem('userRegData')).emname === 'email'
-                        ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em) : '') : '',
+                        ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em)
+                        : '')
+                    : '',
                 sMobile: localStorage.getItem('userRegData')
                     ? (JSON.parse(localStorage.getItem('userRegData')).emname === 'mobile'
-                        ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em) : '') : ''
+                        ? EncryptData(JSON.parse(localStorage.getItem('userRegData')).em)
+                        : '')
+                    : ''
             }}
             enableReinitialize={true}
-            onSubmit={async (values, { resetForm }) => {
+            onSubmit={async (values, { resetForm, setSubmitting }) => {
                 try {
-                    const response = await Axios.post(`${API_URL}/api/registration/InsertUserRegData/${EncryptData(values)}`, 1, {
-                        headers: { ApiKey: `${API_KEY}` }
-                    });
+                    const response = await Axios.post(
+                        `${API_URL}/api/registration/InsertUserRegData/${EncryptData(values)}`,
+                        1,
+                        { headers: { ApiKey: `${API_KEY}` } }
+                    );
 
-                    const retData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+                    const retData = typeof response.data === 'string'
+                        ? JSON.parse(response.data)
+                        : response.data;
 
                     if (retData.success === "1") {
                         resetForm();
@@ -95,7 +103,6 @@ const UserReg = () => {
                             customClass: { confirmButton: 'btn btn-primary' },
                             buttonsStyling: false
                         }).then(() => {
-                            // Handle redirection logic
                             const lgntr = localStorage.getItem('lgntr');
                             const lgninst = localStorage.getItem('lgninst');
 
@@ -116,10 +123,12 @@ const UserReg = () => {
                     }
                 } catch (err) {
                     ErrorDefaultAlert(err);
+                } finally {
+                    setSubmitting(false);
                 }
             }}
         >
-            {({ errors, touched }) => (
+            {({ errors, touched, isSubmitting }) => (
                 <div className='auth-wrapper auth-v2'>
                     <Row className='auth-inner m-0'>
                         <Col className='px-xl-2 mx-auto' sm='8' md='6' lg='12'>
@@ -190,8 +199,12 @@ const UserReg = () => {
                                 </FormGroup>
 
                                 <FormGroup className='mb-1'>
-                                    <button className="rbt-btn btn-gradient" type="submit">
-                                        Submit
+                                    <button
+                                        className="rbt-btn btn-gradient"
+                                        type="submit"
+                                        disabled={isSubmitting}   // ← This prevents multiple clicks
+                                    >
+                                        {isSubmitting ? "Processing..." : "Submit"}
                                     </button>
                                     <br />
                                     <p className='text-muted font-12 mb-1'>
