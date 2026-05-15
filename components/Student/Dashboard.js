@@ -30,15 +30,34 @@ const Dashboard = () => {
       Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedBatch/${udata}`, {
         headers: { ApiKey: `${API_KEY}` }
       })
+          // REPLACE everything from setBatchCnt to the second setCompletedBatchCnt with THIS only:
           .then(res => {
             if (res.data && Array.isArray(res.data)) {
+              const now = new Date();
+
               setBatchCnt(res.data.length)
-              const completed = res.data.filter(item => item.bCompleted === true).length;
-              setActiveBatchCnt(res.data.length - completed)
-              setCompletedBatchCnt(completed)
+
+              const completedBatches = res.data.filter(item =>
+                  item.dBatchEndDate && new Date(item.dBatchEndDate) < now
+              ).length;
+
+              const activeBatches = res.data.filter(item =>
+                  !item.dBatchEndDate || new Date(item.dBatchEndDate) >= now
+              ).length;
+
+              console.log('Enrolled:', res.data.length, '| Active:', activeBatches, '| Completed:', completedBatches);
+
+              setActiveBatchCnt(activeBatches)
+              setCompletedBatchCnt(completedBatches)
+            } else {
+              console.log('API response is not an array or empty:', res.data);
             }
           })
-          .catch(err => { ErrorDefaultAlert(err) })
+          .catch(err => {
+            // LOG 6: API failed entirely
+            console.error('getPurchasedBatch API ERROR:', err);
+            ErrorDefaultAlert(err)
+          })
     }
   }
 
@@ -47,7 +66,7 @@ const Dashboard = () => {
     // bhavika@123
     if (localStorage.getItem('userData')) {
       const udata = DecryptData(localStorage.getItem('userData')).regid
-      // console.log('api called')
+      console.log('api called')
       console.log(udata, "udata value")
       console.log( "API CALL MADE", `${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`)
       Axios.get(`${API_URL}/api/purchasedCourse/GetPurchasedCourse/${udata}`, {
@@ -262,7 +281,7 @@ const Dashboard = () => {
                         numberClass="color-violet"
                         icon="feather-monitor"
                         title="ACTIVE BATCHES"
-                        value={getBatchCnt || 0}
+                        value={getActiveBatchCnt || 0}
                         btnColor="bg-violet-opacity"
                     />:
                     <div className="rbt-counterup variation-01 rbt-hover-03 rbt-border-dashed bg-violet-opacity">
