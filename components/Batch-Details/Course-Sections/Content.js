@@ -63,6 +63,11 @@ const Content = ({ batchStartTime, batchEndTime, batchStartDate, batchEndDate, b
           setIsApiCall(1);
         });
   };
+  const ensureAbsoluteUrl = (url) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return 'https://' + url;
+  };
   const parseBatchTime = (timeStr) => {
     if (!timeStr) return null;
     const s = timeStr.trim();
@@ -134,7 +139,7 @@ const Content = ({ batchStartTime, batchEndTime, batchStartDate, batchEndDate, b
                 setScheduledLinks(prev => ({
                   ...prev,
                   [nLId]: {
-                    sBatchLink: res.data[0].sBatchLink,
+                    sBatchLink: ensureAbsoluteUrl(res.data[0].sBatchLink),
                     sBatchDate: res.data[0].sBatchDate,   // 👈 add this
                     sBatchTime: res.data[0].sBatchTime,   // 👈 add this
                     isScheduled: true
@@ -371,7 +376,7 @@ const Content = ({ batchStartTime, batchEndTime, batchStartDate, batchEndDate, b
                                                   isJoinEnabled(subIndex) ? (
                                                       <button
                                                           className="schedule-btn scheduled immersive-btn"
-                                                          style={{ backgroundColor: '#cc0000', color: '#fff', border: 'none', borderRadius: '20px', padding: '5px 14px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', minWidth: '120px', boxShadow: '0 2px 8px rgba(204,0,0,0.25)' }}
+                                                          style={{ backgroundColor: '#3ed643', color: '#fff', border: 'none', borderRadius: '20px', padding: '5px 14px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', minWidth: '120px', boxShadow: '0 2px 8px rgba(204,0,0,0.25)' }}
                                                           onClick={() => window.open(link, '_blank', 'noopener,noreferrer')}
                                                       >
                                                         Join Now
