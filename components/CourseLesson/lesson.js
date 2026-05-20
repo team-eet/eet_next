@@ -142,6 +142,12 @@ const CourseLesson = () => {
         setIsActivityLoading(true);
         setShowModal(true)
         setActivityName(sActivityName)
+        console.log('viewActivity batch url : ', `${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`);
+        console.log('viewActivity nAQId: ', DecryptData(nAQId));
+        console.log('viewActivity act_first: ', DecryptData(act_first));
+        console.log('viewActivity questionNo: ', DecryptData(questionNo));
+        console.log('viewActivity nCId: ', DecryptData(nCId));
+        console.log('viewActivity userRegId: ', DecryptData(userRegId));
         switch (nSQId){
             case 1:
             case 2:

@@ -126,11 +126,11 @@ const CourseLessonBody = ({
                                              onClick={() => openPreview(item)}
                                              style={{ cursor: 'pointer' }}>
                                             {/* Thumbnail Section with Play Overlay */}
-                                            <div className="rbt-card-img position-relative">
+                                            <div className="rbt-card-img position-relative" style={{ backgroundColor: '#f8f9fa' }}>
                                                 <div
                                                     className="thumbnail-wrapper cursor-pointer"
                                                     onClick={() => openPreview(item)}
-                                                    style={{ cursor: 'pointer' }}
+                                                    style={{ cursor: 'pointer', height: '100%', width: '100%' }}
                                                 >
                                                     {item.nPFTId === 11 ? (
                                                         // Video Thumbnail
@@ -140,8 +140,14 @@ const CourseLessonBody = ({
                                                                 alt={item.sFileName}
                                                                 className="w-100 rbt-radius-top"
                                                                 width={400}
-                                                                height={160}
-                                                                style={{ objectFit: 'cover', width: '100%', height: '160px' }}
+                                                                height={190}
+                                                                style={{
+                                                                    objectFit: 'contain',     // ← Changed from cover
+                                                                    width: '100%',
+                                                                    height: '100%',
+                                                                    display: 'block',
+                                                                    backgroundColor: '#f8f9fa'
+                                                                }}
                                                             />
                                                             <div className="video-overlay">
                                                                 <div className="play-button pulse-animation">
@@ -156,8 +162,14 @@ const CourseLessonBody = ({
                                                             alt={item.sFileName}
                                                             className="w-100 rbt-radius-top"
                                                             width={400}
-                                                            height={160}
-                                                            style={{ objectFit: 'cover', width: '100%', height: '160px' }}
+                                                            height={190}
+                                                            style={{
+                                                                objectFit: 'contain',     // ← Changed from cover
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                display: 'block',
+                                                                backgroundColor: '#f8f9fa'
+                                                            }}
                                                         />
                                                     ) : (
                                                         // Default Thumbnail
@@ -166,22 +178,25 @@ const CourseLessonBody = ({
                                                             alt={item.sFileName}
                                                             className="w-100 rbt-radius-top"
                                                             width={400}
-                                                            height={160}
-                                                            style={{ objectFit: 'cover', width: '100%', height: '160px' }}
+                                                            height={190}
+                                                            style={{
+                                                                objectFit: 'contain',     // ← Changed from cover
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                display: 'block',
+                                                                backgroundColor: '#f8f9fa'
+                                                            }}
                                                         />
                                                     )}
                                                 </div>
 
                                                 {/* Category/Tag Badge */}
                                                 <div className="rbt-badge-group position-absolute top-0 start-0 m-3">
-                                                    <span className={`rbt-badge ${item.nPFTId === 11 ? 'bg-primary' : 'bg-danger'}`}>
-                                                        {getFileTypeIcon(item)}
-                                                        {item.nPFTId === 11 ? 'Video' : 'PDF'}
-                                                    </span>
+        <span className={`rbt-badge ${item.nPFTId === 11 ? 'bg-primary' : 'bg-danger'}`}>
+            {getFileTypeIcon(item)}
+            {item.nPFTId === 11 ? 'Video' : 'PDF'}
+        </span>
                                                 </div>
-
-                                                {/* Tutor Badge */}
-
                                             </div>
 
                                             <div className="rbt-card-body p-3 d-flex flex-column flex-grow-1">
@@ -808,27 +823,48 @@ const CourseLessonBody = ({
                     70% { box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
                     100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
                 }
+                .rbt-card.modern-card .rbt-card-body {
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .description-wrapper {
+                    min-height: 75px;        /* Keeps description area consistent */
+                }
                 .rbt-card.modern-card {
                     overflow: hidden;
                     transition: all 0.3s ease;
                     width: 100%;
-                }
-                .rbt-card.modern-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-                }
-                /* Fixed thumbnail height across all devices */
-                .rbt-card-img img {
-                    height: 180px !important;
-                    object-fit: cover !important;
-                    width: 100% !important;
-                }
-                /* Description area fixed min-height so cards stay uniform */
-                .description-wrapper {
-                    min-height: 72px;
+                    height: 100%;           /* Important for uniform cards */
                     display: flex;
                     flex-direction: column;
-                    justify-content: flex-start;
+                }
+
+                /* FIXED THUMBNAIL CONTAINER - Updated */
+                .rbt-card-img {
+                    height: 190px !important;        /* Fixed height for all cards */
+                    min-height: 190px !important;
+                    position: relative;
+                    overflow: hidden;
+                    background-color: #f8f9fa;
+                    border-top-left-radius: inherit;
+                    border-top-right-radius: inherit;
+                }
+
+                .rbt-card-img img {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: contain !important;   /* Changed to contain */
+                    display: block;
+                    padding: 8px;                     /* Optional: small padding so image doesn't touch edges */
+                    box-sizing: border-box;
+                }
+
+                /* Ensure thumbnail wrapper fills container */
+                .thumbnail-wrapper {
+                    height: 100%;
+                    width: 100%;
                 }
                 .description-text {
                     font-size: 14px;
