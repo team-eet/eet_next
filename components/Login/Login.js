@@ -181,16 +181,17 @@ const Login = () => {
                             localStorage.removeItem('checkbox')
                           }
                           resetForm({})
-                          const sharedLink = localStorage.getItem('sharedLink')
-                          // if (sharedLink) {
-                          //   localStorage.removeItem('sharedLink')
-                          //   window.location.href = sharedLink// Redirect to the shared link
-                          // } else {
+                          // === AFTER SUCCESSFUL LOGIN ===
+                          const sharedLink = localStorage.getItem('sharedLink');
 
-                            router.push('/') // Redirect to home page
-                            // window.location.reload()
-                            toast.success(<SuccessProgressToast pdata={retData} />, { hideProgressBar: true })
-                          // }
+                          if (sharedLink) {
+                            localStorage.removeItem('sharedLink');
+                            router.push(sharedLink);           // ← Use router, not window.location
+                          } else {
+                            router.push('/');
+                          }
+
+                          toast.success(<SuccessProgressToast pdata={retData} />, { hideProgressBar: true });
 
                         } else {
                           { ErrorAlert(retData) }

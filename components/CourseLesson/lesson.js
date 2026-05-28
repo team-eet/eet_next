@@ -140,7 +140,8 @@ const CourseLesson = () => {
         //    alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
-        setActivityName(sActivityName);
+        setShowModal(true)
+        setActivityName(sActivityName)
         console.log('viewActivity batch url : ', `${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`);
         console.log('viewActivity nAQId: ', DecryptData(nAQId));
         console.log('viewActivity act_first: ', DecryptData(act_first));
@@ -154,13 +155,11 @@ const CourseLesson = () => {
             case 4:
             case 5:
                 setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
-                setShowModal(true);   // ← add here
                 break;
             case 6:
             case 7:
             case 8:
                 setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
-                setShowModal(true);   // ← add here
                 break;
             case 9:
             case 10:

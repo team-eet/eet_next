@@ -175,6 +175,9 @@ const Viedo = ({ checkMatchCourses }) => {
         setIsLoading(true);
 
         if (!localStorage.getItem("userData")) {
+            // Save current page URL so we can return after login
+            localStorage.setItem('sharedLink', window.location.pathname + window.location.search);
+
             return MySwal.fire({
                 title: "Login",
                 text: "Login to add batch to cart",

@@ -612,7 +612,17 @@ const Registration = () => {
                             <p className="description mt--20">
                                 Already have an account?{' '}
                                 <Link href="/login">
-                                    <span>Sign in instead</span>
+        <span
+            onClick={() => {
+                // Preserve the original batch page so user returns after login
+                if (!localStorage.getItem('sharedLink')) {
+                    localStorage.setItem('sharedLink', window.location.pathname + window.location.search);
+                }
+            }}
+            style={{ cursor: 'pointer' }}
+        >
+            Sign in instead
+        </span>
                                 </Link>
                             </p>
                         </div>

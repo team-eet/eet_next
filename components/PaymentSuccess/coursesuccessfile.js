@@ -302,23 +302,8 @@ const CourseSuccessFile = () => {
                                                         paymentDetails.payment_status === 'captured' || paymentDetails.payment_status === 'created' || paymentDetails.payment_status === 'authorized' ?
                                                             <div className="mt-5">
                                                                 <div className="single-button">
-                                                                    {/*<Link href={`/inovice/${getPaymentUrlId}`}>*/}
-                                                                    {/*    <button*/}
-                                                                    {/*        className="rbt-btn btn-gradient icon-hover w-100 text-center">*/}
-                                                                    {/*        <span className="btn-text">Download Invoice</span><span*/}
-                                                                    {/*        className="btn-icon"><i*/}
-                                                                    {/*        className="feather-download"></i></span>*/}
-                                                                    {/*    </button>*/}
-                                                                    {/*</Link>*/}
-                                                                    {/*<button onClick={downloadInvoice}*/}
-                                                                    {/*        className="rbt-btn btn-gradient icon-hover w-100 text-center">*/}
-                                                                    {/*<span*/}
-                                                                    {/*    className="btn-text">Download Invoice</span><span*/}
-                                                                    {/*    className="btn-icon"><i*/}
-                                                                    {/*    className="feather-download"></i></span>*/}
-                                                                    {/*</button>*/}
                                                                     <div
-                                                                        onClick={!loading ? downloadInvoice : null} // Click disabled when loading
+                                                                        onClick={!loading ? downloadInvoice : null}
                                                                         className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${loading ? "disabled" : ""}`}
                                                                         style={{
                                                                             pointerEvents: loading ? "none" : "auto",
@@ -333,6 +318,15 @@ const CourseSuccessFile = () => {
                                                                         )}
                                                                     </div>
                                                                 </div>
+                                                                {Array.isArray(courseitem) && courseitem.length > 0 && (
+                                                                    <div className="single-button mt--10">
+                                                                        <Link href={`/batch-details/${EncryptData(courseitem[0].batchID)}/${courseitem[0].itemsID.replace(/\"/g, '')}`}>
+                                                                            <div className="rbt-btn btn-gradient rbt-switch-y w-100 text-center">
+                                                                                <span data-text="Start Learning">Start Learning</span>
+                                                                            </div>
+                                                                        </Link>
+                                                                    </div>
+                                                                )}
                                                             </div> : null
                                                     }
 
