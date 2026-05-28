@@ -47,7 +47,7 @@ const CourseLesson = () => {
                 }
             })
             .catch(err => {
-                ErrorDefaultAlert(err);
+                ErrorDefaultAlert(`prectice ${err.message}`);
             });
     };
 

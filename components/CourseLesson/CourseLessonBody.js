@@ -364,9 +364,17 @@ const CourseLessonBody = ({
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 // userRegId prop is already passed — use it directly
-                                                                                // No need for the inline require/decrypt fallback
                                                                                 const safeRegId = userRegId
                                                                                     || DecryptData(localStorage.getItem('userData'))?.regid;
+
+                                                                                console.group("🟡 DEBUG: Start button clicked");
+                                                                                console.log("DEBUG userRegId prop:", userRegId);
+                                                                                console.log("DEBUG safeRegId resolved:", safeRegId);
+                                                                                console.log("DEBUG item.nAQId:", item.nAQId);
+                                                                                console.log("DEBUG item.act_first:", item.act_first);
+                                                                                console.log("DEBUG item.nSQId:", item.nSQId);
+                                                                                console.log("DEBUG isBatch.nCId:", isBatch.nCId);
+                                                                                console.groupEnd();
 
                                                                                 viewActivity(
                                                                                     EncryptData(item.nAQId),
@@ -374,7 +382,7 @@ const CourseLessonBody = ({
                                                                                     EncryptData(1),
                                                                                     'y',
                                                                                     EncryptData(isBatch.nCId),
-                                                                                    safeRegId,
+                                                                                    EncryptData(DecryptData(safeRegId)),
                                                                                     item.sActivityName,
                                                                                     item.nSQId
                                                                                 );

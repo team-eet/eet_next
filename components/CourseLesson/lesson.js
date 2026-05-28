@@ -3,7 +3,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import Axios from 'axios';
 import { SuccessAlert, ErrorDefaultAlert } from "@/components/Services/SweetAlert";
-import { API_URL, API_KEY, WEB_URL } from "../../constants/constant";
+import { API_URL, API_KEY, WEB_URL } from "@/constants/constant";
 import { DecryptData, EncryptData } from "@/components/Services/encrypt-decrypt";
 import LessonSidebar from '@/components/CourseLesson/CourseLessonSidebar';
 import LessonBody from '@/components/CourseLesson/CourseLessonBody';
@@ -69,7 +69,7 @@ const CourseLesson = () => {
         // ✅ Safe DOM access
         const el = document.getElementById('Activity');
         if (el) el.style.marginBottom = '0';
-        const safeReg = regid?.regid || regid?.nRegId || regid?.['regid'] || regid?.['nRegId'];
+        const safeReg = regid?.regid || regid?.['regid'];
         Axios.get(`${API_URL}/api/activityQue/GetActivityQueListSeparateViewActivity/${EncryptData(aqid)}/${regid['regid']}/${cid}`, {
             headers: { ApiKey: `${API_KEY}` }
         })
@@ -79,7 +79,7 @@ const CourseLesson = () => {
                 }
             })
             .catch(err => {
-                ErrorDefaultAlert(err);
+                ErrorDefaultAlert(`Lesson ${err.message}`);
             });
     };
 
@@ -140,8 +140,7 @@ const CourseLesson = () => {
         //    alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
         // alert(nSQId)
         setIsActivityLoading(true);
-        setShowModal(true)
-        setActivityName(sActivityName)
+        setActivityName(sActivityName);
         console.log('viewActivity batch url : ', `${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`);
         console.log('viewActivity nAQId: ', DecryptData(nAQId));
         console.log('viewActivity act_first: ', DecryptData(act_first));
@@ -155,11 +154,13 @@ const CourseLesson = () => {
             case 4:
             case 5:
                 setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                setShowModal(true);   // ← add here
                 break;
             case 6:
             case 7:
             case 8:
                 setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                setShowModal(true);   // ← add here
                 break;
             case 9:
             case 10:
@@ -234,6 +235,20 @@ const CourseLesson = () => {
             const udata = DecryptData(localStorage.getItem('userData'));
             console.log("🔑 udata keys:", Object.keys(udata), "full:", udata);
             setRegid(udata);
+
+            console.group("🔴 DEBUG: useEffect init");
+            console.log("cid:", cid);
+            console.log("mid:", mid);
+            console.log("acid:", acid);
+            console.log("lid:", lid);
+            console.log("pnview:", pnview);
+            console.log("targetNLId:", targetNLId);
+            console.log("targetNSId:", targetNSId);
+            console.log("targetNTBId:", targetNTBId);
+            console.log("udata full:", udata);
+            console.log("udata.regid (encrypted):", udata?.regid);
+            console.log("DecryptData(udata.regid):", DecryptData(udata?.regid));
+            console.groupEnd();
 
             Axios.get(`${API_URL}/api/section/GetSectionLessionData/${cid}/${mid}`, {
                 headers: { ApiKey: `${API_KEY}` }
@@ -625,7 +640,7 @@ const CourseLesson = () => {
                                 activitySeperateCard={activitySeperateCard}
                                 handleBackActivity={handleBackActivity}
                                 viewActivity={viewActivity}
-                                userRegId={regid?.['regid'] || regid?.regid || regid?.nRegId || regid?.['nRegId'] || ''}
+                                userRegId={regid?.['regid'] || regid?.regid || ''}
                                 tutorialDocArray={tutorialDocArray}
                                 sidebar={sidebar}
                                 setSidebar={() => setSidebar(!sidebar)}
