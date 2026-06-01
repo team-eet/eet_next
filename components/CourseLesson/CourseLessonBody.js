@@ -280,10 +280,28 @@ const CourseLessonBody = ({
                             {quetypeItems && quetypeItems.length > 0 ? (
                                 quetypeItems.map((item, index) => (
                                     <Fragment key={index}>
-                                        {(item.nSQId >= 20 && item.nSQId <= 21)? (
+                                        {(item.nSQId >= 20 && item.nSQId <= 19)? (
                                             // ✅ FIX 1: Card always renders; no longer gated behind SepActivitylist
+                                            /*
+                                            Looking at your code, the condition (item.nSQId >= 20 && item.nSQId <= 21) is meant to separate EET-type activities (nSQId 20 & 21) into a different card style — one that uses handleSepActivityPage (click on whole card) instead of the Start button with viewActivity.
+The problem: When nSQId is 20 or 21, it calls handleSepActivityPage(item.nAQId) instead of viewActivity(...), so your switch-case 20/21 that sets the iframe URL never gets reached.
+The fix is in the onClick of that card — replace handleSepActivityPage with viewActivity just like the other card does:
+jsx
+                                             */
                                             <div className="col-lg-6">
-                                                <div onClick={() => handleSepActivityPage(item.nAQId)} style={{ cursor: 'pointer' }}>
+                                                <div onClick={() => {
+                                                    const safeRegId = userRegId || DecryptData(localStorage.getItem('userData'))?.regid;
+                                                    viewActivity(
+                                                        EncryptData(item.nAQId),
+                                                        EncryptData(parseInt(item.act_first)),
+                                                        EncryptData(1),
+                                                        'y',
+                                                        EncryptData(isBatch.nCId),
+                                                        EncryptData(DecryptData(safeRegId)),
+                                                        item.sActivityName,
+                                                        item.nSQId
+                                                    );
+                                                }} style={{ cursor: 'pointer' }}>
                                                     <Card className="border-primary activity-card cardDesignEET hover-transform">
                                                         <CardBody className="card-mobile-view p-4">
                                                             <Row>
@@ -346,9 +364,9 @@ const CourseLessonBody = ({
                                                             <Col lg={12}>
                                                                 <div className="d-flex justify-content-between align-items-start">
                                                                     <div className="d-flex">
-                                            <span className="badge bg-primary rounded-circle p-2 me-3">
-                                                {index + 1}
-                                            </span>
+                <span className="badge bg-primary rounded-circle p-2 me-3">
+                    {index + 1}
+                </span>
                                                                         <div className="titleQuestion">
                                                                             <h6 className="mb-1 font-weight-600 font-16">{item.sActivityName}</h6>
                                                                             <small className="text-muted font-12">
@@ -363,19 +381,7 @@ const CourseLessonBody = ({
                                                                             className="btn btn-primary btn-sm"
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
-                                                                                // userRegId prop is already passed — use it directly
-                                                                                const safeRegId = userRegId
-                                                                                    || DecryptData(localStorage.getItem('userData'))?.regid;
-
-                                                                                console.group("🟡 DEBUG: Start button clicked");
-                                                                                console.log("DEBUG userRegId prop:", userRegId);
-                                                                                console.log("DEBUG safeRegId resolved:", safeRegId);
-                                                                                console.log("DEBUG item.nAQId:", item.nAQId);
-                                                                                console.log("DEBUG item.act_first:", item.act_first);
-                                                                                console.log("DEBUG item.nSQId:", item.nSQId);
-                                                                                console.log("DEBUG isBatch.nCId:", isBatch.nCId);
-                                                                                console.groupEnd();
-
+                                                                                const safeRegId = userRegId || DecryptData(localStorage.getItem('userData'))?.regid;
                                                                                 viewActivity(
                                                                                     EncryptData(item.nAQId),
                                                                                     EncryptData(parseInt(item.act_first)),
@@ -397,9 +403,9 @@ const CourseLessonBody = ({
                                                             <Col>
                                                                 {item.sPackageName && (
                                                                     <div className="pkgName text-end mt-2">
-                                            <span className="badge bg-light-success text-success">
-                                                {item.sPackageName}
-                                            </span>
+                <span className="badge bg-light-success text-success">
+                    {item.sPackageName}
+                </span>
                                                                     </div>
                                                                 )}
                                                             </Col>

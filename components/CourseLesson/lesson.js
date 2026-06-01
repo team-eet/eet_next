@@ -20,7 +20,6 @@ const Plyr = dynamic(
     { ssr: false }
 );
 
-//jdjejdjed
 const CourseLesson = () => {
     const [isBatch, setIsBatch] = useState({});
     const [LessonData, setLessonData] = useState([]);
@@ -38,6 +37,7 @@ const CourseLesson = () => {
     const [SepActivitylist, setSepActivitylist] = useState(true);
     const [getShowModal, setShowModal] = useState(false);
     const [tutorialDocArray, setTutorialDocArray] = useState([]);
+    const [getUserUsername, setUserUsername] = useState("");
 
     const [cid, setcid] = useState('');
     const [regid, setRegid] = useState('');
@@ -138,11 +138,12 @@ const CourseLesson = () => {
             return;
         }
         //    alert(nAQId + " " + act_first + " " + questionNo + " " + y + " " + nCId + " " + userRegId)
-        // alert(nSQId)
+        alert(nSQId);
         setIsActivityLoading(true);
         setShowModal(true)
         setActivityName(sActivityName)
-        console.log('viewActivity batch url : ', `${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`);
+        const getUserUsername = DecryptData(localStorage.getItem('userData'))?.['username'] || getUserUsername;
+        console.log('viewActivity batch url : ', `${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`);
         console.log('viewActivity nAQId: ', DecryptData(nAQId));
         console.log('viewActivity act_first: ', DecryptData(act_first));
         console.log('viewActivity questionNo: ', DecryptData(questionNo));
@@ -154,32 +155,51 @@ const CourseLesson = () => {
             case 3:
             case 4:
             case 5:
-                setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
                 break;
             case 6:
             case 7:
             case 8:
-                setUrlIFrame(`${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                setUrlIFrame(`${WEB_URL}/mcqsingleoptionact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
                 break;
             case 9:
             case 10:
             case 11:
             case 12:
             case 13:
-                setUrlIFrame(`${WEB_URL}/mcqmultipleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                setUrlIFrame(`${WEB_URL}/mcqmultipleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
                 break;
             case 14:
             case 15:
             case 16:
+                setUrlIFrame(`${WEB_URL}/mcqmultipleoptionact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
+                break;
             case 26:
             case 27:
-            case 28:
-                setUrlIFrame(`${WEB_URL}/speakingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+                setUrlIFrame(`${WEB_URL}/speakingque/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
                 break;
             case 17:
             case 18:
-            case 19:  // add whatever other writing nSQIds exist
-                setUrlIFrame(`${WEB_URL}/writingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${userRegId}`)
+            case 19:  // keep it as it is don't touch the code highly fragile not even case ids
+            case 21:
+            case 20:
+                setUrlIFrame(`${WEB_URL}/writingque/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
+                break;
+            case 22:
+            case 23:
+            case 24:
+            case 25:
+                setUrlIFrame(`${WEB_URL}/truefalseallact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
+                break;
+            case 28:
+                setUrlIFrame(`${WEB_URL}/truefalseact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
+                break;
+            case 29:
+            case 30:
+            case 31:
+                case 32:
+            case 33:                   /*case 34-38 dropdown para */
+                setUrlIFrame(`${WEB_URL}/blankparatypingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
                 break;
             default:
                 setUrlIFrame(`${WEB_URL}/frame_error`)
@@ -195,7 +215,9 @@ const CourseLesson = () => {
     useEffect(() => {
         const url = window.location.href;
         const parts = url.split("/");
-
+        const udata = DecryptData(localStorage.getItem('userData'));
+        const username = DecryptData(udata['username']);
+        setUserUsername(udata['username']);
         const encodedId = parts[4]; // index 2 par hoga actual ID
 
         const urlIdArray = DecryptData(encodedId);
