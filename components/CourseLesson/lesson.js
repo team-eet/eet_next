@@ -200,7 +200,7 @@ const CourseLesson = () => {
             case 29:
             case 30:
             case 31:
-                case 32:
+            case 32:
             case 33:                   /*case 34-38 dropdown para */
                 setUrlIFrame(`${WEB_URL}/blankparatypingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
                 break;
