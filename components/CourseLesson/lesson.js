@@ -855,7 +855,7 @@ const CourseLesson = () => {
 
                                     {/* Footer */}
                                     <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" onClick={closePreview}>Close</button>
+
                                     </div>
 
                                 </div>
