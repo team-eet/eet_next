@@ -27,6 +27,7 @@ const CourseLesson = () => {
     const [ActivityATId, setActivityATId] = useState(0);
     const [PracticeATId, setPracticeATId] = useState(0);
     const [TestATId, setTestATId] = useState(0);
+    const [isAttemptingActivity, setIsAttemptingActivity] = useState(false);
     const [tutresourcearray, settutresourcearray] = useState([]);
     const [sContent, setsContent] = useState('');
     const [activeTab, setActiveTab] = useState({ tab: 'overview', dayIndex: 0, titleIndex : 0, nlid : 0 });
@@ -141,6 +142,8 @@ const CourseLesson = () => {
         alert(nSQId);
         setIsActivityLoading(true);
         setShowModal(true)
+        setShowModal(true);
+        setIsAttemptingActivity(false); // reset on each new open
         setActivityName(sActivityName)
         const getUserUsername = DecryptData(localStorage.getItem('userData'))?.['username'] || getUserUsername;
         console.log('viewActivity batch url : ', `${WEB_URL}/mcqsingleact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`);
@@ -210,8 +213,10 @@ const CourseLesson = () => {
 
 
 
-    const handleClose = () => setShowModal(false);
-
+    const handleClose = () => {
+        setShowModal(false);
+        setIsAttemptingActivity(false);
+    };
     useEffect(() => {
         const url = window.location.href;
         const parts = url.split("/");
@@ -726,12 +731,7 @@ const CourseLesson = () => {
                                         />
                                     </div>
 
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary"
-                                                onClick={handleClose}>Close
-                                        </button>
-                                    </div>
-
+                                    {/* Footer removed */}
                                 </div>
                             </div>
                         </div>

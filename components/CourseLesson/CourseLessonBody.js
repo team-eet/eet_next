@@ -57,7 +57,7 @@ const CourseLessonBody = ({
     });
 
     return (
-        <div className="rbt-lesson-rightsidebar overflow-hidden lesson-video">
+        <div className="rbt-lesson-rightsidebar lesson-video" style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', position: 'relative' }}>
             {/* Top Bar */}
             <div className="lesson-top-bar">
                 <div className="lesson-top-left">
@@ -85,7 +85,7 @@ const CourseLessonBody = ({
             </div>
 
             {/* Main Content Area */}
-            <div className="inner content">
+            <div className="inner content" style={{ flex: '1 1 auto', overflowY: 'auto', overflowX: 'hidden', paddingBottom: '20px', minHeight: 0 }}>
                 {/* Overview Tab */}
                 {activeTab.tab === 'overview' && (
                     <div className="overview-content">
@@ -276,7 +276,7 @@ const CourseLessonBody = ({
                             </div>
                         )}
 
-                        <div className="row g-4" id="Activity" style={{ marginBottom: '100px' }}>
+                        <div className="row g-4" id="Activity" style={{ marginBottom: '20px' }}>
                             {quetypeItems && quetypeItems.length > 0 ? (
                                 quetypeItems.map((item, index) => (
                                     <Fragment key={index}>
@@ -768,7 +768,7 @@ jsx
                 })()}
             </div>{/* closes inner content */}
             {/* Footer Navigation */}
-            <div className="footerBar bg-color-extra2 ptb--15 overflow-hidden position-absolute bottom-0 start-0 end-0">
+            <div className="footerBar bg-color-extra2 overflow-hidden" style={{ flexShrink: 0, padding: '12px 0', zIndex: 100, borderTop: '1px solid #e0e0e0', background: '#fff', width: '100%' }}>
                 <div className="rbt-button-group d-flex justify-content-between px-4">
                     <button
                         className="btn btn-outline-primary d-flex align-items-center gap-2"
