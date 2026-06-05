@@ -320,7 +320,7 @@ const CourseSuccessFile = () => {
                                                                 </div>
                                                                 {Array.isArray(courseitem) && courseitem.length > 0 && (
                                                                     <div className="single-button mt--10">
-                                                                        <Link href={`/batch-details/${EncryptData(courseitem[0].batchID)}/${courseitem[0].itemsID.replace(/\"/g, '')}`}>
+                                                                        <Link href={`/student/student-dashboard`}>
                                                                             <div className="rbt-btn btn-gradient rbt-switch-y w-100 text-center">
                                                                                 <span data-text="Start Learning">Start Learning</span>
                                                                             </div>
