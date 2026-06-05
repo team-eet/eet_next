@@ -169,7 +169,7 @@ const  Nav = () => {
                       <li>
                           <a
                               className={`${activeMenuItem === "tutor" ? "open" : ""}`}
-                              href={`${WEB_URL}/access/${token}`}
+                              href={`https://testportal.eetenglish.in/login?token=${token}`}
                               target={'_blank'}
                           >
                               Tutor dashboard
