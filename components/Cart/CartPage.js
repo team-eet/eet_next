@@ -68,10 +68,9 @@ const CartPage = () => {
                   console.log(res.data)
                   const retData = JSON.parse(res.data)
                   if(retData.success === "1"){
-                    // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
-                    // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
-                    // router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
-                  // New Code
+                    response["eet_orderID"] = orderDetails.orderId;
+                    response["query_for"] = "course";
+                    response["eet_tbid"] = 0;
                     Axios.get(`${API_URL}/api/cart/GetUserCart/${udata['regid']}/${EncryptData(response)}`, {
                       headers: {
                         ApiKey: `${API_KEY}`
@@ -80,14 +79,10 @@ const CartPage = () => {
                       if (res.data) {
                         setLoading(false);
                         const retData = JSON.parse(res.data)
-                        // alert(retData.payid)
                         if(retData.success === "1"){
-                          // console.log("response.razorpay_order_id",response.razorpay_order_id, "razorpay_payment_id",response.razorpay_payment_id,"txnAmount",orderDetails.txnAmount)
-                          // console.log("response.razorpay_order_id",EncryptData(response.razorpay_order_id), "razorpay_payment_id",EncryptData(response.razorpay_payment_id),"txnAmount",EncryptData(orderDetails.txnAmount))
-                          // router.push(`/payment-detail/${EncryptData(response.razorpay_order_id)}/${EncryptData(response.razorpay_payment_id)}/${EncryptData(orderDetails.txnAmount)}`)
                           router.push(`/payment-detail/${retData.payid}`)
                         } else {
-                          rzpay.close();
+                          console.error("GetUserCart failed:", retData);
                         }
                       }
                     })
