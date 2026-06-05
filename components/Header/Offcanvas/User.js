@@ -15,12 +15,10 @@ const User = ({fname, lname, profile}) => {
   const [userRole, setuserRole] = useState('')
   const [uuid, setuuid] = useState('')
   const handleLogout = () => {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('userUpdateData');
     localStorage.clear();
+    sessionStorage.clear();
     router.push('/login');
   };
-
   useEffect(() => {
     if (localStorage.getItem('userData')){
       const data = DecryptData(localStorage.getItem('userData'))

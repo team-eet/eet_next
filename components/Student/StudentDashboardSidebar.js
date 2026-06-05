@@ -12,9 +12,9 @@ const StudentDashboardSidebar = () => {
     const handleLogout = () => {
         setShowLogoutModal(true);
     };
-
     const confirmLogout = () => {
         localStorage.clear();
+        sessionStorage.clear();
         router.push('/login');
     };
 

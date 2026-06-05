@@ -153,13 +153,19 @@ const Viedo = ({ checkMatchCourses }) => {
 
     useEffect(() => {
         if (!router.query.batchId) return;
-        if (!checkMatchCourses?.nTBId) return; // wait for prop too
+        if (!checkMatchCourses?.nTBId) return;
+
+        // ✅ Only write cart data if a valid user session exists
+        const storedUser = localStorage.getItem("userData");
+        if (storedUser) {
+            localStorage.setItem("eetData", JSON.stringify(cart));
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
 
         getFeatureCount();
         checkIfAlreadyPurchased();
-        localStorage.setItem("eetData", JSON.stringify(cart));
-        localStorage.setItem("cart", JSON.stringify(cart));
 
+        // ✅ Video path logic kept exactly as before
         if (checkMatchCourses.sVideoPath && checkMatchCourses.sVideoPath !== "") {
             setvideoOpenData(checkMatchCourses.sVideoPath);
         } else if (checkMatchCourses.sVideoURL && checkMatchCourses.sVideoURL !== "") {
