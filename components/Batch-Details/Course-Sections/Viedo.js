@@ -25,7 +25,9 @@ const Viedo = ({ checkMatchCourses }) => {
     const [isPurchaseChecking, setIsPurchaseChecking] = useState(true); // true by default
     const rawBatchId = router.query.batchId;   // encrypted batch id from URL
     const rawCourseId = router.query.courseId; // encrypted course id from URL
-
+    const [enrolledCount, setEnrolledCount] = useState(0);
+    const [studentAllot, setStudentAllot] = useState(null); // null = not loaded yet
+    const [isBatchFull, setIsBatchFull] = useState(false);
     // ─── State ────────────────────────────────────────────────────────────────
     const [getNumberCount, setNumberCount]       = useState({});
     const [isApiCall, setAPiCall]                = useState({});
@@ -164,7 +166,7 @@ const Viedo = ({ checkMatchCourses }) => {
 
         getFeatureCount();
         checkIfAlreadyPurchased();
-
+        checkBatchCapacity();
         // ✅ Video path logic kept exactly as before
         if (checkMatchCourses.sVideoPath && checkMatchCourses.sVideoPath !== "") {
             setvideoOpenData(checkMatchCourses.sVideoPath);
@@ -179,7 +181,18 @@ const Viedo = ({ checkMatchCourses }) => {
     const addToCartFun = (batchId, amount,  product) => {
         const courseMainId = rawCourseId;
         setIsLoading(true);
-
+// Block purchase if batch is full (re-check at click time)
+        if (isBatchFull) {
+            setIsLoading(false);
+            return MySwal.fire({
+                title: "Batch Full",
+                text: "Sorry, this batch has reached its maximum capacity.",
+                icon: "warning",
+                confirmButtonText: "OK",
+                customClass: { confirmButton: "btn btn-warning" },
+                buttonsStyling: false,
+            });
+        }
         if (!localStorage.getItem("userData")) {
             // Save current page URL so we can return after login
             localStorage.setItem('sharedLink', window.location.pathname + window.location.search);
@@ -259,7 +272,27 @@ const Viedo = ({ checkMatchCourses }) => {
                 setIsLoading(false);
             });
     };
+    const checkBatchCapacity = useCallback(() => {
+        if (!rawBatchId) return;
 
+        // Get enrolled count
+        Axios.get(`${API_URL}/api/coursemain/Get_Batch_Enrolled_Student/${rawBatchId}`, {
+            headers: { ApiKey: `${API_KEY}` }
+        }).then(res => {
+            const ecnt = (res.data && res.data.length !== 0) ? (res.data[0]['ecnt'] || 0) : 0;
+            setEnrolledCount(ecnt);
+
+            // Get allotted seats
+            Axios.get(`${API_URL}/api/coursemain/GetBatchCoursesOnly/${rawBatchId}`, {
+                headers: { ApiKey: `${API_KEY}` }
+            }).then(res2 => {
+                const allot = (res2.data && res2.data.length !== 0) ? (res2.data[0].nStudentAllot || 0) : 0;
+                setStudentAllot(allot);
+                setIsBatchFull(allot > 0 && ecnt >= allot);
+            }).catch(err => console.log("GetBatchCoursesOnly err:", err));
+
+        }).catch(err => console.log("Get_Batch_Enrolled_Student err:", err));
+    }, [rawBatchId]);
     const handlePayment = (amount,batchId,nTBId) => {
         if(localStorage.getItem('userData')) {
             const regID = DecryptData(localStorage.getItem('userData'))
@@ -365,6 +398,7 @@ const Viedo = ({ checkMatchCourses }) => {
                                         const innerRetData = JSON.parse(res.data)
                                         if(innerRetData.success === "1"){
                                             checkIfAlreadyPurchased(); // refresh purchased state after payment
+                                            checkBatchCapacity();
                                             router.push(`/payment-detail/${innerRetData.payid}`)
                                         } else {
                                             rzpay.close();
@@ -604,22 +638,32 @@ const Viedo = ({ checkMatchCourses }) => {
                                     <span data-text="Already Purchased">✓ Already Purchased</span>
                                 </button>
                             ) : !isCartItem ? (
-                                <button
-                                    className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${isLoading ? "disabled" : ""}`}
-                                    onClick={() => addToCartFun(rawBatchId, checkMatchCourses.dAmount, checkMatchCourses)}
-                                    style={{
-                                        pointerEvents: isLoading ? "none" : "auto",
-                                        opacity: isLoading ? 0.7 : 1,
-                                    }}
-                                >
-                                    {isLoading ? (
-                                        <span data-text="Loading...">
+                                isBatchFull ? (
+                                    <button
+                                        className="rbt-btn w-100 text-center disabled"
+                                        style={{ pointerEvents: "none", opacity: 0.8, background: "linear-gradient(to right, #dc3545, #c82333)" }}
+                                        disabled
+                                    >
+                                        <span>🚫 Batch Full</span>
+                                    </button>
+                                ) : (
+                                    <button
+                                        className={`rbt-btn btn-gradient rbt-switch-y w-100 text-center ${isLoading ? "disabled" : ""}`}
+                                        onClick={() => addToCartFun(rawBatchId, checkMatchCourses.dAmount, checkMatchCourses)}
+                                        style={{
+                                            pointerEvents: isLoading ? "none" : "auto",
+                                            opacity: isLoading ? 0.7 : 1,
+                                        }}
+                                    >
+                                        {isLoading ? (
+                                            <span data-text="Loading...">
                     <i className="fa fa-spinner fa-spin p-0"></i> Loading...
                 </span>
-                                    ) : (
-                                        <span data-text="Add to Cart">Buy Now</span>
-                                    )}
-                                </button>
+                                        ) : (
+                                            <span data-text="Register Now">Register Now</span>
+                                        )}
+                                    </button>
+                                )
                             ) : (
                                 isCartId !== "" ? (
                                     <button

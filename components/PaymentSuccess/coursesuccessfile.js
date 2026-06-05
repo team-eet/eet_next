@@ -42,86 +42,86 @@ const CourseSuccessFile = () => {
         if (payId !== '' && payId !== null && udata['regid'] !== ''){
             setUserData(udata)
             Axios.get(`${API_URL}/api/cart/GetCartCourseDone/${udata['regid']}/${payId}`, {
-              headers: {
-                ApiKey: `${API_KEY}`
-              }
+                headers: {
+                    ApiKey: `${API_KEY}`
+                }
             })
                 .then(res => {
-                  if(Array.isArray(res.data) && res.data.length !== 0){
-                      setPaymentUrlId(payId)
-                    console.log("Course Payment Details",res.data)
-                      setItemCount(res.data.length)
-                      setcourseitem(res.data)
-                      setPaymentDetails({
-                          payment_method: res.data?.[0]?.payment_method || "",
-                          payment_status: res.data?.[0]?.payment_status || "",
-                          payment_id: res.data?.[0]?.payment_id || "",
-                          sOID: res.data?.[0]?.sOID || "",
-                          txnAmount: res.data?.[0]?.txnAmount || "",
-                          purchaseDate: res.data?.[0]?.dCreatedDate2 || "",
-                      });
-                      // alert(res.data?.[0]?.payment_id)
-                      // New Code
-                      console.log("FINAL DATA", res.data?.[0]?.payment_id, udata['regid'] )
-                      Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${res.data?.[0]?.payment_id}/${udata['regid']}`, {
-                          headers: {
-                              ApiKey: `${API_KEY}`
-                          }
-                      })
-                          .then(res => {
-                              console.log("CheckPayment Data",res.data)
-                              if(res.data.length !== 0){
+                    if(Array.isArray(res.data) && res.data.length !== 0){
+                        setPaymentUrlId(payId)
+                        console.log("Course Payment Details",res.data)
+                        setItemCount(res.data.length)
+                        setcourseitem(res.data)
+                        setPaymentDetails({
+                            payment_method: res.data?.[0]?.payment_method || "",
+                            payment_status: res.data?.[0]?.payment_status || "",
+                            payment_id: res.data?.[0]?.payment_id || "",
+                            sOID: res.data?.[0]?.sOID || "",
+                            txnAmount: res.data?.[0]?.txnAmount || "",
+                            purchaseDate: res.data?.[0]?.dCreatedDate2 || "",
+                        });
+                        // alert(res.data?.[0]?.payment_id)
+                        // New Code
+                        console.log("FINAL DATA", res.data?.[0]?.payment_id, udata['regid'] )
+                        Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${res.data?.[0]?.payment_id}/${udata['regid']}`, {
+                            headers: {
+                                ApiKey: `${API_KEY}`
+                            }
+                        })
+                            .then(res => {
+                                console.log("CheckPayment Data",res.data)
+                                if(res.data.length !== 0){
 
-                                  // setPaymentDetails({
-                                  //     payment_status: res.data.status || "",
-                                  //     error_description : res.data.error_description || ""
-                                  // });
-                                  // setApiCall(1)
-                                  // setServerError(1)
-                              }
-                          })
-                          .catch(err => {
-                              {
-                                  // ErrorDefaultAlert(err)
-                                  // setServerError(0)
-                              }
-                          })
-                      // Close New Code
-                      setApiCall(1)
-                      setServerError(1)
+                                    // setPaymentDetails({
+                                    //     payment_status: res.data.status || "",
+                                    //     error_description : res.data.error_description || ""
+                                    // });
+                                    // setApiCall(1)
+                                    // setServerError(1)
+                                }
+                            })
+                            .catch(err => {
+                                {
+                                    // ErrorDefaultAlert(err)
+                                    // setServerError(0)
+                                }
+                            })
+                        // Close New Code
+                        setApiCall(1)
+                        setServerError(1)
 
-                  }else {
-                      // Payment Failed And Refueled
-                      Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${DecryptData(payId)}/${udata['regid']}`, {
-                          headers: {
-                              ApiKey: `${API_KEY}`
-                          }
-                      })
-                          .then(res => {
-                              console.log("Payment Failled Data",res.data)
-                              if(res.data.length !== 0){
+                    }else {
+                        // Payment Failed And Refueled
+                        Axios.get(`${API_URL}/api/cart/checkPaymentStatus/${DecryptData(payId)}/${udata['regid']}`, {
+                            headers: {
+                                ApiKey: `${API_KEY}`
+                            }
+                        })
+                            .then(res => {
+                                console.log("Payment Failled Data",res.data)
+                                if(res.data.length !== 0){
 
-                                  setPaymentDetails({
-                                      payment_status: res.data.status || "",
-                                      error_description : res.data.error_description || ""
-                                  });
-                                  setApiCall(1)
-                                  setServerError(1)
-                              }
-                          })
-                          .catch(err => {
-                              {
-                                  // ErrorDefaultAlert(err)
-                                  setServerError(0)
-                              }
-                          })
-                  }
+                                    setPaymentDetails({
+                                        payment_status: res.data.status || "",
+                                        error_description : res.data.error_description || ""
+                                    });
+                                    setApiCall(1)
+                                    setServerError(1)
+                                }
+                            })
+                            .catch(err => {
+                                {
+                                    // ErrorDefaultAlert(err)
+                                    setServerError(0)
+                                }
+                            })
+                    }
                 })
                 .catch(err => {
-                  {
-                      // ErrorDefaultAlert(err)
-                      setServerError(0)
-                  }
+                    {
+                        // ErrorDefaultAlert(err)
+                        setServerError(0)
+                    }
                 })
         }
 
