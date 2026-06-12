@@ -204,6 +204,13 @@ const CourseLesson = () => {
             case 33:                   /*case 34-38 dropdown para */
                 setUrlIFrame(`${WEB_URL}/blankparatypingact/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
                 break;
+            case 34:
+            case 35:
+            case 36:
+            case 37:
+            case 38:
+                setUrlIFrame(`${WEB_URL}/blankparadropdown/${nAQId}/${act_first}/${questionNo}/${y}/${nCId}/${getUserUsername}`)
+                break;
             default:
                 setUrlIFrame(`${WEB_URL}/frame_error`)
         }
